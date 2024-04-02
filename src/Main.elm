@@ -206,7 +206,7 @@ view model =
                                 , El.moveUp 5
                                 ]
                                 [ El.image [ El.centerX ]
-                                    { src = "assets/github.svg"
+                                    { src = "../assets/github.svg"
                                     , description = "GitHub"
                                     }
                                 , El.paragraph
@@ -221,7 +221,7 @@ view model =
                         , rotLeft
                         , shadow
                         ]
-                        { src = "assets/open-spaces-card-1.webp"
+                        { src = "../assets/open-spaces-card-1.webp"
                         , description = "Gimbalabs Open Spaces. Wednesday and Thursday at 14:30 UTC. Click for more details."
                         }
                     , add
@@ -396,7 +396,7 @@ add =
     <|
         El.column [ centerXY, Font.color addColor ]
             [ El.image [ El.height <| El.px 60, El.centerX ]
-                { src = "assets/add.svg"
+                { src = "../assets/add.svg"
                 , description = "Add"
                 }
             , el [ Font.center, Font.bold ] <| El.text "Add Item"
@@ -509,7 +509,7 @@ menuButton attrs pic str =
 gibmalabsPic : Element Msg
 gibmalabsPic =
     El.image [ El.height <| El.px <| mh ]
-        { src = "assets/gimbalabs-logo.svg"
+        { src = "../assets/gimbalabs-logo.svg"
         , description = "Gimbalabs"
         }
 
@@ -521,7 +521,7 @@ gibmalabsPic =
 calendarPic : Element Msg
 calendarPic =
     El.image [ El.height <| El.px <| mh - 20 ]
-        { src = "assets/calendar.svg"
+        { src = "../assets/calendar.svg"
         , description = "Calendar"
         }
 
@@ -533,7 +533,7 @@ calendarPic =
 blogPic : Element Msg
 blogPic =
     El.image [ El.height <| El.px <| mh - 20 ]
-        { src = "assets/blog.svg"
+        { src = "../assets/blog.svg"
         , description = "Blog"
         }
 
@@ -545,7 +545,7 @@ blogPic =
 solutionsPic : Element Msg
 solutionsPic =
     El.image [ El.height <| El.px <| mh - 20 ]
-        { src = "assets/solutions.svg"
+        { src = "../assets/solutions.svg"
         , description = "Solutions"
         }
 
