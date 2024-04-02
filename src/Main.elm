@@ -18,13 +18,23 @@ import Ui.Font as Font
 
 
 type alias Model =
-    { window : Viewport }
+    { window : Viewport
+    , page : Page
+    }
 
 
 type Msg
     = WindowSize Viewport
     | WindowResize Float Float
     | Tick Float
+    | GotoPage Page
+
+
+type Page
+    = GridPage
+    | CalendarPage
+    | BlogPage
+    | SolutionPage
 
 
 
@@ -47,7 +57,9 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { window = sizeToVp 0 0 }
+    ( { window = sizeToVp 0 0
+      , page = GridPage
+      }
     , Cmd.batch
         [ Task.perform WindowSize
             Dom.getViewport
@@ -95,6 +107,11 @@ update msg model =
             ( model
             , Task.perform WindowSize
                 Dom.getViewport
+            )
+
+        GotoPage page ->
+            ( { model | page = page }
+            , Cmd.none
             )
 
 
@@ -145,198 +162,230 @@ view model =
                 , spc
                 , shadow
                 ]
-                [ El.row [ Font.size <| round <| toFloat mh * 0.6 ]
-                    [ el
-                        [ El.height El.fill
-                        ]
-                        gibmalabsPic
-                    , El.text "GIMBA"
-                    , el [ Font.bold ] <| El.text "LABS"
-                    , El.text "  2024"
-                    ]
+                [ El.button []
+                    { onPress = Just <| GotoPage GridPage
+                    , label =
+                        El.row [ Font.size <| round <| toFloat mh * 0.6 ]
+                            [ el
+                                [ El.height El.fill
+                                ]
+                                gibmalabsPic
+                            , El.text "GIMBA"
+                            , el [ Font.bold ] <| El.text "LABS"
+                            , El.text "  2024"
+                            ]
+                    }
                 , el [ El.width El.fill ] El.none
-                , menuButton [ El.alignRight ] calendarPic "Calendar"
-                , menuButton [ El.alignRight ] blogPic "Blog"
-                , menuButton [ El.alignRight ] solutionsPic "Solutions"
+                , menuButton [ El.alignRight ] CalendarPage calendarPic "Calendar"
+                , menuButton [ El.alignRight ] BlogPage blogPic "Blog"
+                , menuButton [ El.alignRight ] SolutionPage solutionsPic "Solutions"
                 ]
         ]
     <|
         el [ fillSpace, siteBg ] <|
-            El.column
-                [ fillSpace
-                , El.paddingEach
-                    { left = padVal + 5
-                    , right = padVal + 5
-                    , top = 0 -- padVal
-                    , bottom = padVal + 5
-                    }
-                , spc
+            case model.page of
+                GridPage ->
+                    gridPage model
+
+                CalendarPage ->
+                    placeholderPage "Calendar"
+
+                BlogPage ->
+                    placeholderPage "Blog"
+
+                SolutionPage ->
+                    placeholderPage "Solutions"
+
+
+placeholderPage : String -> Element Msg
+placeholderPage str =
+    el
+        [ centerXY
+        , Font.size 40
+        ]
+    <|
+        El.text str
+
+
+gridPage : Model -> Element Msg
+gridPage model =
+    El.column
+        [ fillSpace
+        , El.paddingEach
+            { left = padVal + 5
+            , right = padVal + 5
+            , top = 0 -- padVal
+            , bottom = padVal + 5
+            }
+        , spc
+        , siteBg
+        ]
+        [ el
+            [ El.width El.fill
+            , menuHeight
+            ]
+            El.none
+        , El.row [ El.width El.fill, El.height <| El.px 400, spc ]
+            [ El.column
+                [ El.width <| El.px 200
+                , El.height El.fill
                 , siteBg
+                , spc
                 ]
                 [ el
-                    [ El.width El.fill
-                    , menuHeight
+                    [ fillSpace
+                    , Bg.color blue
+                    , shadow
+                    , El.rotate -0.01
                     ]
-                    El.none
-                , El.row [ El.width El.fill, El.height <| El.px 400, spc ]
-                    [ El.column
-                        [ El.width <| El.px 200
-                        , El.height El.fill
-                        , siteBg
-                        , spc
-                        ]
-                        [ el
-                            [ fillSpace
-                            , Bg.color blue
-                            , shadow
-                            , El.rotate -0.01
-                            ]
-                          <|
-                            displayViewport model.window
-                        , el
-                            [ fillSpace
-                            , cellBg
-                            , shadow
-                            , rotRight
-                            , El.padding 5
-                            ]
-                          <|
-                            El.column
-                                [ centerXY
-                                , El.moveUp 5
-                                ]
-                                [ El.image [ El.centerX ]
-                                    { src = "assets/github.svg"
-                                    , description = "GitHub"
-                                    }
-                                , El.paragraph
-                                    [ Font.center
-                                    ]
-                                    [ El.text "View source on GitHub"
-                                    ]
-                                ]
-                        ]
-                    , El.image
-                        [ El.height <| El.px 400
-                        , rotLeft
-                        , shadow
-                        ]
-                        { src = "assets/open-spaces-card-1.webp"
-                        , description = "Gimbalabs Open Spaces. Wednesday and Thursday at 14:30 UTC. Click for more details."
-                        }
-                    , add
-                    , El.column [ fillSpace, spc ]
-                        [ add
-                        , El.column
-                            [ fillSpace
-                            , Bg.color yellow
-                            , Font.size 16
-                            , Font.center
-                            , El.padding <| round <| padVal * 1.5
-                            , rotRight
-                            , shadow
-                            , spc
-                            ]
-                            [ el
-                                [ Font.size 30
-                                , Font.center
-                                , centerXY
-                                ]
-                              <|
-                                El.text "Welcome!"
-                            , El.paragraph [ centerXY ]
-                                [ El.text "Right now, we are building Plutus PBL 2024, running weekly live coding sessions, and hosting Gimbalabs Open Spaces."
-                                ]
-                            ]
-                        ]
+                  <|
+                    displayViewport model.window
+                , El.link
+                    [ fillSpace
+                    , cellBg
+                    , shadow
+                    , rotRight
+                    , El.padding 5
                     ]
-                , El.row [ fillSpace, spc ]
+                    { url = "https://github.com/thistent/gimbalabs"
+                    , label =
+                        El.column
+                            [ centerXY
+                            , El.moveUp 5
+                            ]
+                            [ El.image [ El.centerX ]
+                                { src = "assets/github.svg"
+                                , description = "GitHub"
+                                }
+                            , El.paragraph
+                                [ Font.center
+                                ]
+                                [ El.text "View source on GitHub"
+                                ]
+                            ]
+                    }
+                ]
+            , El.image
+                [ El.height <| El.px 400
+                , rotLeft
+                , shadow
+                ]
+                { src = "assets/open-spaces-card-1.webp"
+                , description = "Gimbalabs Open Spaces. Wednesday and Thursday at 14:30 UTC. Click for more details."
+                }
+            , add
+            , El.column [ fillSpace, spc ]
+                [ add
+                , El.column
+                    [ fillSpace
+                    , Bg.color yellow
+                    , Font.size 16
+                    , Font.center
+                    , El.padding <| round <| padVal * 1.5
+                    , rotRight
+                    , shadow
+                    , spc
+                    ]
                     [ el
-                        [ fillSpace
-                        , Bg.color teal
-                        , El.padding padVal
-                        , rotRight
-                        , shadow
+                        [ Font.size 30
+                        , Font.center
+                        , centerXY
                         ]
                       <|
-                        El.column [ centerXY, spc ]
-                            [ el
-                                [ Border.widthEach { edges | bottom = 1 }
-                                , El.padding 10
-                                , Font.size 30
-                                ]
-                              <|
-                                El.text "Learn"
-                            , El.column [ El.centerX, spc ]
-                                [ el [] <| El.text "⯀ Starter Kits"
-                                , el [] <| El.text "⯀ Plutus"
-                                , el [] <| El.text "⯀ Playground"
-                                ]
-                            ]
-                    , el
-                        [ fillSpace
-                        , Bg.color orange
-                        , El.padding padVal
-                        , shadow
+                        El.text "Welcome!"
+                    , El.paragraph [ centerXY ]
+                        [ El.text "Right now, we are building Plutus PBL 2024, running weekly live coding sessions, and hosting Gimbalabs Open Spaces."
                         ]
-                      <|
-                        El.column [ centerXY, spc ]
-                            [ el
-                                [ Border.widthEach { edges | bottom = 1 }
-                                , El.padding 10
-                                , Font.size 30
-                                ]
-                              <|
-                                El.text "APIs"
-                            , El.column [ El.centerX, spc ]
-                                [ el [] <| El.text "⯀ Dandelion"
-                                , el [] <| El.text "⯀ Endpoints"
-                                ]
-                            ]
-                    , el
-                        [ fillSpace
-                        , Bg.color green
-                        , El.padding padVal
-                        , rotLeft
-                        , shadow
-                        ]
-                      <|
-                        El.column [ centerXY, spc ]
-                            [ el
-                                [ Border.widthEach { edges | bottom = 1 }
-                                , El.padding 10
-                                , Font.size 30
-                                ]
-                              <|
-                                El.text "Updates"
-                            , El.column [ El.centerX, spc ]
-                                [ el [] <| El.text "⯀ Updates"
-                                ]
-                            ]
-                    , el
-                        [ fillSpace
-                        , Bg.color lavender
-                        , El.padding padVal
-                        , rotRight
-                        , shadow
-                        ]
-                      <|
-                        El.column [ centerXY, spc ]
-                            [ el
-                                [ Border.widthEach { edges | bottom = 1 }
-                                , El.padding 10
-                                , Font.size 30
-                                ]
-                              <|
-                                El.text "About Us"
-                            , El.column [ El.centerX, spc ]
-                                [ el [] <| El.text "⯀ Team"
-                                , el [] <| El.text "⯀ Calendar"
-                                , el [] <| El.text "⯀ Stake Pools"
-                                ]
-                            ]
                     ]
                 ]
+            ]
+        , El.row [ fillSpace, spc ]
+            [ el
+                [ fillSpace
+                , Bg.color teal
+                , El.padding padVal
+                , rotRight
+                , shadow
+                ]
+              <|
+                El.column [ centerXY, spc ]
+                    [ el
+                        [ Border.widthEach { edges | bottom = 1 }
+                        , El.padding 10
+                        , Font.size 30
+                        ]
+                      <|
+                        El.text "Learn"
+                    , El.column [ El.centerX, spc ]
+                        [ el [] <| El.text "⯀ Starter Kits"
+                        , el [] <| El.text "⯀ Plutus"
+                        , el [] <| El.text "⯀ Playground"
+                        ]
+                    ]
+            , el
+                [ fillSpace
+                , Bg.color orange
+                , El.padding padVal
+                , shadow
+                ]
+              <|
+                El.column [ centerXY, spc ]
+                    [ el
+                        [ Border.widthEach { edges | bottom = 1 }
+                        , El.padding 10
+                        , Font.size 30
+                        ]
+                      <|
+                        El.text "APIs"
+                    , El.column [ El.centerX, spc ]
+                        [ el [] <| El.text "⯀ Dandelion"
+                        , el [] <| El.text "⯀ Endpoints"
+                        ]
+                    ]
+            , el
+                [ fillSpace
+                , Bg.color green
+                , El.padding padVal
+                , rotLeft
+                , shadow
+                ]
+              <|
+                El.column [ centerXY, spc ]
+                    [ el
+                        [ Border.widthEach { edges | bottom = 1 }
+                        , El.padding 10
+                        , Font.size 30
+                        ]
+                      <|
+                        El.text "Updates"
+                    , El.column [ El.centerX, spc ]
+                        [ el [] <| El.text "⯀ Updates"
+                        ]
+                    ]
+            , el
+                [ fillSpace
+                , Bg.color lavender
+                , El.padding padVal
+                , rotRight
+                , shadow
+                ]
+              <|
+                El.column [ centerXY, spc ]
+                    [ el
+                        [ Border.widthEach { edges | bottom = 1 }
+                        , El.padding 10
+                        , Font.size 30
+                        ]
+                      <|
+                        El.text "About Us"
+                    , El.column [ El.centerX, spc ]
+                        [ el [] <| El.text "⯀ Team"
+                        , el [] <| El.text "⯀ Calendar"
+                        , el [] <| El.text "⯀ Stake Pools"
+                        ]
+                    ]
+            ]
+        ]
 
 
 centerXY : El.Attribute Msg
@@ -484,26 +533,28 @@ edges =
     { left = 0, right = 0, top = 0, bottom = 0 }
 
 
-menuButton : List (El.Attribute Msg) -> Element Msg -> String -> Element Msg
-menuButton attrs pic str =
-    el
+menuButton : List (El.Attribute Msg) -> Page -> Element Msg -> String -> Element Msg
+menuButton attrs page pic str =
+    El.button
         [ El.height El.fill
         , El.batch attrs
         ]
-    <|
-        el
-            [ centerXY
-            , El.padding 10
-            ]
-        <|
-            El.row
-                [ Font.size <| round <| toFloat mh * 0.5
-                , Font.center
-                , El.height El.fill
+        { onPress = Just <| GotoPage page
+        , label =
+            el
+                [ centerXY
+                , El.padding 10
                 ]
-                [ pic
-                , el [ El.centerY ] <| El.text str
-                ]
+            <|
+                El.row
+                    [ Font.size <| round <| toFloat mh * 0.5
+                    , Font.center
+                    , El.height El.fill
+                    ]
+                    [ pic
+                    , el [ El.centerY ] <| El.text str
+                    ]
+        }
 
 
 gibmalabsPic : Element Msg
