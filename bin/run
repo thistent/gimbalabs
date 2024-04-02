@@ -1,4 +1,4 @@
 #! /bin/sh
 clear
-ls -R src/* | entr -r elm-live src/Main.elm
+ls -R src/* | entr -r elm-live -s doc/index.html src/Main.elm -- --optimize --output=doc/index.html
 reset
