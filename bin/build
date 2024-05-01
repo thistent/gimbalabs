@@ -1,2 +1,2 @@
 #! /bin/sh
-elm make src/Main.elm --optimize --output=docs/index.html
+elm make src/Paper.elm --optimize --output=docs/index.html

@@ -21,8 +21,6 @@ module Ui exposing
     , batch
     , behindContent
     , below
-    , button
-      -- FIXME!
     , centerX
     , centerY
     , classifyDevice
@@ -66,8 +64,6 @@ module Ui exposing
     , noHover
     , noStaticStyleSheet
     , none
-    , onClick
-      -- FIXME!
     , onLeft
     , onRight
     , padding
@@ -105,35 +101,8 @@ module Ui exposing
 
 import Color as C
 import Element as E
-import Element.Events as Ev
-import Element.Input as I
 import Html exposing (Html)
 import Ui.Util exposing (cc)
-
-
-
--- HACK: This goes in Events when it exists --
-
-
-onClick : msg -> Attribute msg
-onClick msg =
-    [ Ev.onClick msg ]
-
-
-{-| -}
-button :
-    List (Attribute msg)
-    ->
-        { onPress : Maybe msg
-        , label : Element msg
-        }
-    -> Element msg
-button a r =
-    I.button (batch a) r
-
-
-
--- END HACK --
 
 
 type alias Attr decorative msg =

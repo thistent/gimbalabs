@@ -1,5 +1,5 @@
 #! /bin/sh
 clear
-ls -R src/* | entr -r elm-live -d docs src/Main.elm -- --output=docs/index.html  
+ls -R src/* | entr -r elm-live -d docs src/Paper.elm -- --output=docs/index.html  
 # ls -R src/* | entr -r elm-live -d docs src/Main.elm -- --optimize --output=docs/index.html
 reset
