@@ -11,6 +11,7 @@ import Dict
 import Docs exposing (..)
 import Ease
 import Html exposing (Html)
+import Html.Attributes as HAttr
 import Http
 import Markdown.Block as Md
 import Markdown.Html as MdHtml
@@ -112,7 +113,7 @@ init color () url key =
     Return.return
         { navKey = key
         , url = url
-        , page = Blog
+        , page = Home
         , menu = MenuClosed
         , color = color
         , size = Delay.wait 1000 Nothing
@@ -259,9 +260,12 @@ view model vp =
         [ Font.size <| round <| spcNum * 0.55
         , Font.family [ Font.serif ]
         , Font.color model.color.fg
-        , Font.justify
+        , Font.letterSpacing 0.2
+
+        --, Font.justify
         , Bg.color <| Pic.mix 0.5 model.color.bg model.color.fg
-        , fillSpace
+
+        --, fillSpace
         , padding <| lineSize * 2 --spcNum // 6
         ]
     <|
@@ -269,7 +273,7 @@ view model vp =
             [ fillSpace
             , spacing <| spcNum // 5
             ]
-            [ turningPage model <|
+            [ turningPage model 0 <|
                 column
                     [ fillSpace
                     , spacing spcNum
@@ -299,6 +303,8 @@ view model vp =
                                                 "Right now, we are building Plutus PBL 2024, "
                                                     ++ "running weekly live coding sessions, "
                                                     ++ "and hosting Gimbalabs Open Spaces."
+                                            , item p <|
+                                                "This version of the website is still under construction!"
                                             ]
                                     , vBar
                                     , topGroup p
@@ -311,7 +317,7 @@ view model vp =
                                     [ fillSpace
                                     , spacing spcNum
                                     ]
-                                    [ turningPage (m orangeNote) <|
+                                    [ turningPage (m orangeNote) 0.02 <|
                                         el [ fillSpace ] <|
                                             column [ centerX, spacing <| spcNum // 2 ]
                                                 [ title p "Learn"
@@ -319,20 +325,20 @@ view model vp =
                                                 , el [] <| text "⯀ Plutus"
                                                 , el [] <| text "⯀ Playground"
                                                 ]
-                                    , turningPage (m yellowNote) <|
+                                    , turningPage (m yellowNote) 0 <|
                                         el [ fillSpace ] <|
                                             column [ centerX, spacing <| spcNum // 2 ]
                                                 [ title p "APIs"
                                                 , el [] <| text "⯀ Dandelion"
                                                 , el [] <| text "⯀ Endpoints"
                                                 ]
-                                    , turningPage (m greenNote) <|
+                                    , turningPage (m greenNote) -0.02 <|
                                         el [ fillSpace ] <|
                                             column [ centerX, spacing <| spcNum // 2 ]
                                                 [ title p "Updates"
                                                 , el [] <| text "⯀ Updates"
                                                 ]
-                                    , turningPage (m blueNote) <|
+                                    , turningPage (m blueNote) 0.01 <|
                                         el [ fillSpace ] <|
                                             column [ centerX, spacing <| spcNum // 2 ]
                                                 [ title p "About Us"
@@ -381,15 +387,14 @@ view model vp =
             ]
 
 
-turningPage : Model -> Element Msg -> Element Msg
-turningPage model content =
+turningPage : Model -> Float -> Element Msg -> Element Msg
+turningPage model rot content =
     row
-        [ -- Bg.color model.color.bg
-          Bg.color <| rgba 0 0 0 0
-        , Font.color model.color.fg
+        [ Font.color model.color.fg
         , Border.roundEach { corners | bottomRight = spcNum }
         , shadow
         , fillSpace
+        , rotate rot
         ]
         [ el
             [ fillSpace
@@ -399,7 +404,7 @@ turningPage model content =
                 el
                     [ fillSpace
                     , paddingEach { edges | left = spcNum, top = spcNum, bottom = round <| toFloat spcNum * 1.5 }
-                    , alpha 0.04
+                    , alpha 0.03
                     , style "pointer-events" "none"
                     ]
                 <|
@@ -419,6 +424,8 @@ turningPage model content =
             , el
                 [ width <| px spcNum
                 , height <| px spcNum
+                , Bg.color model.color.bg
+                , Border.roundEach { corners | bottomRight = spcNum }
                 ]
               <|
                 Pic.pageCurl model.color
@@ -704,9 +711,9 @@ renderMd model vp str =
         |> Result.withDefault
             [ text "Markdown rendering error!" ]
         |> (\stuff ->
-                column
+                textColumn
                     [ spacing spcNum
-                    , width <| px <| round <| vp.viewport.width - 2 * spcNum
+                    , width <| px <| round <| vp.viewport.width - 2 * spcNum - 4 * lineSize
                     ]
                     stuff
            )
@@ -722,54 +729,58 @@ markdownRenderer model vp =
         -- {HeadingLevel, String, List view} -> view
         \{ level, rawText, children } ->
             let
-                hAttrs : Float -> List (Attribute Msg)
-                hAttrs i =
-                    [ Font.size <|
-                        round <|
-                            spcNum
-                                * (1.0 - ((i - 1) * 0.1))
-                    , Bg.color <|
-                        Pic.mix 0.9 model.color.fg model.color.bg
-                    , paddingXY (spcNum // 2) (spcNum // 3)
-                    , spacing <| spcNum // 4
-                    , vw
-                    ]
+                h : Float -> Element Msg
+                h i =
+                    row
+                        [ Font.size <|
+                            round <|
+                                spcNum
+                                    * (1.0 - ((i - 1) * 0.1))
+                        , Bg.color <|
+                            Pic.mix 0.9 model.color.fg model.color.bg
+                        , paddingXY (spcNum // 2) (spcNum // 3)
+                        , spacing <| spcNum // 2
+                        , vw
+                        ]
+                        [ el
+                            [ alignTop
+                            , Font.color <| Pic.mix 0.6 model.color.fg model.color.bg
+                            , Font.letterSpacing 0
+                            ]
+                          <|
+                            text <|
+                                String.repeat (i |> round) "#"
+                        , paragraph
+                            [ fillSpace
+                            , spacing <| spcNum // 2
+                            ]
+                            children
+                        ]
             in
             case level of
                 Md.H1 ->
-                    wrappedRow
-                        (hAttrs 1)
-                        children
+                    h 1
 
                 Md.H2 ->
-                    wrappedRow
-                        (hAttrs 2)
-                        children
+                    h 2
 
                 Md.H3 ->
-                    wrappedRow
-                        (hAttrs 3)
-                        children
+                    h 3
 
                 Md.H4 ->
-                    wrappedRow
-                        (hAttrs 4)
-                        children
+                    h 4
 
                 Md.H5 ->
-                    wrappedRow
-                        (hAttrs 5)
-                        children
+                    h 5
 
                 Md.H6 ->
-                    wrappedRow
-                        (hAttrs 6)
-                        children
+                    h 6
     , paragraph =
         -- List view -> view
         \list ->
-            wrappedRow
+            paragraph
                 [ fillSpace
+                , spacing <| spcNum // 2
                 ]
                 list
     , blockQuote =
@@ -791,7 +802,7 @@ markdownRenderer model vp =
             wrappedRow
                 [ Font.family [ Font.monospace ]
                 , Bg.color <| Pic.mix 0.05 model.color.bg model.color.fg
-                , padding 15
+                , padding 5
                 ]
                 [ text str ]
     , strong =
@@ -807,7 +818,7 @@ markdownRenderer model vp =
         wrappedRow [ Font.strike ]
     , hardLineBreak =
         -- view
-        none
+        hBar
     , link =
         {-
            { title : Maybe String
@@ -821,9 +832,7 @@ markdownRenderer model vp =
                 (GetDoc <| destination ++ ".md")
                 Nothing
             <|
-                wrappedRow
-                    []
-                    list
+                paragraph [] list
     , image =
         {-
            { alt : String
@@ -832,17 +841,65 @@ markdownRenderer model vp =
            }
            -> view
         -}
-        \img -> none
+        \{ alt, src, title } ->
+            column
+                [ Bg.color <| Pic.mix 0.05 model.color.bg model.color.fg
+                , padding <| spcNum // 4
+                , spacing <| spcNum // 4
+                , model.size
+                    |> Delay.payload
+                    |> Maybe.map .viewport
+                    |> Maybe.map .width
+                    |> Maybe.withDefault 600.0
+                    |> (\x -> x * 0.3)
+                    |> round
+                    |> px
+                    |> width
+                ]
+                [ image
+                    [ centerX
+                    , width fill
+                    ]
+                    { src = src
+                    , description = alt
+                    }
+                , case title of
+                    Just t ->
+                        paragraph [ centerX, Font.size <| spcNum // 2 ] [ text t ]
+
+                    Nothing ->
+                        none
+                ]
     , unorderedList =
         -- List (ListItem view) -> view
         \items ->
-            {- FIXME: row [spacing <| spcNum // 2]
-               []
-            -}
-            none
+            items
+                |> List.map
+                    (\item ->
+                        case item of
+                            Md.ListItem _ xs ->
+                                row [ width fill, spacing <| spcNum // 4 ] [ text " ⏺", paragraph [ width fill ] xs ]
+                    )
+                |> textColumn [ width fill, spacing <| spcNum // 2 ]
     , orderedList =
         -- Int -> List (List view) -> view
-        \startIndex items -> none
+        \startIndex items ->
+            items
+                |> List.indexedMap
+                    (\i xs ->
+                        row [ width fill, spacing <| spcNum // 4 ]
+                            [ el [ Font.bold ] <|
+                                text <|
+                                    String.padLeft 4 ' ' <|
+                                        (String.fromInt <|
+                                            i
+                                                + startIndex
+                                        )
+                                            ++ "."
+                            , paragraph [ width fill ] xs
+                            ]
+                    )
+                |> textColumn [ width fill, spacing <| spcNum // 2 ]
     , codeBlock =
         {- { body : String
            , language : Maybe String
@@ -855,8 +912,8 @@ markdownRenderer model vp =
                     case language of
                         Just l ->
                             el
-                                [ Font.size 15
-                                , paddingXY 15 5
+                                [ Font.size <| spcNum // 2
+                                , padding <| spcNum // 4
                                 , Bg.color <|
                                     Pic.mix 0.1 model.color.bg model.color.fg
                                 ]
@@ -866,162 +923,75 @@ markdownRenderer model vp =
                         Nothing ->
                             none
             in
-            column
-                [ width fill
-                , Font.family [ Font.monospace ]
-                ]
+            textColumn [ width fill ]
                 [ lang
-                , el
-                    [ width fill
-                    , spacing 15
-                    , Bg.color <| Pic.mix 0.05 model.color.bg model.color.fg
-                    , padding 15
+                , row [ width fill ]
+                    [ body
+                        |> String.split "\n"
+                        |> List.tail
+                        |> Maybe.withDefault []
+                        |> List.indexedMap
+                            (\i _ ->
+                                el []
+                                    (i + 1 |> String.fromInt |> String.padLeft 4 ' ' |> text)
+                            )
+                        |> column
+                            [ Font.family [ Font.monospace ]
+                            , Font.bold
+                            , spacing <| spcNum // 2
+                            , centerY
+                            , paddingEach { edges | right = spcNum // 4 }
+                            ]
+                        |> el
+                            [ height fill
+                            , Bg.color <| Pic.mix 0.2 model.color.bg model.color.fg
+                            ]
+                    , link
+                        [ width fill
+                        , Font.family [ Font.monospace ]
+                        , Bg.color <| Pic.mix 0.05 model.color.bg model.color.fg
+                        , scrollbars
+                        , alignTop
+                        , paddingEach { edges | left = spcNum // 4 }
+
+                        --, explain Debug.todo
+                        ]
+                        { url = ""
+                        , label =
+                            body |> pre
+                        }
                     ]
-                  <|
-                    pre body
                 ]
     , thematicBreak =
         -- view
         hBar
     , table =
         -- List view -> view
-        \list -> none
+        \list ->
+            column
+                [ Bg.color <| Pic.mix 0.05 model.color.bg model.color.fg
+                , spacing <| spcNum // 2
+                , padding <| spcNum // 2
+                ]
+                list
     , tableHeader =
         -- List view -> view
-        \list -> none
+        \list -> row [ width fill, spacing <| spcNum // 2, Border.widthEach { edges | bottom = 2 } ] list
     , tableBody =
         -- List view -> view
-        \list -> none
+        \list -> column [ width fill, spacing <| spcNum // 2 ] list
     , tableRow =
         -- List view -> view
-        \list -> none
+        \list -> row [ width fill, spacing <| spcNum // 2 ] list
     , tableCell =
         -- Maybe Alignment -> List view -> view
-        \maybeArg list -> none
+        \maybeArg list -> paragraph [ width fill, spacing <| spcNum // 2 ] list
     , tableHeaderCell =
         -- Maybe Alignment -> List view -> view
-        \maybeArg list -> none
-    }
-
-
-debugRenderer : Model -> Md.Renderer String
-debugRenderer model =
-    let
-        ls : List String -> String
-        ls l =
-            l
-                |> List.intersperse ", "
-                |> String.concat
-                |> (\s -> "[" ++ s ++ "]")
-    in
-    { heading =
-        -- {HeadingLevel, String, List view} -> view
-        \{ level, rawText, children } ->
-            case level of
-                Md.H1 ->
-                    "(H1 (rawText " ++ rawText ++ ") " ++ ls children ++ ")"
-
-                Md.H2 ->
-                    "(H2 (rawText " ++ rawText ++ ") " ++ ls children ++ ")"
-
-                Md.H3 ->
-                    "(H3 (rawText " ++ rawText ++ ") " ++ ls children ++ ")"
-
-                Md.H4 ->
-                    "(H4 (rawText " ++ rawText ++ ") " ++ ls children ++ ")"
-
-                Md.H5 ->
-                    "(H5 (rawText " ++ rawText ++ ") " ++ ls children ++ ")"
-
-                Md.H6 ->
-                    "(H6 (rawText " ++ rawText ++ ") " ++ ls children ++ ")"
-    , paragraph =
-        -- List view -> view
-        \list -> "(paragraph " ++ ls list ++ ")"
-    , blockQuote =
-        -- List view -> view
-        \list -> "(blockQuote " ++ ls list ++ ")"
-    , html =
-        -- Renderer (List view -> view)
-        --\list -> "(html " ++ ls list ++ ")"
-        MdHtml.oneOf []
-    , text =
-        -- String -> view
-        \s -> "(text " ++ s ++ ")"
-    , codeSpan =
-        -- String -> view
-        \s -> "(codeSpan " ++ s ++ ")"
-    , strong =
-        -- List view -> view
-        \list -> "(strong " ++ ls list ++ ")"
-    , emphasis =
-        -- List view -> view
-        \list -> "(emphasis " ++ ls list ++ ")"
-    , strikethrough =
-        -- List view -> view
-        \list -> "(strikethrough " ++ ls list ++ ")"
-    , hardLineBreak =
-        -- view
-        "(hardLineBreak)"
-    , link =
-        {-
-           { title : Maybe String
-           , destination : String
-           }
-           -> List view
-           -> view
-        -}
-        \{ title, destination } list ->
-            "(link (title " ++ Maybe.withDefault "" title ++ ") (destination " ++ destination ++ ") " ++ ls list ++ ")"
-    , image =
-        {-
-           { alt : String
-           , src : String
-           , title : Maybe String
-           }
-           -> view
-        -}
-        \{ alt, src, title } -> "(image (alt " ++ alt ++ ") (src " ++ src ++ ") (title " ++ Maybe.withDefault "" title ++ "))"
-    , unorderedList =
-        -- List (ListItem view) -> view
-        \items ->
-            "(unorderedList)"
-    , orderedList =
-        -- Int -> List (List view) -> view
-        \startIndex items ->
-            "(orderedList)"
-    , codeBlock =
-        {- { body : String
-           , language : Maybe String
-           }
-           -> view
-        -}
-        \{ body, language } ->
-            "(codeBlock (lang " ++ Maybe.withDefault "" language ++ ") (body " ++ body ++ "))"
-    , thematicBreak =
-        -- view
-        "(thematicBreak)"
-    , table =
-        -- List view -> view
-        \list -> "(table " ++ ls list ++ ")"
-    , tableHeader =
-        -- List view -> view
-        \list -> "(tableHeader " ++ ls list ++ ")"
-    , tableBody =
-        -- List view -> view
-        \list -> "(tableBody " ++ ls list ++ ")"
-    , tableRow =
-        -- List view -> view
-        \list -> "(tableRow " ++ ls list ++ ")"
-    , tableCell =
-        -- Maybe Alignment -> List view -> view
-        \_ list -> "(tableCell " ++ ls list ++ ")"
-    , tableHeaderCell =
-        -- Maybe Alignment -> List view -> view
-        \_ list -> "(tableHeaderCell " ++ ls list ++ ")"
+        \maybeArg list -> paragraph [ width fill, Font.bold, spacing <| spcNum // 2 ] list
     }
 
 
 pre : String -> Element Msg
 pre str =
-    html <| Html.pre [] [ Html.text str ]
+    el [ alignLeft ] <| html <| Html.pre [ HAttr.style "line-height" <| "calc(1em + " ++ String.fromInt (spcNum // 2) ++ "px)" ] [ Html.text str ]

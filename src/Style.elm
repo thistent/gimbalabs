@@ -40,7 +40,7 @@ newspaper =
     { name = "Newspaper"
     , fg = rgb255 0x2B 0x16 0x00
     , bg = rgb255 0x9B 0x99 0x94
-    , link = rgb255 0x00 0x4D 0x1F
+    , link = rgb255 0x8D 0x19 0x00
 
     -- #9b9994#918f8b
     -- #003370 #004d1f #961d00
@@ -143,6 +143,7 @@ otherSide content =
             , style "-ms-transform" "scale(1, -1)"
             , style "transform" "scale(1, -1)"
             , style "pointer-events" "none"
+            , inFront <| el [ fillSpace ] none
             ]
         <|
             content
