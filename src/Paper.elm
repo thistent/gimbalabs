@@ -116,7 +116,7 @@ init color () url key =
         , page = Home
         , menu = MenuClosed
         , color = color
-        , size = Delay.wait 1000 Nothing
+        , size = Delay.wait 300 Nothing
         , zone = Time.utc
         , time = Nothing
         , currentSlide = "start"
@@ -843,15 +843,13 @@ markdownRenderer model vp =
         -}
         \{ alt, src, title } ->
             column
-                [ Bg.color <| Pic.mix 0.05 model.color.bg model.color.fg
-                , padding <| spcNum // 4
-                , spacing <| spcNum // 4
+                [ alignRight
                 , model.size
                     |> Delay.payload
                     |> Maybe.map .viewport
                     |> Maybe.map .width
                     |> Maybe.withDefault 600.0
-                    |> (\x -> x * 0.3)
+                    |> (\x -> x * 0.5)
                     |> round
                     |> px
                     |> width
@@ -859,13 +857,28 @@ markdownRenderer model vp =
                 [ image
                     [ centerX
                     , width fill
+                    , Bg.color <| Pic.mix 0.05 model.color.bg model.color.fg
                     ]
                     { src = src
                     , description = alt
                     }
                 , case title of
                     Just t ->
-                        paragraph [ centerX, Font.size <| spcNum // 2 ] [ text t ]
+                        column [ width fill ]
+                            [ paragraph
+                                [ centerX
+                                , Bg.color <| Pic.mix 0.05 model.color.bg model.color.fg
+                                , padding <| spcNum // 2
+                                , Font.size <| spcNum // 2
+                                ]
+                                [ text t ]
+                            , el
+                                [ width fill
+                                , height <| px <| spcNum // 2
+                                , Bg.color <| rgba 0 0 0 0
+                                ]
+                                none
+                            ]
 
                     Nothing ->
                         none
@@ -878,28 +891,43 @@ markdownRenderer model vp =
                     (\item ->
                         case item of
                             Md.ListItem _ xs ->
-                                row [ width fill, spacing <| spcNum // 4 ] [ text " ⏺", paragraph [ width fill ] xs ]
+                                row
+                                    [ width fill
+                                    , spacing <| spcNum // 4
+                                    ]
+                                    [ el [ alignTop ] <| text " ⏺", paragraph [ width fill ] xs ]
                     )
-                |> textColumn [ width fill, spacing <| spcNum // 2 ]
+                |> textColumn
+                    [ width fill
+                    , spacing <| spcNum // 2
+                    , paddingEach { edges | top = spcNum // 2 }
+                    ]
     , orderedList =
         -- Int -> List (List view) -> view
         \startIndex items ->
             items
                 |> List.indexedMap
                     (\i xs ->
-                        row [ width fill, spacing <| spcNum // 4 ]
-                            [ el [ Font.bold ] <|
-                                text <|
-                                    String.padLeft 4 ' ' <|
-                                        (String.fromInt <|
-                                            i
-                                                + startIndex
-                                        )
-                                            ++ "."
-                            , paragraph [ width fill ] xs
+                        row
+                            [ width fill
+                            , spacing <| spcNum // 4
+                            ]
+                            [ (String.fromInt <| i + startIndex)
+                                ++ "."
+                                |> String.padLeft 4 ' '
+                                |> text
+                                |> el [ alignTop, Font.bold ]
+                            , paragraph
+                                [ width fill
+                                ]
+                                xs
                             ]
                     )
-                |> textColumn [ width fill, spacing <| spcNum // 2 ]
+                |> textColumn
+                    [ width fill
+                    , spacing <| spcNum // 2
+                    , paddingEach { edges | top = spcNum // 2 }
+                    ]
     , codeBlock =
         {- { body : String
            , language : Maybe String
@@ -923,7 +951,10 @@ markdownRenderer model vp =
                         Nothing ->
                             none
             in
-            textColumn [ width fill ]
+            textColumn
+                [ width fill
+                , Font.family [ Font.monospace ]
+                ]
                 [ lang
                 , row [ width fill ]
                     [ body
@@ -936,7 +967,7 @@ markdownRenderer model vp =
                                     (i + 1 |> String.fromInt |> String.padLeft 4 ' ' |> text)
                             )
                         |> column
-                            [ Font.family [ Font.monospace ]
+                            [ Font.family []
                             , Font.bold
                             , spacing <| spcNum // 2
                             , centerY
@@ -948,7 +979,6 @@ markdownRenderer model vp =
                             ]
                     , link
                         [ width fill
-                        , Font.family [ Font.monospace ]
                         , Bg.color <| Pic.mix 0.05 model.color.bg model.color.fg
                         , scrollbars
                         , alignTop

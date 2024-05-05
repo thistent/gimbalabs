@@ -13019,7 +13019,7 @@ var $author$project$Paper$init = F4(
 				dR: 0,
 				b1: key,
 				d5: 0,
-				C: A2($author$project$Delay$wait, 1000, $elm$core$Maybe$Nothing),
+				C: A2($author$project$Delay$wait, 300, $elm$core$Maybe$Nothing),
 				cl: $author$project$Docs$initSlides,
 				bm: $elm$core$Maybe$Nothing,
 				cv: url,
@@ -14414,6 +14414,10 @@ var $dillonkearns$elm_markdown$Markdown$Block$Text = function (a) {
 var $author$project$Types$GetDoc = function (a) {
 	return {$: 12, a: a};
 };
+var $mdgriffith$elm_ui$Internal$Model$Right = 2;
+var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX(2);
+var $author$project$Ui$alignRight = _List_fromArray(
+	[$mdgriffith$elm_ui$Element$alignRight]);
 var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 3};
 var $mdgriffith$elm_ui$Element$none = $mdgriffith$elm_ui$Internal$Model$Empty;
 var $author$project$Ui$none = $mdgriffith$elm_ui$Element$none;
@@ -14709,6 +14713,7 @@ var $author$project$Paper$pre = function (str) {
 						$elm$html$Html$text(str)
 					]))));
 };
+var $author$project$Ui$rgba = $avh4$elm_color$Color$rgba;
 var $mdgriffith$elm_ui$Internal$Flag$overflow = $mdgriffith$elm_ui$Internal$Flag$flag(20);
 var $mdgriffith$elm_ui$Element$scrollbars = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.ek);
 var $author$project$Ui$scrollbars = _List_fromArray(
@@ -14994,7 +14999,10 @@ var $author$project$Paper$markdownRenderer = F2(
 					$author$project$Ui$textColumn,
 					_List_fromArray(
 						[
-							$author$project$Ui$width($author$project$Ui$fill)
+							$author$project$Ui$width($author$project$Ui$fill),
+							$author$project$Ui$Font$family(
+							_List_fromArray(
+								[$author$project$Ui$Font$monospace]))
 						]),
 					_List_fromArray(
 						[
@@ -15019,9 +15027,7 @@ var $author$project$Paper$markdownRenderer = F2(
 										$author$project$Ui$column,
 										_List_fromArray(
 											[
-												$author$project$Ui$Font$family(
-												_List_fromArray(
-													[$author$project$Ui$Font$monospace])),
+												$author$project$Ui$Font$family(_List_Nil),
 												$author$project$Ui$Font$bold,
 												$author$project$Ui$spacing(($author$project$Style$spcNum / 2) | 0),
 												$author$project$Ui$centerY,
@@ -15054,9 +15060,6 @@ var $author$project$Paper$markdownRenderer = F2(
 									_List_fromArray(
 										[
 											$author$project$Ui$width($author$project$Ui$fill),
-											$author$project$Ui$Font$family(
-											_List_fromArray(
-												[$author$project$Ui$Font$monospace])),
 											$author$project$Ui$Background$color(
 											A3($author$project$Pic$mix, 0.05, model.a1.cU, model.a1.a3)),
 											$author$project$Ui$scrollbars,
@@ -15161,15 +15164,12 @@ var $author$project$Paper$markdownRenderer = F2(
 					$author$project$Ui$column,
 					_List_fromArray(
 						[
-							$author$project$Ui$Background$color(
-							A3($author$project$Pic$mix, 0.05, model.a1.cU, model.a1.a3)),
-							$author$project$Ui$padding(($author$project$Style$spcNum / 4) | 0),
-							$author$project$Ui$spacing(($author$project$Style$spcNum / 4) | 0),
+							$author$project$Ui$alignRight,
 							$author$project$Ui$width(
 							$author$project$Ui$px(
 								$elm$core$Basics$round(
 									function (x) {
-										return x * 0.3;
+										return x * 0.5;
 									}(
 										A2(
 											$elm$core$Maybe$withDefault,
@@ -15193,22 +15193,47 @@ var $author$project$Paper$markdownRenderer = F2(
 							_List_fromArray(
 								[
 									$author$project$Ui$centerX,
-									$author$project$Ui$width($author$project$Ui$fill)
+									$author$project$Ui$width($author$project$Ui$fill),
+									$author$project$Ui$Background$color(
+									A3($author$project$Pic$mix, 0.05, model.a1.cU, model.a1.a3))
 								]),
 							{dh: alt, cn: src}),
 							function () {
 							if (!title.$) {
 								var t = title.a;
 								return A2(
-									$author$project$Ui$paragraph,
+									$author$project$Ui$column,
 									_List_fromArray(
 										[
-											$author$project$Ui$centerX,
-											$author$project$Ui$Font$size(($author$project$Style$spcNum / 2) | 0)
+											$author$project$Ui$width($author$project$Ui$fill)
 										]),
 									_List_fromArray(
 										[
-											$author$project$Ui$text(t)
+											A2(
+											$author$project$Ui$paragraph,
+											_List_fromArray(
+												[
+													$author$project$Ui$centerX,
+													$author$project$Ui$Background$color(
+													A3($author$project$Pic$mix, 0.05, model.a1.cU, model.a1.a3)),
+													$author$project$Ui$padding(($author$project$Style$spcNum / 2) | 0),
+													$author$project$Ui$Font$size(($author$project$Style$spcNum / 2) | 0)
+												]),
+											_List_fromArray(
+												[
+													$author$project$Ui$text(t)
+												])),
+											A2(
+											$author$project$Ui$el,
+											_List_fromArray(
+												[
+													$author$project$Ui$width($author$project$Ui$fill),
+													$author$project$Ui$height(
+													$author$project$Ui$px(($author$project$Style$spcNum / 2) | 0)),
+													$author$project$Ui$Background$color(
+													A4($author$project$Ui$rgba, 0, 0, 0, 0))
+												]),
+											$author$project$Ui$none)
 										]));
 							} else {
 								return $author$project$Ui$none;
@@ -15234,7 +15259,11 @@ var $author$project$Paper$markdownRenderer = F2(
 						_List_fromArray(
 							[
 								$author$project$Ui$width($author$project$Ui$fill),
-								$author$project$Ui$spacing(($author$project$Style$spcNum / 2) | 0)
+								$author$project$Ui$spacing(($author$project$Style$spcNum / 2) | 0),
+								$author$project$Ui$paddingEach(
+								_Utils_update(
+									$author$project$Types$edges,
+									{eZ: ($author$project$Style$spcNum / 2) | 0}))
 							]),
 						A2(
 							$elm$core$List$indexedMap,
@@ -15252,7 +15281,7 @@ var $author$project$Paper$markdownRenderer = F2(
 												A2(
 												$author$project$Ui$el,
 												_List_fromArray(
-													[$author$project$Ui$Font$bold]),
+													[$author$project$Ui$alignTop, $author$project$Ui$Font$bold]),
 												$author$project$Ui$text(
 													A3(
 														$elm$core$String$padLeft,
@@ -15365,7 +15394,11 @@ var $author$project$Paper$markdownRenderer = F2(
 					_List_fromArray(
 						[
 							$author$project$Ui$width($author$project$Ui$fill),
-							$author$project$Ui$spacing(($author$project$Style$spcNum / 2) | 0)
+							$author$project$Ui$spacing(($author$project$Style$spcNum / 2) | 0),
+							$author$project$Ui$paddingEach(
+							_Utils_update(
+								$author$project$Types$edges,
+								{eZ: ($author$project$Style$spcNum / 2) | 0}))
 						]),
 					A2(
 						$elm$core$List$map,
@@ -15380,7 +15413,11 @@ var $author$project$Paper$markdownRenderer = F2(
 									]),
 								_List_fromArray(
 									[
-										$author$project$Ui$text(' ⏺'),
+										A2(
+										$author$project$Ui$el,
+										_List_fromArray(
+											[$author$project$Ui$alignTop]),
+										$author$project$Ui$text(' ⏺')),
 										A2(
 										$author$project$Ui$paragraph,
 										_List_fromArray(
@@ -23777,10 +23814,6 @@ var $author$project$Types$GotoPage = function (a) {
 	return {$: 0, a: a};
 };
 var $author$project$Types$MainMenu = 1;
-var $mdgriffith$elm_ui$Internal$Model$Right = 2;
-var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX(2);
-var $author$project$Ui$alignRight = _List_fromArray(
-	[$mdgriffith$elm_ui$Element$alignRight]);
 var $author$project$Types$ChangeColor = function (a) {
 	return {$: 2, a: a};
 };
@@ -24578,7 +24611,6 @@ var $elm_community$typed_svg$TypedSvg$Types$Percent = function (a) {
 	return {$: 7, a: a};
 };
 var $elm_community$typed_svg$TypedSvg$Types$percent = $elm_community$typed_svg$TypedSvg$Types$Percent;
-var $author$project$Ui$rgba = $avh4$elm_color$Color$rgba;
 var $elm_community$typed_svg$TypedSvg$stop = $elm_community$typed_svg$TypedSvg$Core$node('stop');
 var $elm_community$typed_svg$TypedSvg$Attributes$stopColor = $elm_community$typed_svg$TypedSvg$Core$attribute('stop-color');
 var $elm_community$typed_svg$TypedSvg$Attributes$x1 = function (position) {
