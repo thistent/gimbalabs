@@ -1,13 +1,8 @@
 module Docs exposing (..)
 
--- import Browser.Events exposing (onResize)
---import Html.Attributes exposing (style)
---import Pic
---import Return exposing (Return)
---import Time
---import Ui.Background as Bg
-
 import Dict exposing (Dict)
+import Html
+import Html.Attributes as HAttr
 import Pic
 import Style exposing (..)
 import Types exposing (..)
@@ -25,6 +20,7 @@ import Ui.Font as Font
 outline : Pal -> List (Element Msg)
 outline m =
     let
+        li : String -> String -> Element Msg
         li =
             linkItem m
     in
@@ -44,7 +40,7 @@ initSlides =
         [ ( "start"
           , \m ->
                 topGroup m
-                    [ title m "Gimbalabs Primary Driver"
+                    [ heading m "Gimbalabs Primary Driver"
                     , item m "To provide open, replicable safe spaces to learn, to explore, and to empower individuals and organizations anywhere so that we can solve meaningful problems"
                     , group m
                         "What does this mean?"
@@ -72,7 +68,7 @@ initSlides =
         , ( "driv"
           , \m ->
                 topGroup m
-                    [ title m "Proposal Driver"
+                    [ heading m "Proposal Driver"
                     , item m "The website doesn’t currently reflect the Gimbalabs primary driver. This can hinder newcomers from understanding what Gimbalabs is all about. We will look at how the website can be more open, replicable, a safe space to learn and explore, and more empowering to people."
                     , group m
                         "Some questions to ask"
@@ -89,7 +85,7 @@ initSlides =
         , ( "desc"
           , \m ->
                 topGroup m
-                    [ title m "Description"
+                    [ heading m "Description"
                     , item m "Build a Gimbalabs website that actually embodies the goals given in the primary driver!"
                     , item m "The website will be open and reusable for similar use cases in different communities, without the need to do many changes to the code itself. The code will be easy to learn about, maintain, or change for those who want to do so."
                     , item m "The website will also become a useful place to explore different ideas and connect them together. Maybe even allowing content creators to put together little interactive choose-your-own-adventure games to give people a more engaging experience with the information they produce."
@@ -104,19 +100,19 @@ initSlides =
         , ( "reqs"
           , \m ->
                 topGroup m
-                    [ title m "Requirements"
+                    [ heading m "Requirements"
                     , item m "2000 Ada"
                     , item m "People can share their ideas."
-                    , title m "Responsibilities"
+                    , heading m "Responsibilities"
                     , item m "Ken can do the whole thing himself and work full time for asked fund amount"
                     ]
           )
         , ( "eval"
           , \m ->
                 topGroup m
-                    [ title m "Evaluation Process"
+                    [ heading m "Evaluation Process"
                     , item m "All progress will be visible on github"
-                    , title m "Evaluation Frequency"
+                    , heading m "Evaluation Frequency"
                     , item m "This proposal is for one month"
                     , item m "After a month, progress can be re-evaluated"
                     ]
@@ -142,8 +138,8 @@ topGroup _ =
         ]
 
 
-title : Pal -> String -> Element Msg
-title _ txt =
+heading : Pal -> String -> Element Msg
+heading _ txt =
     paragraph
         [ Border.widthEach { edges | bottom = lineSize }
         , paddingEach { edges | left = spcNum // 2, bottom = spcNum // 2 }
@@ -220,7 +216,7 @@ group pal hd els =
                     , bottomRight = spcNum // 4
                 }
             , moveDown <| lineSize * 3.0
-            , Bg.color <| Pic.mix 0.9 pal.fg pal.bg
+            , Bg.color <| Style.mix 0.9 pal.fg pal.bg
             ]
             [ text hd
             ]
@@ -296,7 +292,21 @@ iconButton model msg maybeIcon content =
         color : Color
         color =
             if isLink then
-                model.color.link
+                case msg of
+                    GetDoc str ->
+                        let
+                            testStr : String
+                            testStr =
+                                String.left 4 str
+                        in
+                        if testStr == "http" then
+                            model.color.extLink
+
+                        else
+                            model.color.link
+
+                    _ ->
+                        model.color.link
 
             else
                 model.color.fg
@@ -306,9 +316,7 @@ iconButton model msg maybeIcon content =
             batch
                 [ paddingXY 0 3
                 , Font.bold
-                , Border.widthEach
-                    { edges | bottom = lineSize * 2 }
-                , Border.dotted
+                , Font.underline
                 , Font.color color
                 ]
 
@@ -330,9 +338,46 @@ iconButton model msg maybeIcon content =
         link
             [ Ev.onClick msg
             ]
-            { url = ""
+            { url =
+                case msg of
+                    GetDoc str ->
+                        let
+                            testStr : String
+                            testStr =
+                                String.left 4 str
+                        in
+                        if testStr == "http" then
+                            str
+
+                        else
+                            ""
+
+                    _ ->
+                        ""
             , label = linkContent
             }
 
     else
         linkContent
+
+
+pre : List (Attribute Msg) -> String -> Element Msg
+pre attrs str =
+    el attrs <|
+        html <|
+            Html.pre
+                [ HAttr.style "line-height" <|
+                    "calc(1em + "
+                        ++ String.fromInt 0
+                        -- (spcNum // 4)
+                        ++ "px)"
+                ]
+                [ Html.text str ]
+
+
+dca : Attribute Msg
+dca =
+    batch
+        [ spacing spcNum
+        , paddingEach { edges | left = spcNum }
+        ]

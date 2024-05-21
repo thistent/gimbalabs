@@ -3,7 +3,7 @@ module Pic exposing (..)
 --import TypedSvg.Filters as Tf
 
 import Color
-import Color.Manipulate as CM
+import Style
 import TypedSvg as Ts
 import TypedSvg.Attributes as Ta
 import TypedSvg.Core as Tc
@@ -80,12 +80,15 @@ menuOpen color msg =
 pageCurl : Pal -> Element msg
 pageCurl c =
     let
+        fg : Color
         fg =
             c.fg
 
+        bg : Color
         bg =
             c.bg
 
+        gid : String
         gid =
             c.name ++ "-grad"
     in
@@ -106,14 +109,14 @@ pageCurl c =
                     [ Ta.offset "55%"
                     , Ta.stopColor <|
                         Color.toCssString <|
-                            mix 0.9 fg bg
+                            Style.mix 0.9 fg bg
                     ]
                     []
                 , Ts.stop
                     [ Ta.offset "100%"
                     , Ta.stopColor <|
                         Color.toCssString <|
-                            mix 0.1 fg bg
+                            Style.mix 0.1 fg bg
                     ]
                     []
                 ]
@@ -277,36 +280,9 @@ dims link bg =
 -- Misc Functions --
 
 
-addAlpha : Float -> Color -> Color
-addAlpha alph color =
-    let
-        colorRec =
-            toRgb color
-    in
-    fromRgb { colorRec | alpha = alph }
-
-
 spcNum : number
 spcNum =
     40
-
-
-mix : Float -> Color -> Color -> Color
-mix f a b =
-    let
-        elToColor =
-            toRgb >> Color.fromRgba
-
-        colorToEl =
-            Color.toRgba >> fromRgb
-
-        ca =
-            elToColor a
-
-        cb =
-            elToColor b
-    in
-    colorToEl <| CM.weightedMix cb ca f
 
 
 svg : List (Tc.Attribute msg) -> List (Tc.Svg msg) -> Element msg

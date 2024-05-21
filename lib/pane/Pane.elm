@@ -24,6 +24,12 @@ type Pane a
 render : SplitRenderer a -> Viewport -> Pane a -> a
 render spr vp pane =
     let
+        paneVp :
+            { x : Float
+            , y : Float
+            , width : Float
+            , height : Float
+            }
         paneVp =
             vp.viewport
     in
@@ -33,6 +39,7 @@ render spr vp pane =
 
         HSplit f p1 p2 ->
             let
+                ratio : Float
                 ratio =
                     toRatio f
             in
@@ -61,6 +68,7 @@ render spr vp pane =
 
         VSplit f p1 p2 ->
             let
+                ratio : Float
                 ratio =
                     toRatio f
             in

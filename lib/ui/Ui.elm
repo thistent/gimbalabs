@@ -297,6 +297,18 @@ fillPortion =
 focusStyle : FocusStyle -> Option
 focusStyle op =
     let
+        shadowMap :
+            { color : Color
+            , offset : ( Int, Int )
+            , blur : Int
+            , size : Int
+            }
+            ->
+                { color : E.Color
+                , offset : ( Int, Int )
+                , blur : Int
+                , size : Int
+                }
         shadowMap shad =
             { color = cc shad.color
             , offset = shad.offset
@@ -304,6 +316,7 @@ focusStyle op =
             , size = shad.size
             }
 
+        options : E.FocusStyle
         options =
             { borderColor = Maybe.map cc op.borderColor
             , backgroundColor = Maybe.map cc op.backgroundColor

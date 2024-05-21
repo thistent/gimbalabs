@@ -62,6 +62,7 @@ tick delta delay =
     case delay of
         Wait tmr content ->
             let
+                newTime : Float
                 newTime =
                     tmr.current - delta
             in

@@ -79,6 +79,7 @@ type alias Pal =
     , fg : Color
     , bg : Color
     , link : Color
+    , extLink : Color
     }
 
 

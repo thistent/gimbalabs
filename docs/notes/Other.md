@@ -1,5 +1,5 @@
 # Other.md
-You can goto the [Main Page](Main) or [Reload the Other Page](Other)!
+You can goto the [Main Page](Main.md) or [Reload the Other Page](Other.md)!
 
 This is another page!
 
