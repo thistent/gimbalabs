@@ -47,51 +47,27 @@ type Msg
     | ReceiveDoc String (Result Http.Error String)
 
 
-type GameState
-    = Stuff
-
-
-type alias Form =
-    Dict String FormMsg
-
-
 type Page
     = Home
     | Calendar
     | Blog
     | Solutions
+    | Settings
 
 
 type Menu
     = MenuClosed
     | MainMenu
-    | Settings
     | ThemePicker
-
-
-type FormMsg
-    = Field String
-    | Timestamp Time.Posix
 
 
 type alias Pal =
     { name : String
     , fg : Color
     , bg : Color
+    , error : Color
     , link : Color
     , extLink : Color
-    }
-
-
-emptyViewport : Dom.Viewport
-emptyViewport =
-    { scene = { width = 0, height = 0 }
-    , viewport =
-        { x = 0
-        , y = 0
-        , width = 0
-        , height = 0
-        }
     }
 
 

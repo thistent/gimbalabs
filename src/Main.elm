@@ -75,12 +75,12 @@ loadingPage model t =
     layout
         [ fillSpace
         , Bg.color bg
-        , Font.size spcNum
+        , Font.size <| fontSize * 2
         , Font.family [ Font.serif ]
         ]
     <|
         el [ centerXY, moveUp <| ease * 60.0 ] <|
-            column [ centerX, spacing <| spcNum // 6 ]
+            column [ centerX, spacing <| fontSize // 3 ]
                 [ row
                     [ Font.color fg
                     , Font.letterSpacing 1.25
@@ -89,7 +89,7 @@ loadingPage model t =
                 , el
                     [ Font.color <| Style.mix 0.5 fg bg
                     , centerX
-                    , Font.size <| spcNum * 3 // 5
+                    , Font.size <| fontSize
                     , Font.letterSpacing 2.5
                     ]
                   <|
@@ -111,10 +111,10 @@ init () url key =
     Return.return
         { navKey = key
         , url = url
-        , page = Home
+        , page = Solutions --Home
         , menu = MenuClosed
         , color = newspaper
-        , size = Delay.wait 200 Nothing
+        , size = Delay.wait 1000 Nothing
         , zone = Time.utc
         , time = Nothing
         , currentSlide = "start"
@@ -250,7 +250,7 @@ subs _ =
 view : Model -> Viewport -> Html Msg
 view model vp =
     layout
-        [ Font.size <| round <| spcNum * 0.55
+        [ Font.size fontSize
         , Font.family [ Font.serif ]
         , Font.color model.color.fg
         , Font.letterSpacing 0.2
@@ -259,17 +259,17 @@ view model vp =
         , Bg.color <| Style.mix 0.5 model.color.bg model.color.fg
 
         --, fillSpace
-        , padding <| lineSize * 2 --spcNum // 6
+        , padding <| lineSize * 2
         ]
     <|
         column
             [ fillSpace
-            , spacing <| spcNum // 5
+            , spacing <| fontSize * 2 // 5
             ]
             [ turningPage model 0 <|
                 column
                     [ fillSpace
-                    , spacing spcNum
+                    , spacing <| fontSize * 2
                     ]
                     [ titleBar model
                     , case model.page of
@@ -285,10 +285,10 @@ view model vp =
                             in
                             column
                                 [ fillSpace
-                                , spacing spcNum
-                                , padding <| spcNum // 4
+                                , spacing <| fontSize * 2
+                                , padding <| fontSize // 2
                                 ]
-                                [ row [ fillSpace, spacing spcNum ]
+                                [ row [ fillSpace, spacing <| fontSize * 2 ]
                                     [ el [ width <| fillPortion 3, height fill ] <|
                                         topGroup p
                                             [ heading p "Welcome to Gimbalabs!"
@@ -308,11 +308,11 @@ view model vp =
                                     ]
                                 , row
                                     [ fillSpace
-                                    , spacing spcNum
+                                    , spacing <| fontSize * 2
                                     ]
                                     [ turningPage (m orangeNote) 0.02 <|
                                         el [ fillSpace ] <|
-                                            column [ centerX, spacing <| spcNum // 2 ]
+                                            column [ centerX, spacing fontSize ]
                                                 [ heading p "Learn"
                                                 , el [] <| text "⯀ Starter Kits"
                                                 , el [] <| text "⯀ Plutus"
@@ -320,20 +320,20 @@ view model vp =
                                                 ]
                                     , turningPage (m yellowNote) 0 <|
                                         el [ fillSpace ] <|
-                                            column [ centerX, spacing <| spcNum // 2 ]
+                                            column [ centerX, spacing fontSize ]
                                                 [ heading p "APIs"
                                                 , el [] <| text "⯀ Dandelion"
                                                 , el [] <| text "⯀ Endpoints"
                                                 ]
                                     , turningPage (m greenNote) -0.02 <|
                                         el [ fillSpace ] <|
-                                            column [ centerX, spacing <| spcNum // 2 ]
+                                            column [ centerX, spacing fontSize ]
                                                 [ heading p "Updates"
                                                 , el [] <| text "⯀ Updates"
                                                 ]
                                     , turningPage (m blueNote) 0.01 <|
                                         el [ fillSpace ] <|
-                                            column [ centerX, spacing <| spcNum // 2 ]
+                                            column [ centerX, spacing fontSize ]
                                                 [ heading p "About Us"
                                                 , el [] <| text "⯀ Team"
                                                 , el [] <| text "⯀ Calendar"
@@ -351,19 +351,19 @@ view model vp =
                             in
                             row
                                 [ fillSpace
-                                , spacing spcNum
+                                , spacing <| fontSize * 2
                                 ]
                                 [ el
                                     [ width <| fillPortion 3
                                     , alignTop
                                     , alignLeft
-                                    , spacing spcNum
+                                    , spacing <| fontSize * 2
                                     ]
                                   <|
                                     slide model.color
                                 , vBar
                                 , column
-                                    [ spacing spcNum
+                                    [ spacing <| fontSize * 2
                                     , fillSpace
                                     ]
                                   <|
@@ -375,7 +375,10 @@ view model vp =
                             renderMd model vp model.mdText
 
                         Calendar ->
-                            none
+                            el [ fillSpace ] <| el [ centerXY ] <| text "Calendar!"
+
+                        Settings ->
+                            el [ fillSpace ] <| el [ centerXY ] <| text "Settings!"
                     ]
             ]
 
@@ -384,7 +387,7 @@ turningPage : Model -> Float -> Element Msg -> Element Msg
 turningPage model rot content =
     row
         [ Font.color model.color.fg
-        , Border.roundEach { corners | bottomRight = spcNum }
+        , Border.roundEach { corners | bottomRight = fontSize * 2 }
         , shadow
         , fillSpace
         , rotate rot
@@ -392,11 +395,21 @@ turningPage model rot content =
         [ el
             [ fillSpace
             , Bg.color model.color.bg
-            , paddingEach { edges | left = spcNum, top = spcNum, bottom = round <| toFloat spcNum * 1.5 }
+            , paddingEach
+                { edges
+                    | left = fontSize * 2
+                    , top = fontSize * 2
+                    , bottom = fontSize * 3
+                }
             , otherSide <|
                 el
                     [ fillSpace
-                    , paddingEach { edges | left = spcNum, top = spcNum, bottom = round <| toFloat spcNum * 1.5 }
+                    , paddingEach
+                        { edges
+                            | left = fontSize * 2
+                            , top = fontSize * 2
+                            , bottom = fontSize * 3
+                        }
                     , alpha 0.03
                     , style "pointer-events" "none"
                     ]
@@ -407,7 +420,7 @@ turningPage model rot content =
             content
         , column
             [ height fill
-            , width <| px spcNum
+            , width <| px <| fontSize * 2
             ]
             [ el
                 [ fillSpace
@@ -415,10 +428,10 @@ turningPage model rot content =
                 ]
                 none
             , el
-                [ width <| px spcNum
-                , height <| px spcNum
+                [ width <| px <| fontSize * 2
+                , height <| px <| fontSize * 2
                 , Bg.color model.color.bg
-                , Border.roundEach { corners | bottomRight = spcNum }
+                , Border.roundEach { corners | bottomRight = fontSize * 2 }
                 ]
               <|
                 Pic.pageCurl model.color
@@ -430,7 +443,7 @@ titleBar : Model -> Element Msg
 titleBar model =
     row
         [ width fill
-        , spacing <| spcNum // 4
+        , spacing <| fontSize // 2
         ]
         [ link
             [ Ev.onClick <| GotoPage Home ]
@@ -442,10 +455,11 @@ titleBar model =
             row
                 [ fillSpace
                 , Border.widthEach { edges | top = lineSize, bottom = lineSize }
-                , spacing 20
+                , spacing fontSize
+                , paddingXY 0 <| fontSize // 2
                 ]
                 [ row
-                    [ spacing <| spcNum // 2
+                    [ spacing fontSize
                     , width fill
                     , centerY
                     ]
@@ -456,7 +470,7 @@ titleBar model =
                                 { url = ""
                                 , label =
                                     row
-                                        [ Font.size <| 3 * spcNum // 4
+                                        [ Font.size <| 3 * fontSize // 2
                                         , Font.color model.color.link
                                         , Font.letterSpacing 1.25
                                         ]
@@ -474,7 +488,7 @@ titleBar model =
 
                         MainMenu ->
                             [ el
-                                [ Font.size <| 3 * spcNum // 4
+                                [ Font.size <| 3 * fontSize // 2
                                 , Font.bold
                                 ]
                               <|
@@ -484,21 +498,9 @@ titleBar model =
                                 (ChangeMenu MenuClosed)
                             ]
 
-                        Settings ->
-                            [ el
-                                [ Font.size <| 3 * spcNum // 4
-                                , Font.bold
-                                ]
-                              <|
-                                text "Settings:"
-                            , el [ alignRight ] <| settingsMenu model
-                            , Pic.menuOpen model.color.link
-                                (ChangeMenu MenuClosed)
-                            ]
-
                         ThemePicker ->
                             [ el
-                                [ Font.size <| 3 * spcNum // 4
+                                [ Font.size <| 3 * fontSize // 2
                                 , Font.bold
                                 ]
                               <|
@@ -514,14 +516,10 @@ titleBar model =
 colorPicker : Model -> Element Msg
 colorPicker model =
     row
-        [ spacing <| round <| spcNum * 0.75
+        [ spacing <| round <| fontSize * 1.5
         , Font.letterSpacing 1.25
         ]
         [ iconButton model (ChangeMenu MainMenu) Nothing <| text "🠈 Back"
-        , iconButton model (ChangeColor newspaper) Nothing <| text "Newspaper"
-        , iconButton model (ChangeColor blueprint) Nothing <| text "Blueprint"
-        , iconButton model (ChangeColor term) Nothing <| text "Terminal"
-        , iconButton model (ChangeColor dark) Nothing <| text "Dark Mode"
         , iconButton model ResetView Nothing <| text "Reset"
         ]
 
@@ -529,7 +527,7 @@ colorPicker model =
 settingsMenu : Model -> Element Msg
 settingsMenu model =
     row
-        [ spacing <| round <| spcNum * 0.75
+        [ spacing <| round <| fontSize * 1.5
         , Font.letterSpacing 1.25
         ]
         [ iconButton model
@@ -543,7 +541,7 @@ settingsMenu model =
 mainMenu : Model -> Element Msg
 mainMenu model =
     row
-        [ spacing <| round <| spcNum * 0.75
+        [ spacing <| round <| fontSize * 1.5
         , Font.letterSpacing 1.25
         ]
         [ iconButton model
@@ -566,11 +564,13 @@ mainMenu model =
             (Just Pic.solutions)
           <|
             text "Solutions"
-        , iconButton model
-            (ChangeMenu ThemePicker)
-            (Just Pic.pal)
-          <|
-            text "Theme"
+        , iconButton model (GotoPage Settings) (Just Pic.settings) <| text "Settings"
+        , el [ Border.widthEach { edges | left = lineSize, right = lineSize }, paddingXY (fontSize // 2) 0 ] <|
+            if model.color.name == "Newspaper" then
+                iconButton model (ChangeColor dark) (Just Pic.dark) none
+
+            else
+                iconButton model (ChangeColor newspaper) (Just Pic.light) none
         ]
 
 

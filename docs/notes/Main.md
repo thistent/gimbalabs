@@ -18,8 +18,8 @@ It could be beneficial to have a custom semantic markup language.
 | Questions | Answers |
 | --------- | ------- |
 | What?     | It      |
-| Why?      | Because |
-| How?      | Happily |
+| Why, oh why? This is the question that I'm looking for a good answer to!     | Because |
+| How?      | Happily, because it's very important to have a positive outlook even when things get tough! |
 | When      | Now     |
 
  - Fruit
@@ -29,7 +29,8 @@ It could be beneficial to have a custom semantic markup language.
       - [X] Feugiat sed lectus vestibulum mattis ullamcorper velit sed ullamcorper morbi. Malesuada bibendum arcu vitae elementum curabitur vitae nunc sed. Sit amet consectetur adipiscing elit duis tristique sollicitudin nibh sit. Vel elit scelerisque mauris pellentesque pulvinar pellentesque habitant morbi. Ullamcorper malesuada proin libero nunc consequat interdum varius sit amet. Eu augue ut lectus arcu. Sit amet mattis vulputate enim nulla aliquet. Diam phasellus vestibulum lorem sed risus ultricies. Commodo elit at imperdiet dui accumsan sit amet nulla facilisi. Dui ut ornare lectus sit amet est placerat. Volutpat consequat mauris nunc congue nisi vitae. Sed elementum tempus egestas sed sed risus pretium. Tempus iaculis urna id volutpat lacus laoreet non curabitur gravida. Cum sociis natoque penatibus et. Viverra maecenas accumsan lacus vel facilisis. Eros in cursus turpis massa tincidunt.
    2. Banana
    3. Cherry
- - Other things
+ - Other things that we really need to know about!
+ - Even more things that we need to know about!
 
 ```pony
 actor Main
@@ -49,9 +50,14 @@ Non curabitur gravida arcu ac tortor dignissim convallis aenean. Dolor purus non
 
 Risus ultricies tristique nulla aliquet enim tortor. Cursus mattis molestie a iaculis at. Faucibus et molestie ac feugiat sed lectus vestibulum mattis. Sagittis nisl rhoncus mattis rhoncus urna. Convallis convallis tellus id interdum velit laoreet id. Diam sit amet nisl suscipit. Nisl nisi scelerisque eu ultrices vitae. Id ornare arcu odio ut sem nulla. Consequat interdum varius sit amet mattis vulputate enim. Nulla facilisi nullam vehicula ipsum a arcu cursus vitae. Lectus mauris ultrices eros in cursus. Molestie a iaculis at erat. Amet massa vitae tortor condimentum lacinia. Metus vulputate eu scelerisque felis imperdiet proin fermentum leo. Hac habitasse platea dictumst vestibulum rhoncus. Enim nulla aliquet porttitor lacus luctus.
 
-In nisl nisi scelerisque eu. Nunc mattis enim ut tellus elementum sagittis vitae et. Convallis convallis tellus id interdum. Lacinia at quis risus sed. Eu consequat ac felis donec et. Sagittis vitae et leo duis. Sem integer vitae justo eget magna fermentum iaculis eu. At tellus at urna condimentum mattis pellentesque id nibh. Suspendisse faucibus interdum posuere lorem ipsum. Eget mi proin sed libero. Suspendisse interdum consectetur libero id faucibus nisl tincidunt eget nullam. Morbi leo urna molestie at elementum. Elementum curabitur vitae nunc sed. Rutrum tellus pellentesque eu tincidunt tortor. Orci sagittis eu volutpat odio facilisis mauris sit. Magnis dis parturient montes nascetur. Non tellus orci ac auctor augue. Neque volutpat ac tincidunt vitae semper. Id leo in vitae turpis massa sed elementum tempus.
+> In nisl nisi scelerisque eu. Nunc mattis enim ut tellus elementum sagittis vitae et. Convallis convallis tellus id interdum. Lacinia at quis risus sed. Eu consequat ac felis donec et. Sagittis vitae et leo duis. Sem integer vitae justo eget magna fermentum iaculis eu. At tellus at urna condimentum mattis pellentesque id nibh. Suspendisse faucibus interdum posuere lorem ipsum. Eget mi proin sed libero. Suspendisse interdum consectetur libero id faucibus nisl tincidunt eget nullam. Morbi leo urna molestie at elementum. Elementum curabitur vitae nunc sed. Rutrum tellus pellentesque eu tincidunt tortor. Orci sagittis eu volutpat odio facilisis mauris sit. Magnis dis parturient montes nascetur. Non tellus orci ac auctor augue. Neque volutpat ac tincidunt vitae semper. Id leo in vitae turpis massa sed elementum tempus.
 
-Tortor condimentum lacinia quis vel eros donec ac odio. Tempor orci eu lobortis elementum. Et odio pellentesque diam volutpat commodo sed. Sit amet dictum sit amet justo donec. Id interdum velit laoreet id donec ultrices tincidunt arcu. Purus sit amet volutpat consequat. Aliquam eleifend mi in nulla posuere sollicitudin aliquam ultrices. Nulla malesuada pellentesque elit eget gravida cum sociis natoque penatibus. Amet nulla facilisi morbi tempus iaculis urna id volutpat. Pharetra et ultrices neque ornare aenean euismod elementum. Eget nullam non nisi est sit amet facilisis. Velit aliquet sagittis id consectetur purus.
+---
+
+    Tortor condimentum lacinia quis vel eros donec ac odio. Tempor orci eu lobortis elementum. Et odio pellentesque diam volutpat commodo sed. Sit amet dictum sit amet justo donec. Id interdum velit laoreet id donec ultrices tincidunt arcu. Purus sit amet volutpat consequat. Aliquam eleifend mi in nulla posuere sollicitudin aliquam ultrices. Nulla malesuada pellentesque elit eget gravida cum sociis natoque penatibus. Amet nulla facilisi morbi tempus iaculis urna id volutpat. Pharetra et ultrices neque ornare aenean euismod elementum. Eget nullam non nisi est sit amet facilisis. Velit aliquet sagittis id consectetur purus.
+    Risus ultricies tristique nulla aliquet enim tortor. Cursus mattis molestie a iaculis at. Faucibus et molestie ac feugiat sed lectus vestibulum mattis. Sagittis nisl rhoncus mattis rhoncus urna. Convallis convallis tellus id interdum velit laoreet id. Diam sit amet nisl suscipit. Nisl nisi scelerisque eu ultrices vitae. Id ornare arcu odio ut sem nulla. Consequat interdum varius sit amet mattis vulputate enim. Nulla facilisi nullam vehicula ipsum a arcu cursus vitae. Lectus mauris ultrices eros in cursus. Molestie a iaculis at erat. Amet massa vitae tortor condimentum lacinia. Metus vulputate eu scelerisque felis imperdiet proin fermentum leo. Hac habitasse platea dictumst vestibulum rhoncus. Enim nulla aliquet porttitor lacus luctus.
+
+---
 
 Aenean et tortor at risus viverra adipiscing at. Dictum non consectetur a erat. Pretium aenean pharetra magna ac placerat. Nisi scelerisque eu ultrices vitae. Pellentesque dignissim enim sit amet venenatis urna cursus. Nunc id cursus metus aliquam eleifend mi in nulla. Elementum curabitur vitae nunc sed velit. In fermentum posuere urna nec tincidunt praesent semper feugiat nibh. Suscipit tellus mauris a diam maecenas sed enim ut sem. Sit amet mattis vulputate enim nulla aliquet porttitor lacus. Vulputate sapien nec sagittis aliquam malesuada bibendum arcu vitae elementum. Mus mauris vitae ultricies leo integer malesuada nunc vel risus. Eu ultrices vitae auctor eu. Id semper risus in hendrerit gravida rutrum quisque non tellus.
 

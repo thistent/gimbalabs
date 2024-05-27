@@ -133,7 +133,7 @@ notFound =
 topGroup : Pal -> List (Element Msg) -> Element Msg
 topGroup _ =
     column
-        [ spacing spcNum
+        [ spacing <| fontSize * 2
         , fillSpace
         ]
 
@@ -142,10 +142,10 @@ heading : Pal -> String -> Element Msg
 heading _ txt =
     paragraph
         [ Border.widthEach { edges | bottom = lineSize }
-        , paddingEach { edges | left = spcNum // 2, bottom = spcNum // 2 }
+        , paddingEach { edges | left = fontSize, bottom = fontSize }
         , width fill
-        , Font.size spcNum
-        , spacing <| spcNum // 2
+        , Font.size <| fontSize * 2
+        , spacing <| fontSize
         ]
         [ text txt
         ]
@@ -157,17 +157,17 @@ linkItem color msg txt =
         { url = ""
         , label =
             row
-                [ spacing <| spcNum // 2
+                [ spacing <| fontSize
                 , Font.color color.link
                 , Font.alignLeft
                 ]
                 [ el
                     [ alignTop
-                    , width <| px <| spcNum // 2
+                    , width <| px <| fontSize
                     ]
                   <|
                     Pic.loc color.link
-                , paragraph [ spacing <| spcNum // 3 ]
+                , paragraph [ spacing <| fontSize * 2 // 3 ]
                     [ text txt
                     ]
                 ]
@@ -177,15 +177,15 @@ linkItem color msg txt =
 item : Pal -> String -> Element Msg
 item color txt =
     row
-        [ spacing <| spcNum // 2
+        [ spacing <| fontSize
         ]
         [ el
             [ alignTop
-            , width <| px <| spcNum // 2
+            , width <| px <| fontSize
             ]
           <|
             Pic.bullet color.fg
-        , paragraph [ spacing <| spcNum // 3 ]
+        , paragraph [ spacing <| fontSize * 2 // 3 ]
             [ text txt
             ]
         ]
@@ -200,20 +200,20 @@ group pal hd els =
             }
         , Border.roundEach
             { corners
-                | topLeft = spcNum // 4
-                , bottomLeft = spcNum // 4
+                | topLeft = fontSize // 2
+                , bottomLeft = fontSize // 2
             }
-        , spacing <| spcNum // 2
+        , spacing <| fontSize
         , width fill
         ]
         [ paragraph
             [ Font.bold
-            , paddingXY (spcNum // 2) (spcNum // 3)
-            , spacing <| spcNum // 4
+            , paddingXY fontSize (fontSize * 2 // 3)
+            , spacing <| fontSize // 2
             , Border.roundEach
                 { corners
-                    | topRight = spcNum // 4
-                    , bottomRight = spcNum // 4
+                    | topRight = fontSize // 2
+                    , bottomRight = fontSize // 2
                 }
             , moveDown <| lineSize * 3.0
             , Bg.color <| Style.mix 0.9 pal.fg pal.bg
@@ -223,9 +223,9 @@ group pal hd els =
 
         --, hBar
         , column
-            [ spacing <| spcNum // 2
+            [ spacing <| fontSize
             , width fill
-            , paddingEach { edges | left = spcNum // 2 }
+            , paddingEach { edges | left = fontSize }
             ]
             els
         ]
@@ -266,25 +266,13 @@ iconButton model msg maybeIcon content =
         isLink =
             case msg of
                 GotoPage page ->
-                    if page == model.page then
-                        False
-
-                    else
-                        True
+                    page /= model.page
 
                 ChangeMenu menu ->
-                    if menu == model.menu then
-                        False
-
-                    else
-                        True
+                    menu /= model.menu
 
                 ChangeColor pal ->
-                    if pal == model.color then
-                        False
-
-                    else
-                        True
+                    pal /= model.color
 
                 _ ->
                     True
@@ -366,18 +354,18 @@ pre attrs str =
     el attrs <|
         html <|
             Html.pre
-                [ HAttr.style "line-height" <|
-                    "calc(1em + "
-                        ++ String.fromInt 0
-                        -- (spcNum // 4)
-                        ++ "px)"
-                ]
+                []
+                --[ HAttr.style "line-height" <|
+                --    "calc(1em + "
+                --        ++ String.fromInt 0
+                --        ++ "px)"
+                --]
                 [ Html.text str ]
 
 
 dca : Attribute Msg
 dca =
     batch
-        [ spacing spcNum
-        , paddingEach { edges | left = spcNum }
+        [ spacing <| fontSize * 2
+        , paddingEach { edges | left = fontSize * 2 }
         ]

@@ -11,19 +11,37 @@ when inside the directory containing this file.
 
 -}
 
+import CognitiveComplexity
 import NoMissingTypeAnnotation
 import NoMissingTypeAnnotationInLetIn
 import NoPrematureLetComputation
+import NoSimpleLetBody
+import NoUnused.CustomTypeConstructorArgs
+import NoUnused.CustomTypeConstructors
 import NoUnused.Dependencies
+import NoUnused.Exports
+import NoUnused.Modules
+import NoUnused.Parameters
+import NoUnused.Patterns
 import NoUnused.Variables
 import Review.Rule exposing (Rule)
 
 
 config : List Rule
 config =
-    [ NoMissingTypeAnnotation.rule
+    [ CognitiveComplexity.rule 16
+    , NoMissingTypeAnnotation.rule
     , NoMissingTypeAnnotationInLetIn.rule
     , NoPrematureLetComputation.rule
-    , NoUnused.Variables.rule
+    , NoSimpleLetBody.rule
+    , NoUnused.CustomTypeConstructorArgs.rule
+    , NoUnused.CustomTypeConstructors.rule []
     , NoUnused.Dependencies.rule
+
+    --, NoUnused.Exports.rule
+    --, NoUnused.Modules.rule
+    , NoUnused.Parameters.rule
+
+    --, NoUnused.Patterns.rule
+    --, NoUnused.Variables.rule
     ]

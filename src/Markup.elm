@@ -4,42 +4,20 @@ module Markup exposing (..)
 
 import Browser.Dom exposing (Viewport)
 import Docs exposing (..)
+import Html
+import Html.Attributes as Attrs
 import Markdown.Block as Md
 import Markdown.Html as MdHtml
 import Markdown.Parser as Md
 import Markdown.Renderer as Md
 import Style exposing (..)
+import TypedSvg exposing (font)
+import TypedSvg.Types exposing (ex)
 import Types exposing (..)
 import Ui exposing (..)
 import Ui.Background as Bg
 import Ui.Border as Border
-import Ui.Font as Font
-
-
-
--- Markdown Stuff --
-{-
-   renderMd : Model -> Viewport -> String -> Element Msg
-   renderMd model vp str =
-       str
-           |> Md.parse
-           |> Result.withDefault
-               [ Md.Paragraph [ Md.Text "Markdown parsing error!" ] ]
-           --|> Md.render (markdownRenderer model vp)
-           --|> Md.render Md.defaultHtmlRenderer
-           --|> Result.map (List.map html)
-           |> Md.render (mdRenderer model vp)
-           |> Result.withDefault
-               [ text "Markdown rendering error!" ]
-           |> (\stuff ->
-                   textColumn
-                       [ spacing spcNum
-                       , width <| px <| round <| vp.viewport.width - 2 * spcNum - 4 * lineSize
-                       ]
-                       stuff
-              )
--}
--- Testing --
+import Ui.Font as Font exposing (justify)
 
 
 type MdToken
@@ -50,7 +28,6 @@ type MdToken
     | CodeSpan String
     | Strong (List MdToken)
     | Emphasis (List MdToken)
-    | StrongEmphasis (List MdToken)
     | Strike (List MdToken)
     | LineBreak
     | Link { title : Maybe String, destination : String } (List MdToken)
@@ -103,7 +80,7 @@ renderMd model vp str =
         |> tokenize
         |> nestHeadings
         |> List.map (renderToken model vp)
-        |> textColumn [ fillSpace, spacing spcNum ]
+        |> textColumn [ fillSpace, spacing <| fontSize * 2 ]
 
 
 mdTokenizer : Md.Renderer MdToken
@@ -292,18 +269,6 @@ isUnderHeading h x =
 renderToken : Model -> Viewport -> MdToken -> Element Msg
 renderToken model vp tok =
     let
-        p : Attribute Msg
-        p =
-            batch
-                [ spacing 10
-                , width fill
-                ]
-
-        wr : Attribute Msg
-        wr =
-            batch
-                []
-
         render : List MdToken -> List (Element Msg)
         render =
             List.map (renderToken model vp)
@@ -311,38 +276,87 @@ renderToken model vp tok =
     case tok of
         Heading level title subsections ->
             if level == 1.0 then
-                textColumn [ width fill, spacing spcNum ] <|
-                    paragraph
-                        [ Border.widthEach { edges | bottom = lineSize * 2 }
-                        , Border.roundEach { corners | topLeft = spcNum // 4, topRight = spcNum // 4 }
-                        , padding <| spcNum // 2
+                textColumn
+                    [ width fill
+                    , spacing <| fontSize * 2
+                    ]
+                <|
+                    column
+                        [ width fill
                         , Bg.color <| Style.mix 0.9 model.color.fg model.color.bg
-                        , width fill
-                        , Font.size <| round <| spcNum * (1.0 - ((level - 1) * 0.1))
-                        , spacing <| spcNum // 2
+                        , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2 }
                         ]
-                        (render title)
+                        [ paragraph
+                            [ paddingXY (fontSize * 2) fontSize
+                            , width fill
+                            , Font.size <| round <| fontSize * 2 * (1.0 - ((level - 1) * 0.1))
+                            , spacing <| fontSize
+                            ]
+                            (render title)
+                        , el
+                            [ width fill
+                            , height <| px <| fontSize // 2
+                            , Border.widthEach { edges | top = lineSize * 2 }
+                            , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2 }
+                            , Bg.color model.color.bg
+                            ]
+                            none
+                        ]
                         :: render subsections
 
             else
-                mdGroup level model.color (render title) (render subsections)
+                -- mdGroup level model.color (render title) (render subsections)
+                textColumn [ width fill ] <|
+                    [ paragraph
+                        [ Border.widthEach { edges | left = lineSize * 2 }
+                        , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2, bottomRight = fontSize // 2 }
+                        , paddingXY (fontSize * 2) fontSize
+                        , Bg.color <| Style.mix 0.9 model.color.fg model.color.bg
+                        , Font.size <| round <| fontSize * 2 * (1.0 - ((level - 1) * 0.1))
+                        , spacing <| fontSize
+                        , width fill
+                        ]
+                        (render title)
+                    , el
+                        [ height <| px <| fontSize * 2
+                        , Border.widthEach { edges | left = lineSize * 2 }
+                        ]
+                        none
+                    , textColumn
+                        [ Border.widthEach { edges | left = lineSize * 2 }
+                        , Border.roundEach { corners | bottomLeft = fontSize // 2 }
+                        , paddingEach { edges | left = fontSize * 2, bottom = fontSize }
+                        , spacing <| fontSize * 2
+                        , width fill
+                        ]
+                      <|
+                        render subsections
+                    ]
 
         Paragraph toks ->
             paragraph
-                [ p
+                [ spacing <| fontSize // 2
+                , width fill
                 ]
             <|
                 List.map (renderToken model vp) toks
 
         BlockQuote toks ->
-            paragraph [ p ] <|
+            paragraph
+                [ spacing <| fontSize // 2
+                , width fill
+                , Border.color <| Style.mix 0.75 model.color.fg model.color.bg
+                , Border.widthEach { edges | left = lineSize * 2 }
+                , Border.roundEach { corners | topLeft = fontSize // 2, bottomLeft = fontSize // 2 }
+                , paddingXY (fontSize * 2) 0
+                ]
+            <|
                 List.map (renderToken model vp) toks
 
         Text str ->
             paragraph [ width fill ]
                 [ wrappedRow
-                    [ wr
-                    ]
+                    []
                     [ text str ]
                 ]
 
@@ -353,38 +367,35 @@ renderToken model vp tok =
                 , paddingXY 5 2
                 ]
                 [ wrappedRow
-                    [ wr
-                    , Font.family [ Font.monospace ]
+                    [ Font.family [ Font.monospace ]
                     ]
                     [ text str ]
                 ]
 
         Strong toks ->
             paragraph [ width fill ]
-                [ wrappedRow [ wr, Font.bold ] <|
+                [ wrappedRow [ Font.bold ] <|
                     List.map (renderToken model vp) toks
                 ]
 
         Emphasis toks ->
             paragraph [ width fill ]
-                [ wrappedRow [ wr, Font.italic ] <|
-                    List.map (renderToken model vp) toks
-                ]
-
-        StrongEmphasis toks ->
-            paragraph [ width fill ]
-                [ wrappedRow [ wr, Font.bold, Font.italic ] <|
+                [ wrappedRow [ Font.italic ] <|
                     List.map (renderToken model vp) toks
                 ]
 
         Strike toks ->
             paragraph [ width fill ]
-                [ wrappedRow [ wr, Font.strike ] <|
+                [ wrappedRow [ Font.strike ] <|
                     List.map (renderToken model vp) toks
                 ]
 
         LineBreak ->
-            paragraph [ p ] [ text "<br>" ]
+            paragraph
+                [ spacing <| fontSize // 2
+                , width fill
+                ]
+                [ text "<br>" ]
 
         Link { title, destination } toks ->
             iconButton model
@@ -397,7 +408,7 @@ renderToken model vp tok =
         Image { alt, src, title } ->
             column
                 [ width <| px <| round <| vp.viewport.width * 0.33
-                , paddingEach { edges | right = spcNum }
+                , paddingEach { edges | right = fontSize * 2 }
                 ]
                 [ image
                     [ width fill
@@ -407,107 +418,36 @@ renderToken model vp tok =
                     }
                 , case title of
                     Just t ->
-                        el
+                        paragraph
                             [ centerX
                             , Bg.color <| Style.mix 0.05 model.color.bg model.color.fg
-                            , padding <| spcNum // 2
-                            , Font.size <| spcNum // 2
-
-                            -- TESTING --
+                            , paddingXY fontSize <| fontSize // 2
+                            , Font.size fontSize
                             , Font.bold
                             , Font.italic
-                            , Font.alignRight
                             , width fill
-                            , Border.roundEach { corners | bottomLeft = spcNum // 4, bottomRight = spcNum // 4 }
+                            , Border.roundEach { corners | bottomLeft = fontSize // 2, bottomRight = fontSize // 4 }
+                            , spacing <| fontSize // 2
                             ]
-                        <|
-                            text t
+                            [ text t ]
 
                     Nothing ->
                         none
-
-                --, el [ height <| px <| spcNum ] none
                 ]
 
         ListBlock maybeIndex toks ->
             textColumn
-                [ spacing <| spcNum // 2
+                [ spacing <| fontSize
+                , paddingEach { edges | top = fontSize }
                 , width fill
-                , paddingEach { edges | top = spcNum // 2 }
                 ]
                 (render toks)
 
         ListItem { task, content, children } ->
             mdItem model.color task (render content) (render children)
 
-        CodeBlock { body, language } ->
-            let
-                lang : Element Msg
-                lang =
-                    case language of
-                        Just l ->
-                            el
-                                [ Font.size <| spcNum // 2
-                                , padding <| spcNum // 4
-                                , Bg.color <| Style.mix 0.15 model.color.bg model.color.fg
-                                , width fill
-                                ]
-                            <|
-                                text l
-
-                        Nothing ->
-                            none
-            in
-            column
-                [ fillSpace
-                , Font.family [ Font.monospace ]
-                ]
-                [ lang
-                , link
-                    [ width fill
-                    , Bg.color <|
-                        Style.mix 0.05 model.color.bg model.color.fg
-                    ]
-                    { url = ""
-                    , label =
-                        column
-                            [ width fill
-                            , scrollbarX
-                            , Bg.color <|
-                                Style.mix 0.05 model.color.bg model.color.fg
-                            ]
-                            (body
-                                |> String.split "\n"
-                                |> (\xs ->
-                                        List.take (List.length xs - 1) xs
-                                            |> List.indexedMap
-                                                (\i str ->
-                                                    row
-                                                        [ width fill
-                                                        , height <| px <| spcNum
-                                                        ]
-                                                        [ el
-                                                            [ Bg.color <| Style.mix 0.1 model.color.bg model.color.fg
-                                                            , paddingEach { edges | right = spcNum // 4 }
-                                                            , height fill
-                                                            ]
-                                                          <|
-                                                            el [ centerY, width fill ] <|
-                                                                (i + 1 |> String.fromInt |> String.padLeft 4 ' ' |> text)
-                                                        , el
-                                                            [ Bg.color <| Style.mix 0.05 model.color.bg model.color.fg
-                                                            , paddingEach { edges | left = spcNum // 4 }
-                                                            , fillSpace
-                                                            ]
-                                                          <|
-                                                            el [ centerY, width fill ] <|
-                                                                text str
-                                                        ]
-                                                )
-                                   )
-                            )
-                    }
-                ]
+        CodeBlock codeRec ->
+            renderCodeBlock model vp codeRec
 
         ThematicBreak ->
             hBar
@@ -515,30 +455,50 @@ renderToken model vp tok =
         Table toks ->
             column
                 [ Bg.color <| Style.mix 0.05 model.color.bg model.color.fg
-                , spacing <| spcNum // 2
-                , padding <| spcNum // 2
+                , Border.rounded <| fontSize // 2
                 ]
                 (render toks)
 
         TableHeader toks ->
             row
                 [ width fill
-                , spacing <| spcNum // 2
-                , paddingEach { edges | bottom = spcNum // 2 }
-                , Border.widthEach { edges | bottom = 2 }
+                , spacing fontSize
+                , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2 }
+                , Bg.color <| Style.mix 0.2 model.color.bg model.color.fg
                 ]
                 (render toks)
 
         TableBody toks ->
-            column [ width fill, spacing <| spcNum // 2 ] (render toks)
+            column
+                [ width fill
+                , Border.roundEach { corners | bottomRight = fontSize }
+                ]
+                (render toks)
 
         TableRow toks ->
-            row [ width fill, spacing <| spcNum // 2 ] (render toks)
+            row
+                [ width fill
+                , Border.color <| Style.mix 0.2 model.color.bg model.color.fg
+                ]
+                (render toks
+                    |> List.intersperse
+                        (el
+                            [ height fill
+                            , Border.color <| Style.mix 0.2 model.color.bg model.color.fg
+                            , Border.widthEach { edges | left = 3, top = 3, bottom = 3 }
+                            ]
+                            none
+                        )
+                )
 
         TableCell maybeAlign toks ->
             paragraph
-                [ width fill
-                , spacing <| spcNum // 2
+                [ fillSpace
+                , spacing fontSize
+                , paddingXY (fontSize * 2) fontSize
+                , Font.justify
+                , Border.color <| Style.mix 0.2 model.color.bg model.color.fg
+                , Border.widthEach { edges | top = 3 }
                 , case maybeAlign of
                     Just arg ->
                         case arg of
@@ -561,7 +521,8 @@ renderToken model vp tok =
             paragraph
                 [ width fill
                 , Font.bold
-                , spacing <| spcNum // 2
+                , spacing fontSize
+                , paddingXY (fontSize * 2) fontSize
                 , case maybeAlign of
                     Just arg ->
                         case arg of
@@ -600,9 +561,6 @@ isInline tok =
             True
 
         Emphasis _ ->
-            True
-
-        StrongEmphasis _ ->
             True
 
         Strike _ ->
@@ -689,447 +647,151 @@ isInline tok =
 
 
 mdItem : Pal -> Md.Task -> List (Element Msg) -> List (Element Msg) -> Element Msg
-mdItem color task content children =
-    row [ width fill, spacing <| spcNum // 2 ]
-        [ el [ alignTop ] <|
-            text <|
-                case task of
-                    Md.NoTask ->
-                        "■"
+mdItem pal task content children =
+    row
+        [ fillSpace
+        , spacing fontSize
+        ]
+        [ case task of
+            Md.NoTask ->
+                el
+                    [ alignTop
+                    , Font.size fontSize
+                    ]
+                <|
+                    text "■"
 
-                    Md.IncompleteTask ->
-                        -- "⬚"
-                        "⬚"
+            Md.IncompleteTask ->
+                el
+                    [ alignTop
+                    , Font.size fontSize
+                    , Font.color pal.error
+                    ]
+                <|
+                    text "⬚"
 
-                    Md.CompletedTask ->
-                        -- "▨"
-                        "▨"
+            Md.CompletedTask ->
+                el
+                    [ alignTop
+                    , Font.size fontSize
+                    , Font.color pal.link
+                    ]
+                <|
+                    text "▨"
 
         -- ■▨▣□⬚▨▩●▪
-        , paragraph [ width fill ] <| content ++ children
+        , paragraph
+            [ fillSpace
+            , alignTop
+            ]
+          <|
+            content
+                ++ children
         ]
 
 
-mdGroup : Float -> Pal -> List (Element Msg) -> List (Element Msg) -> Element Msg
-mdGroup level pal hd els =
-    let
-        resize : Int
-        resize =
-            round <| spcNum * (1.0 - ((level - 1) * 0.1))
-    in
+renderCodeBlock : Model -> Viewport -> { body : String, language : Maybe String } -> Element Msg
+renderCodeBlock model vp { body, language } =
     textColumn
-        [ Border.widthEach
-            { edges
-                | left = round <| lineSize * 2
-            }
-        , Border.roundEach
-            { corners
-                | topLeft = spcNum // 4
-                , bottomLeft = spcNum // 4
-            }
-        , paddingEach { edges | bottom = spcNum // 2 }
-        , spacing <| spcNum
-        , width fill
+        [ Font.family [ Font.monospace ]
+        , width <| px <| round <| vp.viewport.width * 0.8
         ]
-        [ paragraph
-            [ Font.size resize
+        [ el
+            [ Font.size <| fontSize
+            , padding <| fontSize // 2
+            , Bg.color <| Style.mix 0.2 model.color.bg model.color.fg
+            , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2 }
+            ]
+          <|
+            case language of
+                Just l ->
+                    text l
 
-            --, Font.underline
-            , spacing <| resize // 4
-            , paddingXY spcNum <| resize // 3
-            , Border.roundEach
-                { corners
-                    | topRight = resize // 4
-                    , bottomRight = resize // 4
-                }
-            , moveDown <| lineSize * 3.0
-            , Bg.color <| Style.mix 0.9 pal.fg pal.bg
+                Nothing ->
+                    none
+        , link
+            [ --width fill
+              Bg.color <|
+                Style.mix 0.05 model.color.bg model.color.fg
+            , width fill
+            , clip
+            , scrollbars
             ]
-            hd
-        , textColumn
-            [ width fill
-            , paddingEach { edges | left = spcNum }
-            , spacing spcNum
-            ]
-            els
+            { url = ""
+            , label =
+                column
+                    [ Bg.color <|
+                        Style.mix 0.05 model.color.bg model.color.fg
+                    , width fill
+                    ]
+                    (body
+                        |> String.split "\n"
+                        |> (\xs ->
+                                xs
+                                    |> List.reverse
+                                    |> splitWhile (\x -> x == "")
+                                    --|> List.partition (\x -> x == "")
+                                    |> Tuple.second
+                                    |> List.reverse
+                                    |> List.indexedMap
+                                        (\i str ->
+                                            let
+                                                bg : { num : Color, text : Color }
+                                                bg =
+                                                    if modBy 2 i == 0 then
+                                                        { num =
+                                                            Style.mix 0.15 model.color.bg model.color.fg
+                                                        , text =
+                                                            Style.mix 0.05 model.color.bg model.color.fg
+                                                        }
+
+                                                    else
+                                                        { num =
+                                                            Style.mix 0.2 model.color.bg model.color.fg
+                                                        , text =
+                                                            Style.mix 0.1 model.color.bg model.color.fg
+                                                        }
+                                            in
+                                            row
+                                                [ width fill ]
+                                                [ el
+                                                    [ Bg.color bg.num
+                                                    , padding <| fontSize // 2
+                                                    , height fill
+                                                    ]
+                                                    (i
+                                                        + 1
+                                                        |> String.fromInt
+                                                        |> String.padLeft
+                                                            (List.length xs
+                                                                |> toFloat
+                                                                |> logBase 10
+                                                                |> (\x -> floor x + 1)
+                                                            )
+                                                            '0'
+                                                        |> (\s -> el [ centerY ] (text s))
+                                                    )
+                                                , paragraph
+                                                    [ Bg.color bg.text
+                                                    , paddingXY (fontSize // 2) 0
+                                                    , width fill
+                                                    , height fill
+                                                    ]
+                                                    [ spaceText str
+                                                    ]
+                                                ]
+                                        )
+                           )
+                    )
+            }
         ]
 
 
-
-{-
-   mdRenderer : Model -> Viewport -> Md.Renderer (Element Msg)
-   mdRenderer model vp =
-       let
-           b : Attribute Msg
-           b =
-               batch [ Font.family [ Font.monospace ], Font.bold ]
-
-           a : Attribute Msg
-           a =
-               batch
-                   [ alignTop
-                   , spacingXY (spcNum // 2) spcNum
-                   ]
-
-           w : Attribute Msg
-           w =
-               width fill
-
-           vw =
-               width <| px <| round <| vp.viewport.width - 2 * spcNum
-       in
-       { heading =
-           -- {HeadingLevel, String, List view} -> view
-           \{ level, rawText, children } ->
-               let
-                   h : Float -> Element Msg
-                   h i =
-                       paragraph [ width fill ]
-                           [ wrappedRow
-                               [ Font.size <|
-                                   round <|
-                                       spcNum
-                                           * (1.0 - ((i - 1) * 0.1))
-                               , Bg.color <|
-                                   Style.mix 0.9 model.color.fg model.color.bg
-                               , paddingXY (spcNum // 2) (spcNum // 3)
-                               , spacing <| spcNum // 2
-                               , width fill
-                               ]
-                               [ el
-                                   [ alignTop
-                                   , Font.color <| Style.mix 0.6 model.color.fg model.color.bg
-                                   , Font.letterSpacing 0
-                                   ]
-                                 <|
-                                   text <|
-                                       String.repeat (i |> round) "#"
-                               , paragraph
-                                   [ fillSpace
-                                   , spacing <| spcNum // 2
-                                   ]
-                                   children
-                               ]
-                           ]
-               in
-               case level of
-                   Md.H1 ->
-                       h 1
-
-                   Md.H2 ->
-                       h 2
-
-                   Md.H3 ->
-                       h 3
-
-                   Md.H4 ->
-                       h 4
-
-                   Md.H5 ->
-                       h 5
-
-                   Md.H6 ->
-                       h 6
-       , paragraph =
-           -- List view -> view
-           \list ->
-               paragraph
-                   [ spacing <| spcNum // 2
-                   , width fill
-                   ]
-                   list
-       , blockQuote =
-           -- List view -> view
-           \list ->
-               paragraph
-                   [ width fill
-                   ]
-                   list
-       , html =
-           -- Renderer (List view -> view)
-           MdHtml.oneOf []
-       , text =
-           -- String -> view
-           text
-       , codeSpan =
-           -- String -> view
-           \str ->
-               wrappedRow
-                   [ Font.family [ Font.monospace ]
-                   , Bg.color <| Style.mix 0.05 model.color.bg model.color.fg
-                   , padding 5
-                   ]
-                   [ text str ]
-       , strong =
-           -- List view -> view
-           wrappedRow
-               [ Font.bold
-               , width fill
-               ]
-       , emphasis =
-           -- List view -> view
-           wrappedRow
-               [ Font.italic
-               , width fill
-               ]
-       , strikethrough =
-           -- List view -> view
-           wrappedRow
-               [ Font.strike
-               , width fill
-               ]
-       , hardLineBreak =
-           -- view
-           hBar
-       , link =
-           {-
-              { title : Maybe String
-              , destination : String
-              }
-              -> List view
-              -> view
-           -}
-           \{ title, destination } list ->
-               iconButton model
-                   (GetDoc destination)
-                   Nothing
-               <|
-                   paragraph [] list
-       , image =
-           {-
-              { alt : String
-              , src : String
-              , title : Maybe String
-              }
-              -> view
-           -}
-           \{ alt, src, title } ->
-               column
-                   [ vp
-                       |> .viewport
-                       |> .width
-                       |> (\x -> x * 0.5)
-                       |> round
-                       |> px
-                       |> width
-
-                   --width fill
-                   , centerX
-                   , alignRight
-                   ]
-                   [ image
-                       [ width fill
-                       , Bg.color <| Style.mix 0.05 model.color.bg model.color.fg
-                       , centerX
-                       ]
-                       { src = src
-                       , description = alt
-                       }
-                   , case title of
-                       Just t ->
-                           column [ width fill ]
-                               [ paragraph
-                                   [ centerX
-                                   , Bg.color <| Style.mix 0.05 model.color.bg model.color.fg
-                                   , padding <| spcNum // 2
-                                   , Font.size <| spcNum // 2
-
-                                   -- TESTING --
-                                   , Font.bold
-                                   , Font.italic
-                                   , Font.alignRight
-                                   ]
-                                   [ text t ]
-                               , el
-                                   [ width fill
-                                   , height <| px <| spcNum // 2
-                                   , Bg.color <| rgba 0 0 0 0
-                                   ]
-                                   none
-                               ]
-
-                       Nothing ->
-                           none
-                   ]
-       , unorderedList =
-           -- List (ListItem view) -> view
-           \items ->
-               items
-                   |> List.map
-                       (\it ->
-                           case it of
-                               Md.ListItem task xs ->
-                                   case task of
-                                       Md.NoTask ->
-                                           row [ a, w ]
-                                               [ el [ a, b ] <| text "⏺"
-                                               , textColumn [ a, w ] xs
-                                               ]
-
-                                       Md.IncompleteTask ->
-                                           row [ a, w ]
-                                               [ el [ a, b ] <| text "[ ]"
-                                               , textColumn [ a, w ] xs
-                                               ]
-
-                                       Md.CompletedTask ->
-                                           row [ a, w ]
-                                               [ el [ a, b ] <| text "[X]"
-                                               , textColumn [ a, w ] xs
-                                               ]
-                       )
-                   |> textColumn [ a, w ]
-       , orderedList =
-           -- Int -> List (List view) -> view
-           \startIndex items ->
-               items
-                   |> List.indexedMap
-                       (\index xs ->
-                           row [ a, w ]
-                               [ (String.fromInt <| index + startIndex)
-                                   ++ "."
-                                   |> (\s -> el [ a, b ] <| text s)
-                               , column [ a, w ] xs
-                               ]
-                       )
-                   |> column [ a, w ]
-       , codeBlock =
-           {- { body : String
-              , language : Maybe String
-              }
-              -> view
-           -}
-           \{ body, language } ->
-               let
-                   lang =
-                       case language of
-                           Just l ->
-                               el
-                                   [ Font.size <| spcNum // 2
-                                   , padding <| spcNum // 4
-                                   , Bg.color <|
-                                       Style.mix 0.1 model.color.bg model.color.fg
-                                   , width fill
-                                   ]
-                               <|
-                                   text l
-
-                           Nothing ->
-                               none
-               in
-               column
-                   [ fillSpace
-                   , Font.family [ Font.monospace ]
-                   ]
-                   [ lang
-                   , link
-                       [ width fill
-                       , Bg.color <| Style.mix 0.05 model.color.bg model.color.fg
-                       ]
-                       { url = ""
-                       , label =
-                           column
-                               [ width fill
-                               , scrollbarX
-                               , Bg.color <| Style.mix 0.05 model.color.bg model.color.fg
-                               ]
-                               (body
-                                   |> String.split "\n"
-                                   |> (\xs ->
-                                           List.take (List.length xs - 1) xs
-                                               |> List.indexedMap
-                                                   (\i str ->
-                                                       row
-                                                           [ width fill
-                                                           , height <| px <| spcNum
-                                                           ]
-                                                           [ el
-                                                               [ Bg.color <| Style.mix 0.2 model.color.bg model.color.fg
-                                                               , paddingEach { edges | right = spcNum // 4 }
-                                                               , height fill
-                                                               ]
-                                                             <|
-                                                               el [ centerY, width fill ] <|
-                                                                   (i + 1 |> String.fromInt |> String.padLeft 4 ' ' |> text)
-                                                           , el
-                                                               [ Bg.color <| Style.mix 0.05 model.color.bg model.color.fg
-                                                               , paddingEach { edges | left = spcNum // 4 }
-                                                               , fillSpace
-                                                               ]
-                                                             <|
-                                                               el [ centerY, width fill ] <|
-                                                                   text str
-                                                           ]
-                                                   )
-                                      )
-                               )
-                       }
-                   ]
-       , thematicBreak =
-           -- view
-           hBar
-       , table =
-           -- List view -> view
-           \list ->
-               column
-                   [ Bg.color <| Style.mix 0.05 model.color.bg model.color.fg
-                   , spacing <| spcNum // 2
-                   , padding <| spcNum // 2
-                   ]
-                   list
-       , tableHeader =
-           -- List view -> view
-           \list -> row [ width fill, spacing <| spcNum // 2, Border.widthEach { edges | bottom = 2 } ] list
-       , tableBody =
-           -- List view -> view
-           \list -> column [ width fill, spacing <| spcNum // 2 ] list
-       , tableRow =
-           -- List view -> view
-           \list -> row [ width fill, spacing <| spcNum // 2 ] list
-       , tableCell =
-           -- Maybe Alignment -> List view -> view
-           \maybeArg list ->
-               paragraph
-                   [ width fill
-                   , spacing <| spcNum // 2
-                   , case maybeArg of
-                       Just arg ->
-                           case arg of
-                               Md.AlignLeft ->
-                                   alignLeft
-
-                               Md.AlignCenter ->
-                                   centerX
-
-                               Md.AlignRight ->
-                                   alignRight
-
-                       Nothing ->
-                           batch []
-                   ]
-                   list
-       , tableHeaderCell =
-           -- Maybe Alignment -> List view -> view
-           \maybeArg list ->
-               paragraph
-                   [ width fill
-                   , Font.bold
-                   , spacing <| spcNum // 2
-                   , case maybeArg of
-                       Just arg ->
-                           case arg of
-                               Md.AlignLeft ->
-                                   alignLeft
-
-                               Md.AlignCenter ->
-                                   centerX
-
-                               Md.AlignRight ->
-                                   alignRight
-
-                       Nothing ->
-                           batch []
-                   ]
-                   list
-       }
--}
+spaceText : String -> Element msg
+spaceText str =
+    html <|
+        Html.pre
+            [ Attrs.style "padding" "0px"
+            , Attrs.style "margins" "0px"
+            ]
+            [ Html.text str ]
