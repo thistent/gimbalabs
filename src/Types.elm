@@ -26,8 +26,15 @@ type alias Model =
     , time : Maybe Time.Posix
     , currentSlide : String
     , slides : Dict String (Pal -> Element Msg)
-    , mdText : String
+    , docText : String
+    , docName : String
+    , clock : Orientation
     }
+
+
+type Orientation
+    = North
+    | South
 
 
 type Msg
@@ -45,6 +52,7 @@ type Msg
     | LinkClicked Browser.UrlRequest
     | GetDoc String
     | ReceiveDoc String (Result Http.Error String)
+    | ToggleClockOrientation
 
 
 type Page

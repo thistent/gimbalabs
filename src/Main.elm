@@ -6,6 +6,8 @@ import Browser
 import Browser.Dom as Dom exposing (Viewport)
 import Browser.Events as Events exposing (onResize)
 import Browser.Navigation as Nav
+import Calendar
+import Date
 import Delay exposing (Timer)
 import Dict
 import Docs exposing (..)
@@ -85,7 +87,18 @@ loadingPage model t =
                     [ Font.color fg
                     , Font.letterSpacing 1.25
                     ]
-                    [ Pic.gimbalogo fg bg, text " GIMBA", el [ Font.bold ] <| text "LABS" ]
+                    [ el
+                        [ Bg.color fg
+                        , height <| px <| fontSize * 3
+                        , width <| px <| fontSize * 3
+                        , paddingXY 0 5
+                        ]
+                      <|
+                        el [ centerXY, scale 1.4 ] <|
+                            Pic.gimbalogo bg
+                    , text " GIMBA"
+                    , el [ Font.bold ] <| text "LABS"
+                    ]
                 , el
                     [ Font.color <| Style.mix 0.5 fg bg
                     , centerX
@@ -111,15 +124,17 @@ init () url key =
     Return.return
         { navKey = key
         , url = url
-        , page = Solutions --Home
+        , page = Calendar
         , menu = MenuClosed
         , color = newspaper
-        , size = Delay.wait 1000 Nothing
+        , size = Delay.wait 100 Nothing
         , zone = Time.utc
         , time = Nothing
         , currentSlide = "start"
         , slides = initSlides
-        , mdText = ""
+        , docText = ""
+        , docName = ""
+        , clock = North
         }
     <|
         Cmd.batch
@@ -218,16 +233,26 @@ update msg model =
                         Http.expectString <| ReceiveDoc doc
                     }
 
-        ReceiveDoc str res ->
+        ReceiveDoc doc res ->
+            -- ReceiveDoc str res ->
             case res of
                 Ok p ->
                     Return.singleton
                         { model
-                            | mdText = p
+                            | docText = p
+                            , docName = doc
                         }
 
                 Err _ ->
                     Return.singleton model
+
+        ToggleClockOrientation ->
+            case model.clock of
+                North ->
+                    Return.singleton { model | clock = South }
+
+                South ->
+                    Return.singleton { model | clock = North }
 
 
 
@@ -372,15 +397,339 @@ view model vp =
                                 ]
 
                         Solutions ->
-                            renderMd model vp model.mdText
+                            column [ fillSpace, spacing <| fontSize * 2 ]
+                                [ row [ width fill, spacing fontSize ]
+                                    [ el [ Font.bold ] <| text "File:"
+                                    , text <| "/notes/" ++ model.docName
+                                    , el [ alignRight ] <| iconButton model (GetDoc "Main.md") Nothing <| text "Go back to the Main Page"
+                                    ]
+                                , renderMd model vp model.docText
+                                ]
 
                         Calendar ->
-                            el [ fillSpace ] <| el [ centerXY ] <| text "Calendar!"
+                            row [ fillSpace, spacing <| fontSize * 2 ]
+                                [ el [ width <| fillPortion 2, height fill ] <|
+                                    calendar model
+                                , el [ alignTop, alignRight ] <|
+                                    clock model
+                                ]
 
                         Settings ->
                             el [ fillSpace ] <| el [ centerXY ] <| text "Settings!"
                     ]
             ]
+
+
+calendar : Model -> Element Msg
+calendar model =
+    column
+        [ fillSpace
+        , Border.width lineSize
+        , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2 }
+        ]
+        [ column
+            [ width fill
+            , Border.widthEach { edges | bottom = lineSize }
+            , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2 }
+            , Bg.color <| Style.mix 0.075 model.color.bg model.color.fg
+            ]
+            [ el
+                [ centerX
+                , Font.size <| round <| fontSize * 1.5
+                , padding <| fontSize // 3
+                ]
+              <|
+                text <|
+                    (model.time
+                        |> Maybe.map
+                            (\t ->
+                                monthToString (Time.toMonth Time.utc t)
+                                    ++ " "
+                                    ++ String.fromInt (Time.toYear Time.utc t)
+                            )
+                        |> Maybe.withDefault "Calendar"
+                    )
+            , row
+                [ width fill
+                , paddingXY 0 <| round <| fontSize * 0.4
+                ]
+                [ el [ width fill, Font.bold ] <| el [ centerX ] <| text "Sunday"
+                , el [ width fill, Font.bold ] <| el [ centerX ] <| text "Monday"
+                , el [ width fill, Font.bold ] <| el [ centerX ] <| text "Tuesday"
+                , el [ width fill, Font.bold ] <| el [ centerX ] <| text "Wednesday"
+                , el [ width fill, Font.bold ] <| el [ centerX ] <| text "Thursday"
+                , el [ width fill, Font.bold ] <| el [ centerX ] <| text "Friday"
+                , el [ width fill, Font.bold ] <| el [ centerX ] <| text "Saturday"
+                ]
+            ]
+        , el
+            [ fillSpace
+            ]
+          <|
+            (model.time
+                |> Maybe.map (Calendar.fromTime Nothing Time.utc)
+                |> Maybe.map
+                    (\weeks ->
+                        column
+                            [ fillSpace
+                            ]
+                        <|
+                            List.map
+                                (\days ->
+                                    row
+                                        [ fillSpace
+                                        ]
+                                        (List.map
+                                            (\d ->
+                                                let
+                                                    date :
+                                                        { year : Int
+                                                        , month : Time.Month
+                                                        , day : Int
+                                                        , posix : Time.Posix
+                                                        }
+                                                    date =
+                                                        model.time
+                                                            |> Maybe.map
+                                                                (\t ->
+                                                                    { year = Time.toYear Time.utc t
+                                                                    , month = Time.toMonth Time.utc t
+                                                                    , day = Time.toDay Time.utc t
+                                                                    , posix = t
+                                                                    }
+                                                                )
+                                                            |> Maybe.withDefault
+                                                                { year = 0
+                                                                , month = Time.Jan
+                                                                , day = 0
+                                                                , posix = Time.millisToPosix 0
+                                                                }
+
+                                                    isToday : Bool
+                                                    isToday =
+                                                        Date.compare d.date (Date.fromPosix Time.utc date.posix) == EQ
+
+                                                    isThisMonth : Bool
+                                                    isThisMonth =
+                                                        Date.month d.date == date.month
+
+                                                    bg : Color
+                                                    bg =
+                                                        if isToday then
+                                                            --Style.mix 0.5 model.color.bg model.color.link
+                                                            model.color.fg
+
+                                                        else if not isThisMonth then
+                                                            Style.mix 0.35 model.color.bg model.color.fg
+
+                                                        else
+                                                            model.color.bg
+                                                in
+                                                el
+                                                    [ fillSpace
+                                                    , padding <| fontSize // 6
+                                                    , Border.width 1
+                                                    , Bg.color bg
+                                                    ]
+                                                <|
+                                                    column
+                                                        [ fillSpace
+                                                        , padding <| fontSize // 2 - fontSize // 6
+                                                        , spacing <| fontSize // 2 - fontSize // 6
+                                                        , Font.size 10
+                                                        , if isThisMonth then
+                                                            Bg.color model.color.bg
+
+                                                          else
+                                                            Bg.color <| Style.mix 0.35 model.color.bg model.color.fg
+                                                        ]
+                                                        [ el [ Font.size 16, Font.bold ] <| text <| String.fromInt <| Date.day d.date
+                                                        , paragraph
+                                                            [ width fill
+                                                            , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.color.bg model.color.error
+                                                            , Border.rounded <| fontSize // 3
+                                                            , padding <| fontSize // 2 - fontSize // 6
+                                                            ]
+                                                            [ text "Event: This is Important!"
+                                                            ]
+                                                        , paragraph
+                                                            [ width fill
+                                                            , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.color.bg model.color.link
+                                                            , Border.rounded <| fontSize // 3
+                                                            , padding <| fontSize // 2 - fontSize // 6
+                                                            ]
+                                                            [ text "Event: This is Important!"
+                                                            ]
+                                                        , paragraph
+                                                            [ width fill
+                                                            , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.color.bg model.color.extLink
+                                                            , Border.rounded <| fontSize // 3
+                                                            , padding <| fontSize // 2 - fontSize // 6
+                                                            ]
+                                                            [ text "Event: This is Important!"
+                                                            ]
+                                                        ]
+                                            )
+                                            days
+                                        )
+                                )
+                                weeks
+                    )
+                |> Maybe.withDefault none
+            )
+        ]
+
+
+clock : Model -> Element Msg
+clock model =
+    let
+        time :
+            { localHours : Int
+            , hours : Int
+            , minutes : Int
+            , seconds : Int
+            , millis : Int
+            }
+        time =
+            model.time
+                |> Maybe.map
+                    (\t ->
+                        { localHours = Time.toHour model.zone t
+                        , hours = Time.toHour Time.utc t
+                        , minutes = Time.toMinute Time.utc t
+                        , seconds = Time.toSecond Time.utc t
+                        , millis = Time.toMillis Time.utc t
+                        }
+                    )
+                |> Maybe.withDefault
+                    { localHours = 0
+                    , hours = 0
+                    , minutes = 0
+                    , seconds = 0
+                    , millis = 0
+                    }
+
+        c :
+            { hourRotation : Float
+            , localHourRotation : Float
+            , secondRotation : Float
+            , leftLabel : String
+            , rightLabel : String
+            , picUrl : String
+            , op : String
+            }
+        c =
+            case model.clock of
+                North ->
+                    { hourRotation = 0 - (toFloat time.hours + toFloat time.minutes / 60) / 12 * pi
+                    , localHourRotation = 0 - (toFloat time.localHours + toFloat time.minutes / 60) / 12 * pi
+                    , secondRotation = 0 - (toFloat time.seconds + toFloat time.millis / 1000) / 30 * pi
+                    , leftLabel = "06"
+                    , rightLabel = "18"
+                    , picUrl = "assets/earth.png"
+                    , op = "Southern"
+                    }
+
+                South ->
+                    { hourRotation = (toFloat time.hours + toFloat time.minutes / 60) / 12 * pi
+                    , localHourRotation = (toFloat time.localHours + toFloat time.minutes / 60) / 12 * pi
+                    , secondRotation = (toFloat time.seconds + toFloat time.millis / 1000) / 30 * pi
+                    , leftLabel = "18"
+                    , rightLabel = "06"
+                    , picUrl = "assets/earth-south.png"
+                    , op = "Northern"
+                    }
+    in
+    column
+        [ clip ]
+        [ el
+            [ centerX
+            , Font.size <| round <| fontSize
+            , paddingEach { edges | bottom = 5 }
+            , Font.family [ Font.monospace ]
+            , Font.bold
+            ]
+          <|
+            text "00"
+        , row []
+            [ el
+                [ centerY
+                , Font.size <| round <| fontSize
+                , paddingEach { edges | right = 5 }
+                , Font.family [ Font.monospace ]
+                , Font.bold
+                ]
+              <|
+                text c.leftLabel
+            , image
+                [ centerXY
+                , inFront <|
+                    image
+                        [ rotate c.localHourRotation
+                        ]
+                        { src = "assets/earth-local-hour.png"
+                        , description = "local hour hand"
+                        }
+                , behindContent <|
+                    image
+                        [ rotate c.hourRotation
+                        , inFront <|
+                            image
+                                [ rotate c.secondRotation
+                                ]
+                                { src = "assets/earth-second.png"
+                                , description = "second hand"
+                                }
+                        ]
+                        { src = c.picUrl
+                        , description = "earth clock"
+                        }
+                ]
+                { src = "assets/earth-hour-lines.png", description = "earth" }
+            , el
+                [ centerY
+                , Font.size <| round <| fontSize
+                , paddingEach { edges | left = 5 }
+                , Font.family [ Font.monospace ]
+                , Font.bold
+                ]
+              <|
+                text c.rightLabel
+            ]
+        , el
+            [ centerX
+            , Font.size <| round <| fontSize
+            , paddingEach { edges | top = 5 }
+            , Font.family [ Font.monospace ]
+            , Font.bold
+            ]
+          <|
+            text "12"
+        , el [ height <| px <| fontSize * 2 ] none
+        , el [ centerX ] <| iconButton model ToggleClockOrientation Nothing <| text <| "Flip Clock to " ++ c.op ++ " Hemisphere"
+        , el [ height <| px <| fontSize * 2 ] none
+        , el
+            [ centerX
+            , Font.size <| fontSize * 4 // 3
+            , Font.bold
+            ]
+          <|
+            text "Current Time:"
+        , el [ height <| px <| fontSize ] none
+        , el [ centerX, Font.size <| fontSize * 4 // 3 ] <|
+            text <|
+                String.fromInt time.hours
+                    ++ ":"
+                    ++ (String.padLeft 2 '0' <| String.fromInt time.minutes)
+                    ++ " UTC"
+        , el [ height <| px <| fontSize ] none
+        , el [ centerX, Font.size <| fontSize * 4 // 3 ] <|
+            text <|
+                String.fromInt time.localHours
+                    ++ ":"
+                    ++ (String.padLeft 2 '0' <| String.fromInt time.minutes)
+                    ++ " Local"
+        ]
 
 
 turningPage : Model -> Float -> Element Msg -> Element Msg
@@ -449,7 +798,15 @@ titleBar model =
             [ Ev.onClick <| GotoPage Home ]
             { url = ""
             , label =
-                Pic.gimbalogo model.color.link model.color.bg
+                el
+                    [ Bg.color model.color.link
+                    , height <| px <| fontSize * 3
+                    , width <| px <| fontSize * 3
+                    , paddingXY 0 5
+                    ]
+                <|
+                    el [ centerXY, scale 1.4 ] <|
+                        Pic.gimbalogo model.color.bg
             }
         , el [ fillSpace, paddingXY 0 lineSize ] <|
             row
@@ -565,12 +922,23 @@ mainMenu model =
           <|
             text "Solutions"
         , iconButton model (GotoPage Settings) (Just Pic.settings) <| text "Settings"
-        , el [ Border.widthEach { edges | left = lineSize, right = lineSize }, paddingXY (fontSize // 2) 0 ] <|
+        , row
+            [ Border.widthEach { edges | left = lineSize, right = lineSize }
+            , paddingXY (fontSize // 2) 0
+            , spacing (fontSize // 2)
+            ]
+          <|
             if model.color.name == "Newspaper" then
-                iconButton model (ChangeColor dark) (Just Pic.dark) none
+                [ iconButton model (ChangeColor dark) (Just Pic.dark) none
+                , iconButton model (GotoPage Settings) (Just Pic.dims) none
+
+                --, iconButton model (GotoPage Settings) (Just Pic.gimbalogo) <| text "Gimbalabs"
+                ]
 
             else
-                iconButton model (ChangeColor newspaper) (Just Pic.light) none
+                [ iconButton model (ChangeColor newspaper) (Just Pic.light) none
+                , iconButton model (GotoPage Settings) (Just Pic.dims) none
+                ]
         ]
 
 

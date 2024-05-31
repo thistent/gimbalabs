@@ -1,5 +1,3 @@
-[Back to Main Page](Main.md)
-
 # Post-02
 
 ## In this blog

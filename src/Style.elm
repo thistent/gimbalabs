@@ -72,9 +72,9 @@ dark =
     { name = "Dark"
     , fg = rgb255 0xA1 0xA0 0x9F
     , bg = rgb255 0x1A 0x1C 0x1F
-    , error = rgb255 0xC9 0x99 0x23
-    , link = rgb255 0xC9 0x99 0x23
+    , error = rgb255 0xE6 0x63 0x63
     , extLink = rgb255 0x20 0xB0 0x80
+    , link = rgb255 0xC9 0x99 0x23
     }
 
 
@@ -122,17 +122,19 @@ orangeNote =
     }
 
 
+redNote : Pal
+redNote =
+    { name = "Red-Note"
+    , fg = rgb255 0x57 0x29 0x23
+    , bg = rgb255 0xD8 0x9C 0x9B
+    , error = rgb255 0xC6 0x6C 0x2C
+    , link = rgb255 0xD0 0x61 0x6A
+    , extLink = rgb255 0xD0 0x61 0x6A
+    }
+
+
 
 {-
-   redNote : Pal
-   redNote =
-       { name = "Red-Note"
-       , fg = rgb255 0x57 0x29 0x23
-       , bg = rgb255 0xD8 0x9C 0x9B
-       , link = rgb255 0xD0 0x61 0x6A
-       , extLink = rgb255 0xD0 0x61 0x6A
-       }
-
 
    purpleNote : Pal
    purpleNote =
@@ -161,6 +163,18 @@ otherSide content =
             ]
         <|
             content
+
+
+noSelect : Attribute Msg
+noSelect =
+    batch
+        [ style "-webkit-touch-callout" "none" -- iOS Safari
+        , style "-webkit-user-select" "none" -- Safari
+        , style "-khtml-user-select" "none" -- Konqueror HTML
+        , style "-moz-user-select" "none" -- Old versions of Firefox
+        , style "-ms-user-select" "none" -- Internet Explorer/Edge
+        , style "user-select" "none" -- Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox
+        ]
 
 
 shadow : Attribute Msg

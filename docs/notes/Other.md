@@ -1,6 +1,4 @@
 # Other.md
-You can goto the [Main Page](Main.md) or [Reload the Other Page](Other.md)!
-
 This is another page!
 
 ## Traversing the knowledge graph

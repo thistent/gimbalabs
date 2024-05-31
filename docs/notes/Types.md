@@ -2,8 +2,6 @@
 - author = "Ken Stanton"
 - date = 2024-05-19
 
-[Back to Main](Main.md)
-
 ```haskell
 module Main where 
 

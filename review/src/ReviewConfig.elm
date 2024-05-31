@@ -41,7 +41,7 @@ config =
     --, NoUnused.Exports.rule
     --, NoUnused.Modules.rule
     , NoUnused.Parameters.rule
+    , NoUnused.Patterns.rule
 
-    --, NoUnused.Patterns.rule
     --, NoUnused.Variables.rule
     ]

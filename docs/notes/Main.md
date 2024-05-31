@@ -1,6 +1,6 @@
 # Main.md
 
-You can [Reload the Main Page](Main.md) or view the [Other Page](Other.md)!
+Look at this [Other Page](Other.md)!
 
 Code: `You can [Reload the Main Page](Main.md) or view the [Other Page](Other.md)!`
 
@@ -30,7 +30,7 @@ It could be beneficial to have a custom semantic markup language.
    2. Banana
    3. Cherry
  - Other things that we really need to know about!
- - Even more things that we need to know about!
+ - Even more things that we don't need to know about!
 
 ```pony
 actor Main
