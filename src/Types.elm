@@ -3,10 +3,11 @@ module Types exposing (..)
 import Browser
 import Browser.Dom as Dom
 import Browser.Navigation as Nav
+import Date exposing (Date)
 import Delay exposing (Delay)
 import Dict exposing (Dict)
 import Http
-import Time
+import Time exposing (Month)
 import Ui exposing (..)
 import Url
 
@@ -29,6 +30,7 @@ type alias Model =
     , docText : String
     , docName : String
     , clock : Orientation
+    , selectDate : Maybe Date
     }
 
 
@@ -53,6 +55,7 @@ type Msg
     | GetDoc String
     | ReceiveDoc String (Result Http.Error String)
     | ToggleClockOrientation
+    | SelectDate (Maybe Date)
 
 
 type Page

@@ -325,7 +325,7 @@ renderToken model vp tok =
                         [ Border.widthEach { edges | left = lineSize * 2 }
                         , Border.roundEach { corners | bottomLeft = fontSize // 2 }
                         , Border.color <| Style.mix 0.5 model.color.bg model.color.fg
-                        , paddingEach { edges | left = fontSize * 2, bottom = fontSize }
+                        , paddingEach { edges | left = fontSize, bottom = fontSize }
                         , spacing <| fontSize * 2
                         , width fill
                         ]
@@ -460,8 +460,10 @@ renderToken model vp tok =
                 column
                     [ Bg.color <| Style.mix 0.15 model.color.bg model.color.fg
                     , Border.rounded <| fontSize // 2
-                    , width <| px <| round <| vp.viewport.width * 0.8
-                    , centerX
+                    , width <| px <| round <| vp.viewport.width * 0.85
+
+                    --, centerX
+                    , alignRight
                     ]
                     (render toks)
 
@@ -631,14 +633,19 @@ renderCodeBlock : Model -> Viewport -> { body : String, language : Maybe String 
 renderCodeBlock model vp { body, language } =
     textColumn
         [ Font.family [ Font.monospace ]
-        , width <| px <| round <| vp.viewport.width * 0.8
-        , centerX
+        , Bg.color <| Style.mix 0.2 model.color.bg model.color.fg
+        , width <| px <| round <| vp.viewport.width * 0.85
+        , Border.rounded <| fontSize // 2
+
+        --, centerX
+        , alignRight
         ]
         [ el
             [ Font.size <| fontSize
             , padding <| fontSize // 2
             , Bg.color <| Style.mix 0.2 model.color.bg model.color.fg
-            , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2 }
+            , Border.rounded <| fontSize // 2
+            , noSelect
             ]
           <|
             case language of
@@ -712,7 +719,11 @@ renderCodeBlock model vp { body, language } =
                                                 , width fill
                                                 , height fill
                                                 ]
-                                                [ spaceText str
+                                                [ if str /= "" then
+                                                    spaceText str
+
+                                                  else
+                                                    spaceText "\n"
                                                 ]
                                             ]
                                     )

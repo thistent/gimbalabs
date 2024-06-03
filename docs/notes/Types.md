@@ -1,6 +1,11 @@
 # Types : Hello World
-- author = "Ken Stanton"
-- date = 2024-05-19
+
+```
+author: "Ken Stanton"
+date: 2024-05-19
+```
+
+Sometimes you just need to write a little ***Haskell** code*:
 
 ```haskell
 module Main where 
@@ -25,7 +30,7 @@ Empty blocks can be used to change the language `puts "Hello"`!
 
 ### What about Tables?
 
-#### Level 4
+#### Level 4 :: Markup
 
 ##### Level 5
 

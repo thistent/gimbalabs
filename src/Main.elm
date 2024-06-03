@@ -7,7 +7,7 @@ import Browser.Dom as Dom exposing (Viewport)
 import Browser.Events as Events exposing (onResize)
 import Browser.Navigation as Nav
 import Calendar
-import Date
+import Date exposing (Date)
 import Delay exposing (Timer)
 import Dict
 import Docs exposing (..)
@@ -124,7 +124,7 @@ init () url key =
     Return.return
         { navKey = key
         , url = url
-        , page = Calendar
+        , page = Home
         , menu = MenuClosed
         , color = newspaper
         , size = Delay.wait 100 Nothing
@@ -135,6 +135,7 @@ init () url key =
         , docText = ""
         , docName = ""
         , clock = North
+        , selectDate = Nothing
         }
     <|
         Cmd.batch
@@ -254,6 +255,9 @@ update msg model =
                 South ->
                     Return.singleton { model | clock = North }
 
+        SelectDate maybeDate ->
+            Return.singleton { model | selectDate = maybeDate }
+
 
 
 -- Subscriptions --
@@ -279,145 +283,200 @@ view model vp =
         , Font.family [ Font.serif ]
         , Font.color model.color.fg
         , Font.letterSpacing 0.2
-
-        --, Font.justify
         , Bg.color <| Style.mix 0.5 model.color.bg model.color.fg
-
-        --, fillSpace
-        , padding <| lineSize * 2
         ]
     <|
-        column
-            [ fillSpace
-            , spacing <| fontSize * 2 // 5
+        el
+            [ Bg.color <| Style.mix 0.5 model.color.bg model.color.fg
+            , fillSpace
             ]
-            [ turningPage model 0 <|
-                column
-                    [ fillSpace
-                    , spacing <| fontSize * 2
-                    ]
-                    [ titleBar model
-                    , case model.page of
-                        Home ->
-                            let
-                                m : Pal -> Model
-                                m pal =
-                                    { model | color = pal }
+        <|
+            column
+                [ fillSpace
+                , spacing <| fontSize * 2 // 5
+                ]
+                [ turningPage model 0 <|
+                    column
+                        [ fillSpace
+                        , spacing <| fontSize * 2
+                        ]
+                        [ titleBar model
+                        , case model.page of
+                            Home ->
+                                let
+                                    m : Pal -> Model
+                                    m pal =
+                                        { model | color = pal }
 
-                                p : Pal
-                                p =
-                                    model.color
-                            in
-                            column
-                                [ fillSpace
-                                , spacing <| fontSize * 2
-                                , padding <| fontSize // 2
-                                ]
-                                [ row [ fillSpace, spacing <| fontSize * 2 ]
-                                    [ el [ width <| fillPortion 3, height fill ] <|
-                                        topGroup p
-                                            [ heading p "Welcome to Gimbalabs!"
-                                            , item p <|
-                                                "Right now, we are building Plutus PBL 2024, "
-                                                    ++ "running weekly live coding sessions, "
-                                                    ++ "and hosting Gimbalabs Open Spaces."
-                                            , item p <|
-                                                "This version of the website is still under construction!"
+                                    p : Pal
+                                    p =
+                                        model.color
+                                in
+                                column
+                                    [ fillSpace
+                                    , spacing <| fontSize * 2
+                                    , padding <| fontSize // 2
+                                    ]
+                                    [ row [ fillSpace, spacing <| fontSize * 2 ]
+                                        [ el [ width <| fillPortion 3, height fill ] <|
+                                            topGroup p
+                                                [ heading p "Welcome to Gimbalabs!"
+                                                , item p <|
+                                                    "Right now, we are building Plutus PBL 2024, "
+                                                        ++ "running weekly live coding sessions, "
+                                                        ++ "and hosting Gimbalabs Open Spaces."
+                                                , item p <|
+                                                    "This version of the website is still under construction!"
+                                                ]
+                                        , vBar
+                                        , topGroup p
+                                            [ heading p "Events"
+                                            , item p "Open Spaces"
+                                            , item p "Playground"
                                             ]
-                                    , vBar
-                                    , topGroup p
-                                        [ heading p "Events"
-                                        , item p "Open Spaces"
-                                        , item p "Playground"
+                                        ]
+                                    , row
+                                        [ fillSpace
+                                        , spacing <| fontSize * 2
+                                        ]
+                                        [ turningPage (m orangeNote) 0.02 <|
+                                            el [ fillSpace ] <|
+                                                column [ centerX, spacing fontSize ]
+                                                    [ heading p "Learn"
+                                                    , el [] <| text "⯀ Starter Kits"
+                                                    , el [] <| text "⯀ Plutus"
+                                                    , el [] <| text "⯀ Playground"
+                                                    ]
+                                        , turningPage (m yellowNote) 0 <|
+                                            el [ fillSpace ] <|
+                                                column [ centerX, spacing fontSize ]
+                                                    [ heading p "APIs"
+                                                    , el [] <| text "⯀ Dandelion"
+                                                    , el [] <| text "⯀ Endpoints"
+                                                    ]
+                                        , turningPage (m greenNote) -0.02 <|
+                                            el [ fillSpace ] <|
+                                                column [ centerX, spacing fontSize ]
+                                                    [ heading p "Updates"
+                                                    , el [] <| text "⯀ Updates"
+                                                    ]
+                                        , turningPage (m blueNote) 0.01 <|
+                                            el [ fillSpace ] <|
+                                                column [ centerX, spacing fontSize ]
+                                                    [ heading p "About Us"
+                                                    , el [] <| text "⯀ Team"
+                                                    , el [] <| text "⯀ Calendar"
+                                                    , el [] <| text "⯀ Stake Pool"
+                                                    ]
                                         ]
                                     ]
-                                , row
+
+                            Calendar ->
+                                row [ fillSpace, spacing <| fontSize * 2 ]
+                                    [ el [ width <| fillPortion 5, height fill ] <|
+                                        calendar model
+                                    , el
+                                        [ width <| fillPortion 2
+                                        , inFront <|
+                                            case model.selectDate of
+                                                Nothing ->
+                                                    none
+
+                                                Just date ->
+                                                    column
+                                                        [ fillSpace
+                                                        , padding fontSize
+                                                        , spacing <| fontSize * 2
+                                                        , Border.width lineSize
+                                                        , Border.rounded <| fontSize // 2
+                                                        , Bg.color <| Style.addAlpha 0.9 model.color.bg
+                                                        ]
+                                                        [ column
+                                                            [ spacing <| round <| fontSize * 0.65
+                                                            , width fill
+                                                            ]
+                                                            [ el
+                                                                [ centerX
+                                                                , Font.size <| round <| fontSize * 1.5
+                                                                , Font.bold
+                                                                ]
+                                                              <|
+                                                                text <|
+                                                                    (weekdayToString <| Date.weekday date)
+                                                            , el
+                                                                [ centerX
+                                                                , Font.size <| round <| fontSize * 1.5
+                                                                , Font.bold
+                                                                ]
+                                                              <|
+                                                                text <|
+                                                                    (monthToString <| Date.month date)
+                                                                        ++ " "
+                                                                        ++ String.fromInt (Date.day date)
+                                                                        ++ ", "
+                                                                        ++ String.fromInt (Date.year date)
+                                                            , hBar
+                                                            ]
+                                                        , column
+                                                            [ spacing <| fontSize * 2
+                                                            , paddingXY (fontSize // 2) 0
+                                                            , width fill
+                                                            ]
+                                                            [ el [ width fill ] <| text "This is the first event!"
+                                                            , el [ width fill ] <| text "This is the second event!"
+                                                            , el [ width fill ] <| text "This is the third event!"
+                                                            ]
+                                                        ]
+                                        , height fill
+                                        ]
+                                      <|
+                                        el [ alignTop, centerX, moveDown 20.0 ] <|
+                                            clock model
+                                    ]
+
+                            Blog ->
+                                column [ fillSpace, spacing <| fontSize * 2 ]
+                                    [ row [ width fill, spacing fontSize ]
+                                        [ el [ Font.bold ] <| text "File:"
+                                        , text <| "/notes/" ++ model.docName
+                                        , el [ alignRight ] <| iconButton model (GetDoc "Main.md") Nothing <| text "Go back to the Main Page"
+                                        ]
+                                    , renderMd model vp model.docText
+                                    ]
+
+                            Solutions ->
+                                let
+                                    slide : Pal -> Element Msg
+                                    slide =
+                                        Maybe.withDefault (\_ -> notFound) <|
+                                            Dict.get model.currentSlide model.slides
+                                in
+                                row
                                     [ fillSpace
                                     , spacing <| fontSize * 2
                                     ]
-                                    [ turningPage (m orangeNote) 0.02 <|
-                                        el [ fillSpace ] <|
-                                            column [ centerX, spacing fontSize ]
-                                                [ heading p "Learn"
-                                                , el [] <| text "⯀ Starter Kits"
-                                                , el [] <| text "⯀ Plutus"
-                                                , el [] <| text "⯀ Playground"
-                                                ]
-                                    , turningPage (m yellowNote) 0 <|
-                                        el [ fillSpace ] <|
-                                            column [ centerX, spacing fontSize ]
-                                                [ heading p "APIs"
-                                                , el [] <| text "⯀ Dandelion"
-                                                , el [] <| text "⯀ Endpoints"
-                                                ]
-                                    , turningPage (m greenNote) -0.02 <|
-                                        el [ fillSpace ] <|
-                                            column [ centerX, spacing fontSize ]
-                                                [ heading p "Updates"
-                                                , el [] <| text "⯀ Updates"
-                                                ]
-                                    , turningPage (m blueNote) 0.01 <|
-                                        el [ fillSpace ] <|
-                                            column [ centerX, spacing fontSize ]
-                                                [ heading p "About Us"
-                                                , el [] <| text "⯀ Team"
-                                                , el [] <| text "⯀ Calendar"
-                                                , el [] <| text "⯀ Stake Pool"
-                                                ]
+                                    [ el
+                                        [ width <| fillPortion 3
+                                        , alignTop
+                                        , alignLeft
+                                        , spacing <| fontSize * 2
+                                        ]
+                                      <|
+                                        slide model.color
+                                    , vBar
+                                    , column
+                                        [ spacing <| fontSize * 2
+                                        , fillSpace
+                                        ]
+                                      <|
+                                        heading model.color "Outline"
+                                            :: outline model.color
                                     ]
-                                ]
 
-                        Blog ->
-                            let
-                                slide : Pal -> Element Msg
-                                slide =
-                                    Maybe.withDefault (\_ -> notFound) <|
-                                        Dict.get model.currentSlide model.slides
-                            in
-                            row
-                                [ fillSpace
-                                , spacing <| fontSize * 2
-                                ]
-                                [ el
-                                    [ width <| fillPortion 3
-                                    , alignTop
-                                    , alignLeft
-                                    , spacing <| fontSize * 2
-                                    ]
-                                  <|
-                                    slide model.color
-                                , vBar
-                                , column
-                                    [ spacing <| fontSize * 2
-                                    , fillSpace
-                                    ]
-                                  <|
-                                    heading model.color "Outline"
-                                        :: outline model.color
-                                ]
-
-                        Solutions ->
-                            column [ fillSpace, spacing <| fontSize * 2 ]
-                                [ row [ width fill, spacing fontSize ]
-                                    [ el [ Font.bold ] <| text "File:"
-                                    , text <| "/notes/" ++ model.docName
-                                    , el [ alignRight ] <| iconButton model (GetDoc "Main.md") Nothing <| text "Go back to the Main Page"
-                                    ]
-                                , renderMd model vp model.docText
-                                ]
-
-                        Calendar ->
-                            row [ fillSpace, spacing <| fontSize * 2 ]
-                                [ el [ width <| fillPortion 2, height fill ] <|
-                                    calendar model
-                                , el [ alignTop, alignRight ] <|
-                                    clock model
-                                ]
-
-                        Settings ->
-                            el [ fillSpace ] <| el [ centerXY ] <| text "Settings!"
-                    ]
-            ]
+                            Settings ->
+                                el [ fillSpace ] <| el [ centerXY ] <| text "Settings!"
+                        ]
+                ]
 
 
 calendar : Model -> Element Msg
@@ -426,6 +485,7 @@ calendar model =
         [ fillSpace
         , Border.width lineSize
         , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2 }
+        , Style.shadow
         ]
         [ column
             [ width fill
@@ -436,7 +496,8 @@ calendar model =
             [ el
                 [ centerX
                 , Font.size <| round <| fontSize * 1.5
-                , padding <| fontSize // 3
+                , Font.bold
+                , paddingXY 0 fontSize
                 ]
               <|
                 text <|
@@ -509,66 +570,102 @@ calendar model =
                                                     isToday =
                                                         Date.compare d.date (Date.fromPosix Time.utc date.posix) == EQ
 
+                                                    isSelected : Bool
+                                                    isSelected =
+                                                        case model.selectDate of
+                                                            Just sd ->
+                                                                Date.compare d.date sd == EQ
+
+                                                            Nothing ->
+                                                                False
+
                                                     isThisMonth : Bool
                                                     isThisMonth =
                                                         Date.month d.date == date.month
 
                                                     bg : Color
                                                     bg =
+                                                        case ( isSelected, isThisMonth ) of
+                                                            ( True, True ) ->
+                                                                Style.mix 0.5 model.color.link model.color.bg
+
+                                                            ( True, False ) ->
+                                                                Style.mix 0.5 model.color.link <| Style.mix 0.35 model.color.bg model.color.fg
+
+                                                            ( False, True ) ->
+                                                                model.color.bg
+
+                                                            ( False, False ) ->
+                                                                Style.mix 0.35 model.color.bg model.color.fg
+
+                                                    internalBorder : Color
+                                                    internalBorder =
                                                         if isToday then
                                                             --Style.mix 0.5 model.color.bg model.color.link
                                                             model.color.fg
 
-                                                        else if not isThisMonth then
-                                                            Style.mix 0.35 model.color.bg model.color.fg
-
                                                         else
-                                                            model.color.bg
+                                                            bg
                                                 in
                                                 el
                                                     [ fillSpace
                                                     , padding <| fontSize // 6
                                                     , Border.width 1
-                                                    , Bg.color bg
+                                                    , Bg.color internalBorder
                                                     ]
                                                 <|
-                                                    column
+                                                    link
                                                         [ fillSpace
-                                                        , padding <| fontSize // 2 - fontSize // 6
-                                                        , spacing <| fontSize // 2 - fontSize // 6
-                                                        , Font.size 10
-                                                        , if isThisMonth then
-                                                            Bg.color model.color.bg
+                                                        , Ev.onClick <|
+                                                            SelectDate <|
+                                                                if isSelected then
+                                                                    Nothing
 
-                                                          else
-                                                            Bg.color <| Style.mix 0.35 model.color.bg model.color.fg
+                                                                else
+                                                                    Just d.date
                                                         ]
-                                                        [ el [ Font.size 16, Font.bold ] <| text <| String.fromInt <| Date.day d.date
-                                                        , paragraph
-                                                            [ width fill
-                                                            , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.color.bg model.color.error
-                                                            , Border.rounded <| fontSize // 3
-                                                            , padding <| fontSize // 2 - fontSize // 6
-                                                            ]
-                                                            [ text "Event: This is Important!"
-                                                            ]
-                                                        , paragraph
-                                                            [ width fill
-                                                            , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.color.bg model.color.link
-                                                            , Border.rounded <| fontSize // 3
-                                                            , padding <| fontSize // 2 - fontSize // 6
-                                                            ]
-                                                            [ text "Event: This is Important!"
-                                                            ]
-                                                        , paragraph
-                                                            [ width fill
-                                                            , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.color.bg model.color.extLink
-                                                            , Border.rounded <| fontSize // 3
-                                                            , padding <| fontSize // 2 - fontSize // 6
-                                                            ]
-                                                            [ text "Event: This is Important!"
-                                                            ]
-                                                        ]
+                                                        { url = ""
+                                                        , label =
+                                                            column
+                                                                [ fillSpace
+                                                                , padding <| fontSize // 2 - fontSize // 6
+                                                                , spacing <| fontSize // 2 - fontSize // 6
+                                                                , Font.size 10
+                                                                , Bg.color bg
+                                                                ]
+                                                                [ el [ Font.size 16, Font.bold ] <| text <| String.fromInt <| Date.day d.date
+                                                                , paragraph
+                                                                    [ width fill
+                                                                    , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.color.bg model.color.error
+                                                                    , Border.color <| Style.mix 0.5 model.color.bg model.color.error
+                                                                    , Border.width 1
+                                                                    , Border.rounded <| fontSize // 3
+                                                                    , padding <| fontSize // 2 - fontSize // 6
+                                                                    ]
+                                                                    [ text "Event: This is Important!"
+                                                                    ]
+                                                                , paragraph
+                                                                    [ width fill
+                                                                    , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.color.bg model.color.link
+                                                                    , Border.color <| Style.mix 0.5 model.color.bg model.color.link
+                                                                    , Border.width 1
+                                                                    , Border.rounded <| fontSize // 3
+                                                                    , padding <| fontSize // 2 - fontSize // 6
+                                                                    ]
+                                                                    [ text "Event: This is Important!"
+                                                                    ]
+                                                                , paragraph
+                                                                    [ width fill
+                                                                    , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.color.bg model.color.extLink
+                                                                    , Border.color <| Style.mix 0.5 model.color.bg model.color.extLink
+                                                                    , Border.width 1
+                                                                    , Border.rounded <| fontSize // 3
+                                                                    , padding <| fontSize // 2 - fontSize // 6
+                                                                    ]
+                                                                    [ text "Event: This is Important!"
+                                                                    ]
+                                                                ]
+                                                        }
                                             )
                                             days
                                         )
@@ -612,10 +709,12 @@ clock model =
         c :
             { hourRotation : Float
             , localHourRotation : Float
+            , minuteRotation : Float
             , secondRotation : Float
             , leftLabel : String
             , rightLabel : String
             , picUrl : String
+            , hourLines : String
             , op : String
             }
         c =
@@ -623,90 +722,65 @@ clock model =
                 North ->
                     { hourRotation = 0 - (toFloat time.hours + toFloat time.minutes / 60) / 12 * pi
                     , localHourRotation = 0 - (toFloat time.localHours + toFloat time.minutes / 60) / 12 * pi
+                    , minuteRotation = 0 - (toFloat time.minutes + toFloat time.seconds / 60) / 30 * pi
                     , secondRotation = 0 - (toFloat time.seconds + toFloat time.millis / 1000) / 30 * pi
                     , leftLabel = "06"
                     , rightLabel = "18"
-                    , picUrl = "assets/earth.png"
+                    , picUrl = "assets/earth-north.png"
+                    , hourLines = "assets/earth-hours-north.png"
                     , op = "Southern"
                     }
 
                 South ->
                     { hourRotation = (toFloat time.hours + toFloat time.minutes / 60) / 12 * pi
                     , localHourRotation = (toFloat time.localHours + toFloat time.minutes / 60) / 12 * pi
+                    , minuteRotation = (toFloat time.minutes + toFloat time.seconds / 60) / 30 * pi
                     , secondRotation = (toFloat time.seconds + toFloat time.millis / 1000) / 30 * pi
                     , leftLabel = "18"
                     , rightLabel = "06"
                     , picUrl = "assets/earth-south.png"
+                    , hourLines = "assets/earth-hours-south.png"
                     , op = "Northern"
                     }
     in
     column
         [ clip ]
-        [ el
-            [ centerX
-            , Font.size <| round <| fontSize
-            , paddingEach { edges | bottom = 5 }
-            , Font.family [ Font.monospace ]
-            , Font.bold
+        [ image
+            [ centerXY
+            , inFront <|
+                image
+                    [ rotate c.localHourRotation
+                    ]
+                    { src = "assets/earth-local-hour.png"
+                    , description = "local hour hand"
+                    }
+            , behindContent <|
+                image
+                    [ rotate c.hourRotation
+                    , inFront <|
+                        image
+                            [ rotate c.secondRotation
+                            ]
+                            { src = "assets/earth-second.png"
+                            , description = "second hand"
+                            }
+                    , inFront <|
+                        image
+                            [ rotate c.minuteRotation
+                            ]
+                            { src = "assets/earth-minute.png"
+                            , description = "minute hand"
+                            }
+                    ]
+                    { src = c.picUrl
+                    , description = "earth clock"
+                    }
             ]
-          <|
-            text "00"
-        , row []
-            [ el
-                [ centerY
-                , Font.size <| round <| fontSize
-                , paddingEach { edges | right = 5 }
-                , Font.family [ Font.monospace ]
-                , Font.bold
-                ]
-              <|
-                text c.leftLabel
-            , image
-                [ centerXY
-                , inFront <|
-                    image
-                        [ rotate c.localHourRotation
-                        ]
-                        { src = "assets/earth-local-hour.png"
-                        , description = "local hour hand"
-                        }
-                , behindContent <|
-                    image
-                        [ rotate c.hourRotation
-                        , inFront <|
-                            image
-                                [ rotate c.secondRotation
-                                ]
-                                { src = "assets/earth-second.png"
-                                , description = "second hand"
-                                }
-                        ]
-                        { src = c.picUrl
-                        , description = "earth clock"
-                        }
-                ]
-                { src = "assets/earth-hour-lines.png", description = "earth" }
-            , el
-                [ centerY
-                , Font.size <| round <| fontSize
-                , paddingEach { edges | left = 5 }
-                , Font.family [ Font.monospace ]
-                , Font.bold
-                ]
-              <|
-                text c.rightLabel
-            ]
-        , el
-            [ centerX
-            , Font.size <| round <| fontSize
-            , paddingEach { edges | top = 5 }
-            , Font.family [ Font.monospace ]
-            , Font.bold
-            ]
-          <|
-            text "12"
+            { src = c.hourLines, description = "earth" }
         , el [ height <| px <| fontSize * 2 ] none
-        , el [ centerX ] <| iconButton model ToggleClockOrientation Nothing <| text <| "Flip Clock to " ++ c.op ++ " Hemisphere"
+        , el [ centerX ] <|
+            iconButton model ToggleClockOrientation Nothing <|
+                text ("Flip Clock to " ++ c.op ++ " Hemisphere")
         , el [ height <| px <| fontSize * 2 ] none
         , el
             [ centerX
@@ -1011,13 +1085,18 @@ viewTimeDate : Time.Zone -> Maybe Time.Posix -> String
 viewTimeDate zone maybeTime =
     case maybeTime of
         Just time ->
-            weekdayToString (Time.toWeekday zone time)
+            let
+                date : Date
+                date =
+                    Date.fromPosix zone time
+            in
+            weekdayToString (Date.weekday date)
                 ++ ", "
-                ++ monthToString (Time.toMonth zone time)
+                ++ monthToString (Date.month date)
                 ++ " "
-                ++ String.fromInt (Time.toDay zone time)
+                ++ String.fromInt (Date.day date)
                 ++ ", "
-                ++ (String.fromInt <| Time.toYear zone time)
+                ++ String.fromInt (Date.year date)
 
         Nothing ->
             ""
