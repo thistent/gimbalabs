@@ -29,7 +29,7 @@ type MdToken
     | LineBreak
     | Link { title : Maybe String, destination : String } (List MdToken)
     | Image { alt : String, src : String, title : Maybe String }
-    | ListBlock (Maybe Int) (List MdToken)
+    | ListBlock (List MdToken)
     | ListItem { task : Md.Task, content : List MdToken, children : List MdToken }
     | CodeBlock { body : String, language : Maybe String }
     | ThematicBreak
@@ -177,7 +177,7 @@ mdTokenizer =
                     list
                         |> List.map convertListItem
             in
-            ListBlock Nothing l2
+            ListBlock l2
     , orderedList =
         -- Int -> List (List view) -> view
         let
@@ -197,7 +197,7 @@ mdTokenizer =
                                 }
                         )
         in
-        \i ls -> ListBlock (Just i) (toListItems ls)
+        \_ ls -> ListBlock (toListItems ls)
     , codeBlock =
         {- { body : String
            , language : Maybe String
@@ -436,7 +436,7 @@ renderToken model vp tok =
                         none
                 ]
 
-        ListBlock _ toks ->
+        ListBlock toks ->
             -- ListBlock maybeIndex toks ->
             textColumn
                 [ spacing <| fontSize

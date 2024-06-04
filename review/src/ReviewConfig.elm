@@ -12,9 +12,11 @@ when inside the directory containing this file.
 -}
 
 import CognitiveComplexity
+import NoMissingSubscriptionsCall
 import NoMissingTypeAnnotation
 import NoMissingTypeAnnotationInLetIn
 import NoPrematureLetComputation
+import NoRecursiveUpdate
 import NoSimpleLetBody
 import NoUnused.CustomTypeConstructorArgs
 import NoUnused.CustomTypeConstructors
@@ -24,6 +26,7 @@ import NoUnused.Modules
 import NoUnused.Parameters
 import NoUnused.Patterns
 import NoUnused.Variables
+import NoUselessSubscriptions
 import Review.Rule exposing (Rule)
 
 
@@ -37,11 +40,14 @@ config =
     , NoUnused.CustomTypeConstructorArgs.rule
     , NoUnused.CustomTypeConstructors.rule []
     , NoUnused.Dependencies.rule
-
-    --, NoUnused.Exports.rule
-    --, NoUnused.Modules.rule
+    , NoMissingSubscriptionsCall.rule
+    , NoRecursiveUpdate.rule
+    , NoUselessSubscriptions.rule
+    , NoUnused.Exports.rule
+        |> Review.Rule.ignoreErrorsForDirectories [ "lib/" ]
+    , NoUnused.Modules.rule
+        |> Review.Rule.ignoreErrorsForDirectories [ "lib/ui" ]
     , NoUnused.Parameters.rule
     , NoUnused.Patterns.rule
-
-    --, NoUnused.Variables.rule
+    , NoUnused.Variables.rule
     ]

@@ -127,7 +127,7 @@ init () url key =
         , page = Home
         , menu = MenuClosed
         , color = newspaper
-        , size = Delay.wait 100 Nothing
+        , size = Delay.wait 1000 Nothing
         , zone = Time.utc
         , time = Nothing
         , currentSlide = "start"
@@ -165,14 +165,6 @@ update msg model =
         ChangeColor scheme ->
             Return.singleton
                 { model | color = scheme }
-
-        ResetView ->
-            Return.singleton
-                { model
-                    | -- page = Home
-                      --, menu = MenuClosed
-                      size = Delay.reset model.size
-                }
 
         NextSlide ns ->
             Return.singleton
@@ -327,6 +319,11 @@ view model vp =
                                                         ++ "and hosting Gimbalabs Open Spaces."
                                                 , item p <|
                                                     "This version of the website is still under construction!"
+                                                , item p <|
+                                                    Debug.toString <|
+                                                        classifyDevice <|
+                                                            (\{ height, width } -> { height = round height, width = round width }) <|
+                                                                vp.viewport
                                                 ]
                                         , vBar
                                         , topGroup p
@@ -853,7 +850,8 @@ turningPage model rot content =
             , el
                 [ width <| px <| fontSize * 2
                 , height <| px <| fontSize * 2
-                , Bg.color model.color.bg
+
+                --, Bg.color model.color.bg
                 , Border.roundEach { corners | bottomRight = fontSize * 2 }
                 ]
               <|
@@ -928,45 +926,38 @@ titleBar model =
                             , Pic.menuOpen model.color.link
                                 (ChangeMenu MenuClosed)
                             ]
-
-                        ThemePicker ->
-                            [ el
-                                [ Font.size <| 3 * fontSize // 2
-                                , Font.bold
-                                ]
-                              <|
-                                text "Select Theme:"
-                            , el [ alignRight ] <| colorPicker model
-                            , Pic.menuOpen model.color.link
-                                (ChangeMenu MenuClosed)
-                            ]
                 ]
         ]
 
 
-colorPicker : Model -> Element Msg
-colorPicker model =
-    row
-        [ spacing <| round <| fontSize * 1.5
-        , Font.letterSpacing 1.25
-        ]
-        [ iconButton model (ChangeMenu MainMenu) Nothing <| text "🠈 Back"
-        , iconButton model ResetView Nothing <| text "Reset"
-        ]
+
+{-
+
+   colorPicker : Model -> Element Msg
+   colorPicker model =
+       row
+           [ spacing <| round <| fontSize * 1.5
+           , Font.letterSpacing 1.25
+           ]
+           [ iconButton model (ChangeMenu MainMenu) Nothing <| text "🠈 Back"
+           , iconButton model ResetView Nothing <| text "Reset"
+           ]
 
 
-settingsMenu : Model -> Element Msg
-settingsMenu model =
-    row
-        [ spacing <| round <| fontSize * 1.5
-        , Font.letterSpacing 1.25
-        ]
-        [ iconButton model
-            (ChangeMenu ThemePicker)
-            (Just Pic.pal)
-          <|
-            text "Theme"
-        ]
+
+      settingsMenu : Model -> Element Msg
+      settingsMenu model =
+          row
+              [ spacing <| round <| fontSize * 1.5
+              , Font.letterSpacing 1.25
+              ]
+              [ iconButton model
+                  (ChangeMenu ThemePicker)
+                  (Just Pic.pal)
+                <|
+                  text "Theme"
+              ]
+-}
 
 
 mainMenu : Model -> Element Msg

@@ -1,8 +1,6 @@
 module Docs exposing (..)
 
 import Dict exposing (Dict)
-import Html
-import Html.Attributes as HAttr
 import Pic
 import Style exposing (..)
 import Types exposing (..)
@@ -347,25 +345,3 @@ iconButton model msg maybeIcon content =
 
     else
         linkContent
-
-
-pre : List (Attribute Msg) -> String -> Element Msg
-pre attrs str =
-    el attrs <|
-        html <|
-            Html.pre
-                []
-                --[ HAttr.style "line-height" <|
-                --    "calc(1em + "
-                --        ++ String.fromInt 0
-                --        ++ "px)"
-                --]
-                [ Html.text str ]
-
-
-dca : Attribute Msg
-dca =
-    batch
-        [ spacing <| fontSize * 2
-        , paddingEach { edges | left = fontSize * 2 }
-        ]

@@ -7,7 +7,7 @@ import Date exposing (Date)
 import Delay exposing (Delay)
 import Dict exposing (Dict)
 import Http
-import Time exposing (Month)
+import Time
 import Ui exposing (..)
 import Url
 
@@ -43,7 +43,6 @@ type Msg
     = GotoPage Page
     | ChangeMenu Menu
     | ChangeColor Pal
-    | ResetView
     | WindowResize Int Int
     | SceneInfo Dom.Viewport
     | NextSlide String
@@ -69,7 +68,6 @@ type Page
 type Menu
     = MenuClosed
     | MainMenu
-    | ThemePicker
 
 
 type alias Pal =
