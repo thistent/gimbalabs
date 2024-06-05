@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 -- import Pane
 
@@ -14,6 +14,8 @@ import Docs exposing (..)
 import Ease
 import Html exposing (Html)
 import Http
+import Json.Decode as Decode
+import Json.Encode as Encode
 import Markup exposing (renderMd)
 import Pic
 import Return exposing (Return)
@@ -30,10 +32,26 @@ import Url
 
 
 
+-- Ports --
+
+
+port saveCache : Encode.Value -> Cmd msg
+
+
+port clearCache : Encode.Value -> Cmd msg
+
+
+
+-- port cache : Encode.Value -> Cmd msg
+-- port fetch : (Encode.Value -> msg) -> Sub msg
 -- Main --
 
 
-main : Program () Model Msg
+type alias Flags =
+    { dpi : Float }
+
+
+main : Program Flags Model Msg
 main =
     Browser.application
         { init = init
@@ -114,8 +132,8 @@ loadingPage model t =
 --Initial State --
 
 
-init : () -> Url.Url -> Nav.Key -> Return Msg Model
-init () url key =
+init : Flags -> Url.Url -> Nav.Key -> Return Msg Model
+init flags url key =
     let
         startDoc : String
         startDoc =
@@ -136,6 +154,7 @@ init () url key =
         , docName = ""
         , clock = North
         , selectDate = Nothing
+        , dpi = flags.dpi
         }
     <|
         Cmd.batch
@@ -319,11 +338,14 @@ view model vp =
                                                         ++ "and hosting Gimbalabs Open Spaces."
                                                 , item p <|
                                                     "This version of the website is still under construction!"
-                                                , item p <|
-                                                    Debug.toString <|
-                                                        classifyDevice <|
-                                                            (\{ height, width } -> { height = round height, width = round width }) <|
-                                                                vp.viewport
+                                                , item p <| String.fromFloat model.dpi
+
+                                                {- , item p <|
+                                                   Debug.toString <|
+                                                       classifyDevice <|
+                                                           (\{ height, width } -> { height = round height, width = round width }) <|
+                                                               vp.viewport
+                                                -}
                                                 ]
                                         , vBar
                                         , topGroup p

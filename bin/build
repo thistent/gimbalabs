@@ -1,2 +1,3 @@
 #! /bin/sh
-elm make src/Main.elm --optimize --output=docs/index.html
+cp docs/assets/index-backup.html docs/index.html
+elm make src/Main.elm --optimize --output=docs/main.js

@@ -31,6 +31,7 @@ type alias Model =
     , docName : String
     , clock : Orientation
     , selectDate : Maybe Date
+    , dpi : Float
     }
 
 
