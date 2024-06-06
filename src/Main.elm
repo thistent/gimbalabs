@@ -1,6 +1,7 @@
 port module Main exposing (..)
 
 -- import Pane
+-- import Docs exposing (..)
 
 import Browser
 import Browser.Dom as Dom exposing (Viewport)
@@ -10,13 +11,12 @@ import Calendar
 import Date exposing (Date)
 import Delay exposing (Timer)
 import Dict
-import Docs exposing (..)
 import Ease
 import Html exposing (Html)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Markup exposing (renderMd)
+import Markup exposing (hBar, iconButton, notFound, renderMd, vBar)
 import Pic
 import Return exposing (Return)
 import Style exposing (..)
@@ -84,43 +84,43 @@ loadingPage model t =
         bg =
             Style.mix ease
                 (rgb 0 0 0)
-                model.color.bg
+                model.pal.bg
 
         fg : Color
         fg =
             Style.mix ease
                 (rgb 0 0 0)
-                model.color.link
+                model.pal.link
     in
     layout
         [ fillSpace
         , Bg.color bg
-        , Font.size <| fontSize * 2
+        , Font.size <| round <| model.fontSize * 2
         , Font.family [ Font.serif ]
         ]
     <|
         el [ centerXY, moveUp <| ease * 60.0 ] <|
-            column [ centerX, spacing <| fontSize // 3 ]
+            column [ centerX, spacing <| round <| model.fontSize / 3 ]
                 [ row
                     [ Font.color fg
                     , Font.letterSpacing 1.25
                     ]
                     [ el
                         [ Bg.color fg
-                        , height <| px <| fontSize * 3
-                        , width <| px <| fontSize * 3
+                        , height <| px <| round <| model.fontSize * 3
+                        , width <| px <| round <| model.fontSize * 3
                         , paddingXY 0 5
                         ]
                       <|
                         el [ centerXY, scale 1.4 ] <|
-                            Pic.gimbalogo bg
+                            Pic.gimbalogo bg model.fontSize
                     , text " GIMBA"
                     , el [ Font.bold ] <| text "LABS"
                     ]
                 , el
                     [ Font.color <| Style.mix 0.5 fg bg
                     , centerX
-                    , Font.size <| fontSize
+                    , Font.size <| round model.fontSize
                     , Font.letterSpacing 2.5
                     ]
                   <|
@@ -144,17 +144,18 @@ init flags url key =
         , url = url
         , page = Home
         , menu = MenuClosed
-        , color = newspaper
+        , pal = newspaper
         , size = Delay.wait 1000 Nothing
         , zone = Time.utc
         , time = Nothing
         , currentSlide = "start"
-        , slides = initSlides
+        , slides = Dict.empty
         , docText = ""
         , docName = ""
         , clock = North
         , selectDate = Nothing
         , dpi = flags.dpi
+        , fontSize = 12 * flags.dpi
         }
     <|
         Cmd.batch
@@ -183,7 +184,7 @@ update msg model =
 
         ChangeColor scheme ->
             Return.singleton
-                { model | color = scheme }
+                { model | pal = scheme }
 
         NextSlide ns ->
             Return.singleton
@@ -290,108 +291,147 @@ subs _ =
 view : Model -> Viewport -> Html Msg
 view model vp =
     layout
-        [ Font.size fontSize
+        [ Font.size <| round model.fontSize
         , Font.family [ Font.serif ]
-        , Font.color model.color.fg
+        , Font.color model.pal.fg
         , Font.letterSpacing 0.2
-        , Bg.color <| Style.mix 0.5 model.color.bg model.color.fg
+        , Bg.color <| Style.mix 0.5 model.pal.bg model.pal.fg
         ]
     <|
         el
-            [ Bg.color <| Style.mix 0.5 model.color.bg model.color.fg
+            [ Bg.color <| Style.mix 0.5 model.pal.bg model.pal.fg
             , fillSpace
             ]
         <|
             column
                 [ fillSpace
-                , spacing <| fontSize * 2 // 5
+                , spacing <| round <| model.fontSize * 0.4
                 ]
                 [ turningPage model 0 <|
                     column
                         [ fillSpace
-                        , spacing <| fontSize * 2
+                        , spacing <| round <| model.fontSize * 2
                         ]
                         [ titleBar model
                         , case model.page of
                             Home ->
-                                let
-                                    m : Pal -> Model
-                                    m pal =
-                                        { model | color = pal }
-
-                                    p : Pal
-                                    p =
-                                        model.color
-                                in
-                                column
-                                    [ fillSpace
-                                    , spacing <| fontSize * 2
-                                    , padding <| fontSize // 2
-                                    ]
-                                    [ row [ fillSpace, spacing <| fontSize * 2 ]
-                                        [ el [ width <| fillPortion 3, height fill ] <|
-                                            topGroup p
-                                                [ heading p "Welcome to Gimbalabs!"
-                                                , item p <|
-                                                    "Right now, we are building Plutus PBL 2024, "
-                                                        ++ "running weekly live coding sessions, "
-                                                        ++ "and hosting Gimbalabs Open Spaces."
-                                                , item p <|
-                                                    "This version of the website is still under construction!"
-                                                , item p <| String.fromFloat model.dpi
-
-                                                {- , item p <|
-                                                   Debug.toString <|
-                                                       classifyDevice <|
-                                                           (\{ height, width } -> { height = round height, width = round width }) <|
-                                                               vp.viewport
-                                                -}
-                                                ]
-                                        , vBar
-                                        , topGroup p
-                                            [ heading p "Events"
-                                            , item p "Open Spaces"
-                                            , item p "Playground"
-                                            ]
-                                        ]
-                                    , row
-                                        [ fillSpace
-                                        , spacing <| fontSize * 2
-                                        ]
-                                        [ turningPage (m orangeNote) 0.02 <|
-                                            el [ fillSpace ] <|
-                                                column [ centerX, spacing fontSize ]
-                                                    [ heading p "Learn"
-                                                    , el [] <| text "⯀ Starter Kits"
-                                                    , el [] <| text "⯀ Plutus"
-                                                    , el [] <| text "⯀ Playground"
-                                                    ]
-                                        , turningPage (m yellowNote) 0 <|
-                                            el [ fillSpace ] <|
-                                                column [ centerX, spacing fontSize ]
-                                                    [ heading p "APIs"
-                                                    , el [] <| text "⯀ Dandelion"
-                                                    , el [] <| text "⯀ Endpoints"
-                                                    ]
-                                        , turningPage (m greenNote) -0.02 <|
-                                            el [ fillSpace ] <|
-                                                column [ centerX, spacing fontSize ]
-                                                    [ heading p "Updates"
-                                                    , el [] <| text "⯀ Updates"
-                                                    ]
-                                        , turningPage (m blueNote) 0.01 <|
-                                            el [ fillSpace ] <|
-                                                column [ centerX, spacing fontSize ]
-                                                    [ heading p "About Us"
-                                                    , el [] <| text "⯀ Team"
-                                                    , el [] <| text "⯀ Calendar"
-                                                    , el [] <| text "⯀ Stake Pool"
-                                                    ]
-                                        ]
+                                column [ fillSpace, spacing <| round model.fontSize ]
+                                    [ el [ centerX, Font.bold, Font.size <| round <| model.fontSize * 2 ] <| text "Under Construction!"
+                                    , vp.viewport
+                                        |> (\{ height, width } ->
+                                                { height = height / model.dpi |> round
+                                                , width = width / model.dpi |> round
+                                                }
+                                           )
+                                        |> classifyDevice
+                                        |> Debug.toString
+                                        |> text
+                                        |> el [ centerX ]
+                                    , vp.viewport
+                                        |> (\{ height, width } ->
+                                                { height = height / model.dpi |> round
+                                                , width = width / model.dpi |> round
+                                                }
+                                           )
+                                        |> Debug.toString
+                                        |> text
+                                        |> el [ centerX ]
+                                    , model.fontSize
+                                        |> String.fromFloat
+                                        |> text
+                                        |> el [ centerX ]
                                     ]
 
+                            {-
+                               let
+                                   m : Pal -> Model
+                                   m pal =
+                                       { model | color = pal }
+
+                                   p : Pal
+                                   p =
+                                       model.pal
+                               in
+                               column
+                                   [ fillSpace
+                                   , spacing <| round <| model.fontSize * 2
+                                   , padding <| round <| model.fontSize / 2
+                                   ]
+                                   [ row [ fillSpace, spacing <| round <| model.fontSize * 2 ]
+                                       [ el [ width <| fillPortion 3, height fill ] <|
+                                           topGroup p
+                                               [ heading p "Welcome to Gimbalabs!"
+                                               , item p <|
+                                                   "Right now, we are building Plutus PBL 2024, "
+                                                       ++ "running weekly live coding sessions, "
+                                                       ++ "and hosting Gimbalabs Open Spaces."
+                                               , item p <|
+                                                   "This version of the website is still under construction!"
+                                               , item p <| String.fromFloat model.dpi
+
+                                               {- , item p <|
+                                                  Debug.toString <|
+                                                      classifyDevice <|
+                                                          (\{ height, width } -> { height = round height, width = round width }) <|
+                                                              vp.viewport
+                                               -}
+                                               ]
+                                       , vBar
+                                       , topGroup p
+                                           [ heading p "Events"
+                                           , item p "Open Spaces"
+                                           , item p "Playground"
+                                           ]
+                                       ]
+                                   , row
+                                       [ fillSpace
+                                       , spacing <| round <| model.fontSize * 2
+                                       ]
+                                       [ turningPage (m orangeNote) 0.02 <|
+                                           el [ fillSpace ] <|
+                                               column [ centerX, spacing <| round model.fontSize ]
+                                                   [ heading p "Learn"
+                                                   , el [] <| text "⯀ Starter Kits"
+                                                   , el [] <| text "⯀ Plutus"
+                                                   , el [] <| text "⯀ Playground"
+                                                   ]
+                                       , turningPage (m yellowNote) 0 <|
+                                           el [ fillSpace ] <|
+                                               column [ centerX, spacing <| round model.fontSize ]
+                                                   [ heading p "APIs"
+                                                   , el [] <| text "⯀ Dandelion"
+                                                   , el [] <| text "⯀ Endpoints"
+                                                   ]
+                                       , turningPage (m greenNote) -0.02 <|
+                                           el [ fillSpace ] <|
+                                               column [ centerX, spacing <| round model.fontSize ]
+                                                   [ heading p "Updates"
+                                                   , el [] <| text "⯀ Updates"
+                                                   ]
+                                       , turningPage (m blueNote) 0.01 <|
+                                           el [ fillSpace ] <|
+                                               column [ centerX, spacing <| round model.fontSize ]
+                                                   [ paragraph
+                                                       [ Border.widthEach { edges | bottom = lineSize }
+                                                       , paddingEach
+                                                           { edges
+                                                               | left = round model.fontSize
+                                                               , bottom = round model.fontSize
+                                                           }
+                                                       , width fill
+                                                       , Font.size <| round <| model.fontSize * 2
+                                                       , spacing <| round model.fontSize
+                                                       ]
+                                                       [ text "About Us" ]
+                                                   , el [] <| text "⯀ Team"
+                                                   , el [] <| text "⯀ Calendar"
+                                                   , el [] <| text "⯀ Stake Pool"
+                                                   ]
+                                       ]
+                                   ]
+                            -}
                             Calendar ->
-                                row [ fillSpace, spacing <| fontSize * 2 ]
+                                row [ fillSpace, spacing <| round <| model.fontSize * 2 ]
                                     [ el [ width <| fillPortion 5, height fill ] <|
                                         calendar model
                                     , el
@@ -404,19 +444,19 @@ view model vp =
                                                 Just date ->
                                                     column
                                                         [ fillSpace
-                                                        , padding fontSize
-                                                        , spacing <| fontSize * 2
+                                                        , padding <| round model.fontSize
+                                                        , spacing <| round model.fontSize * 2
                                                         , Border.width lineSize
-                                                        , Border.rounded <| fontSize // 2
-                                                        , Bg.color <| Style.addAlpha 0.9 model.color.bg
+                                                        , Border.rounded <| round <| model.fontSize / 2
+                                                        , Bg.color <| Style.addAlpha 0.9 model.pal.bg
                                                         ]
                                                         [ column
-                                                            [ spacing <| round <| fontSize * 0.65
+                                                            [ spacing <| round <| model.fontSize * 0.65
                                                             , width fill
                                                             ]
                                                             [ el
                                                                 [ centerX
-                                                                , Font.size <| round <| fontSize * 1.5
+                                                                , Font.size <| round <| model.fontSize * 1.5
                                                                 , Font.bold
                                                                 ]
                                                               <|
@@ -424,7 +464,7 @@ view model vp =
                                                                     (weekdayToString <| Date.weekday date)
                                                             , el
                                                                 [ centerX
-                                                                , Font.size <| round <| fontSize * 1.5
+                                                                , Font.size <| round <| model.fontSize * 1.5
                                                                 , Font.bold
                                                                 ]
                                                               <|
@@ -437,8 +477,8 @@ view model vp =
                                                             , hBar
                                                             ]
                                                         , column
-                                                            [ spacing <| fontSize * 2
-                                                            , paddingXY (fontSize // 2) 0
+                                                            [ spacing <| round <| model.fontSize * 2
+                                                            , paddingXY (round <| model.fontSize / 2) 0
                                                             , width fill
                                                             ]
                                                             [ el [ width fill ] <| text "This is the first event!"
@@ -454,8 +494,8 @@ view model vp =
                                     ]
 
                             Blog ->
-                                column [ fillSpace, spacing <| fontSize * 2 ]
-                                    [ row [ width fill, spacing fontSize ]
+                                column [ fillSpace, spacing <| round <| model.fontSize * 2 ]
+                                    [ row [ width fill, spacing <| round model.fontSize ]
                                         [ el [ Font.bold ] <| text "File:"
                                         , text <| "/notes/" ++ model.docName
                                         , el [ alignRight ] <| iconButton model (GetDoc "Main.md") Nothing <| text "Go back to the Main Page"
@@ -464,34 +504,37 @@ view model vp =
                                     ]
 
                             Solutions ->
-                                let
-                                    slide : Pal -> Element Msg
-                                    slide =
-                                        Maybe.withDefault (\_ -> notFound) <|
-                                            Dict.get model.currentSlide model.slides
-                                in
-                                row
-                                    [ fillSpace
-                                    , spacing <| fontSize * 2
-                                    ]
-                                    [ el
-                                        [ width <| fillPortion 3
-                                        , alignTop
-                                        , alignLeft
-                                        , spacing <| fontSize * 2
-                                        ]
-                                      <|
-                                        slide model.color
-                                    , vBar
-                                    , column
-                                        [ spacing <| fontSize * 2
-                                        , fillSpace
-                                        ]
-                                      <|
-                                        heading model.color "Outline"
-                                            :: outline model.color
-                                    ]
+                                el [ centerXY ] <| text "Solutions"
 
+                            {-
+                               let
+                                   slide : Pal -> Element Msg
+                                   slide =
+                                       Maybe.withDefault (\_ -> notFound) <|
+                                           Dict.get model.currentSlide model.slides
+                               in
+                               row
+                                   [ fillSpace
+                                   , spacing <| round <| model.fontSize * 2
+                                   ]
+                                   [ el
+                                       [ width <| fillPortion 3
+                                       , alignTop
+                                       , alignLeft
+                                       , spacing <| round <| model.fontSize * 2
+                                       ]
+                                     <|
+                                       slide model.pal
+                                   , vBar
+                                   , column
+                                       [ spacing <| round <| model.fontSize * 2
+                                       , fillSpace
+                                       ]
+                                     <|
+                                       heading model.pal "Outline"
+                                           :: outline model.pal
+                                   ]
+                            -}
                             Settings ->
                                 el [ fillSpace ] <| el [ centerXY ] <| text "Settings!"
                         ]
@@ -503,20 +546,28 @@ calendar model =
     column
         [ fillSpace
         , Border.width lineSize
-        , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2 }
+        , Border.roundEach
+            { corners
+                | topLeft = round <| model.fontSize / 2
+                , topRight = round <| model.fontSize / 2
+            }
         , Style.shadow
         ]
         [ column
             [ width fill
             , Border.widthEach { edges | bottom = lineSize }
-            , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2 }
-            , Bg.color <| Style.mix 0.075 model.color.bg model.color.fg
+            , Border.roundEach
+                { corners
+                    | topLeft = round <| model.fontSize / 2
+                    , topRight = round <| model.fontSize / 2
+                }
+            , Bg.color <| Style.mix 0.075 model.pal.bg model.pal.fg
             ]
             [ el
                 [ centerX
-                , Font.size <| round <| fontSize * 1.5
+                , Font.size <| round <| model.fontSize * 1.5
                 , Font.bold
-                , paddingXY 0 fontSize
+                , paddingXY 0 <| round model.fontSize
                 ]
               <|
                 text <|
@@ -531,7 +582,7 @@ calendar model =
                     )
             , row
                 [ width fill
-                , paddingXY 0 <| round <| fontSize * 0.4
+                , paddingXY 0 <| round <| model.fontSize * 0.4
                 ]
                 [ el [ width fill, Font.bold ] <| el [ centerX ] <| text "Sunday"
                 , el [ width fill, Font.bold ] <| el [ centerX ] <| text "Monday"
@@ -606,29 +657,29 @@ calendar model =
                                                     bg =
                                                         case ( isSelected, isThisMonth ) of
                                                             ( True, True ) ->
-                                                                Style.mix 0.5 model.color.link model.color.bg
+                                                                Style.mix 0.5 model.pal.link model.pal.bg
 
                                                             ( True, False ) ->
-                                                                Style.mix 0.5 model.color.link <| Style.mix 0.35 model.color.bg model.color.fg
+                                                                Style.mix 0.5 model.pal.link <| Style.mix 0.35 model.pal.bg model.pal.fg
 
                                                             ( False, True ) ->
-                                                                model.color.bg
+                                                                model.pal.bg
 
                                                             ( False, False ) ->
-                                                                Style.mix 0.35 model.color.bg model.color.fg
+                                                                Style.mix 0.35 model.pal.bg model.pal.fg
 
                                                     internalBorder : Color
                                                     internalBorder =
                                                         if isToday then
-                                                            --Style.mix 0.5 model.color.bg model.color.link
-                                                            model.color.fg
+                                                            --Style.mix 0.5 model.pal.bg model.pal.link
+                                                            model.pal.fg
 
                                                         else
                                                             bg
                                                 in
                                                 el
                                                     [ fillSpace
-                                                    , padding <| fontSize // 6
+                                                    , padding <| round <| model.fontSize / 6
                                                     , Border.width 1
                                                     , Bg.color internalBorder
                                                     ]
@@ -647,39 +698,39 @@ calendar model =
                                                         , label =
                                                             column
                                                                 [ fillSpace
-                                                                , padding <| fontSize // 2 - fontSize // 6
-                                                                , spacing <| fontSize // 2 - fontSize // 6
+                                                                , padding <| round <| model.fontSize / 2 - model.fontSize / 6
+                                                                , spacing <| round <| model.fontSize / 2 - model.fontSize / 6
                                                                 , Font.size 10
                                                                 , Bg.color bg
                                                                 ]
                                                                 [ el [ Font.size 16, Font.bold ] <| text <| String.fromInt <| Date.day d.date
                                                                 , paragraph
                                                                     [ width fill
-                                                                    , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.color.bg model.color.error
-                                                                    , Border.color <| Style.mix 0.5 model.color.bg model.color.error
+                                                                    , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg model.pal.error
+                                                                    , Border.color <| Style.mix 0.5 model.pal.bg model.pal.error
                                                                     , Border.width 1
-                                                                    , Border.rounded <| fontSize // 3
-                                                                    , padding <| fontSize // 2 - fontSize // 6
+                                                                    , Border.rounded <| round <| model.fontSize / 3
+                                                                    , padding <| round <| model.fontSize / 2 - model.fontSize / 6
                                                                     ]
                                                                     [ text "Event: This is Important!"
                                                                     ]
                                                                 , paragraph
                                                                     [ width fill
-                                                                    , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.color.bg model.color.link
-                                                                    , Border.color <| Style.mix 0.5 model.color.bg model.color.link
+                                                                    , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg model.pal.link
+                                                                    , Border.color <| Style.mix 0.5 model.pal.bg model.pal.link
                                                                     , Border.width 1
-                                                                    , Border.rounded <| fontSize // 3
-                                                                    , padding <| fontSize // 2 - fontSize // 6
+                                                                    , Border.rounded <| round <| model.fontSize / 3
+                                                                    , padding <| round <| model.fontSize / 2 - model.fontSize / 6
                                                                     ]
                                                                     [ text "Event: This is Important!"
                                                                     ]
                                                                 , paragraph
                                                                     [ width fill
-                                                                    , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.color.bg model.color.extLink
-                                                                    , Border.color <| Style.mix 0.5 model.color.bg model.color.extLink
+                                                                    , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg model.pal.extLink
+                                                                    , Border.color <| Style.mix 0.5 model.pal.bg model.pal.extLink
                                                                     , Border.width 1
-                                                                    , Border.rounded <| fontSize // 3
-                                                                    , padding <| fontSize // 2 - fontSize // 6
+                                                                    , Border.rounded <| round <| model.fontSize / 3
+                                                                    , padding <| round <| model.fontSize / 2 - model.fontSize / 6
                                                                     ]
                                                                     [ text "Event: This is Important!"
                                                                     ]
@@ -796,27 +847,27 @@ clock model =
                     }
             ]
             { src = c.hourLines, description = "earth" }
-        , el [ height <| px <| fontSize * 2 ] none
+        , el [ height <| px <| round <| model.fontSize * 2 ] none
         , el [ centerX ] <|
             iconButton model ToggleClockOrientation Nothing <|
                 text ("Flip Clock to " ++ c.op ++ " Hemisphere")
-        , el [ height <| px <| fontSize * 2 ] none
+        , el [ height <| px <| round <| model.fontSize * 2 ] none
         , el
             [ centerX
-            , Font.size <| fontSize * 4 // 3
+            , Font.size <| round <| model.fontSize * 1.33
             , Font.bold
             ]
           <|
             text "Current Time:"
-        , el [ height <| px <| fontSize ] none
-        , el [ centerX, Font.size <| fontSize * 4 // 3 ] <|
+        , el [ height <| px <| round model.fontSize ] none
+        , el [ centerX, Font.size <| round <| model.fontSize * 1.33 ] <|
             text <|
                 String.fromInt time.hours
                     ++ ":"
                     ++ (String.padLeft 2 '0' <| String.fromInt time.minutes)
                     ++ " UTC"
-        , el [ height <| px <| fontSize ] none
-        , el [ centerX, Font.size <| fontSize * 4 // 3 ] <|
+        , el [ height <| px <| round model.fontSize ] none
+        , el [ centerX, Font.size <| round <| model.fontSize * 1.33 ] <|
             text <|
                 String.fromInt time.localHours
                     ++ ":"
@@ -828,29 +879,29 @@ clock model =
 turningPage : Model -> Float -> Element Msg -> Element Msg
 turningPage model rot content =
     row
-        [ Font.color model.color.fg
-        , Border.roundEach { corners | bottomRight = fontSize * 2 }
+        [ Font.color model.pal.fg
+        , Border.roundEach { corners | bottomRight = round <| model.fontSize * 2 }
         , shadow
         , fillSpace
         , rotate rot
         ]
         [ el
             [ fillSpace
-            , Bg.color model.color.bg
+            , Bg.color model.pal.bg
             , paddingEach
                 { edges
-                    | left = fontSize * 2
-                    , top = fontSize * 2
-                    , bottom = fontSize * 3
+                    | left = round <| model.fontSize * 2
+                    , top = round <| model.fontSize * 2
+                    , bottom = round <| model.fontSize * 3
                 }
             , otherSide <|
                 el
                     [ fillSpace
                     , paddingEach
                         { edges
-                            | left = fontSize * 2
-                            , top = fontSize * 2
-                            , bottom = fontSize * 3
+                            | left = round <| model.fontSize * 2
+                            , top = round <| model.fontSize * 2
+                            , bottom = round <| model.fontSize * 3
                         }
                     , alpha 0.03
                     , style "pointer-events" "none"
@@ -862,22 +913,22 @@ turningPage model rot content =
             content
         , column
             [ height fill
-            , width <| px <| fontSize * 2
+            , width <| px <| round <| model.fontSize * 2
             ]
             [ el
                 [ fillSpace
-                , Bg.color model.color.bg
+                , Bg.color model.pal.bg
                 ]
                 none
             , el
-                [ width <| px <| fontSize * 2
-                , height <| px <| fontSize * 2
+                [ width <| px <| round <| model.fontSize * 2
+                , height <| px <| round <| model.fontSize * 2
 
-                --, Bg.color model.color.bg
-                , Border.roundEach { corners | bottomRight = fontSize * 2 }
+                --, Bg.color model.pal.bg
+                , Border.roundEach { corners | bottomRight = round <| model.fontSize * 2 }
                 ]
               <|
-                Pic.pageCurl model.color
+                Pic.pageCurl model.pal model.fontSize
             ]
         ]
 
@@ -886,31 +937,31 @@ titleBar : Model -> Element Msg
 titleBar model =
     row
         [ width fill
-        , spacing <| fontSize // 2
+        , spacing <| round <| model.fontSize / 2
         ]
         [ link
             [ Ev.onClick <| GotoPage Home ]
             { url = ""
             , label =
                 el
-                    [ Bg.color model.color.link
-                    , height <| px <| fontSize * 3
-                    , width <| px <| fontSize * 3
+                    [ Bg.color model.pal.link
+                    , height <| px <| round <| model.fontSize * 3
+                    , width <| px <| round <| model.fontSize * 3
                     , paddingXY 0 5
                     ]
                 <|
                     el [ centerXY, scale 1.4 ] <|
-                        Pic.gimbalogo model.color.bg
+                        Pic.gimbalogo model.pal.bg model.fontSize
             }
         , el [ fillSpace, paddingXY 0 lineSize ] <|
             row
                 [ fillSpace
                 , Border.widthEach { edges | top = lineSize, bottom = lineSize }
-                , spacing fontSize
-                , paddingXY 0 <| fontSize // 2
+                , spacing <| round <| model.fontSize
+                , paddingXY 0 <| round <| model.fontSize / 2
                 ]
                 [ row
-                    [ spacing fontSize
+                    [ spacing <| round <| model.fontSize
                     , width fill
                     , centerY
                     ]
@@ -921,8 +972,8 @@ titleBar model =
                                 { url = ""
                                 , label =
                                     row
-                                        [ Font.size <| 3 * fontSize // 2
-                                        , Font.color model.color.link
+                                        [ Font.size <| round <| model.fontSize * 1.5
+                                        , Font.color model.pal.link
                                         , Font.letterSpacing 1.25
                                         ]
                                         [ text "GIMBA"
@@ -933,19 +984,21 @@ titleBar model =
                                 text <|
                                     viewTimeDate model.zone <|
                                         model.time
-                            , Pic.menuClosed model.color.link
+                            , Pic.menuClosed model.pal.link
+                                model.fontSize
                                 (ChangeMenu MainMenu)
                             ]
 
                         MainMenu ->
                             [ el
-                                [ Font.size <| 3 * fontSize // 2
+                                [ Font.size <| round <| model.fontSize * 1.5
                                 , Font.bold
                                 ]
                               <|
                                 text "Menu:"
                             , el [ alignRight ] <| mainMenu model
-                            , Pic.menuOpen model.color.link
+                            , Pic.menuOpen model.pal.link
+                                model.fontSize
                                 (ChangeMenu MenuClosed)
                             ]
                 ]
@@ -985,7 +1038,7 @@ titleBar model =
 mainMenu : Model -> Element Msg
 mainMenu model =
     row
-        [ spacing <| round <| fontSize * 1.5
+        [ spacing <| round <| model.fontSize * 1.5
         , Font.letterSpacing 1.25
         ]
         [ iconButton model
@@ -1011,11 +1064,11 @@ mainMenu model =
         , iconButton model (GotoPage Settings) (Just Pic.settings) <| text "Settings"
         , row
             [ Border.widthEach { edges | left = lineSize, right = lineSize }
-            , paddingXY (fontSize // 2) 0
-            , spacing (fontSize // 2)
+            , paddingXY (round <| model.fontSize / 2) 0
+            , spacing (round <| model.fontSize / 2)
             ]
           <|
-            if model.color.name == "Newspaper" then
+            if model.pal.name == "Newspaper" then
                 [ iconButton model (ChangeColor dark) (Just Pic.dark) none
                 , iconButton model (GotoPage Settings) (Just Pic.dims) none
 

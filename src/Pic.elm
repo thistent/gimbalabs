@@ -3,7 +3,7 @@ module Pic exposing (..)
 --import TypedSvg.Filters as Tf
 
 import Color
-import Style exposing (fontSize)
+import Style
 import TypedSvg as Ts
 import TypedSvg.Attributes as Ta
 import TypedSvg.Core as Tc
@@ -13,11 +13,11 @@ import Ui exposing (..)
 import Ui.Events as Ev
 
 
-gimbalogo : Color -> Element msg
-gimbalogo bg =
+gimbalogo : Color -> Float -> Element msg
+gimbalogo bg fontSize =
     svg
         [ Ta.viewBox 0 0 15.236 26.458
-        , Ta.height <| Tt.px <| fontSize * 1.5
+        , Ta.height <| Tt.px <| fontSize * 1.6
         ]
         [ Ts.path
             [ Ta.d gimbalogoPath
@@ -27,8 +27,8 @@ gimbalogo bg =
         ]
 
 
-menuClosed : Color -> msg -> Element msg
-menuClosed color msg =
+menuClosed : Color -> Float -> msg -> Element msg
+menuClosed color fontSize msg =
     link
         [ Ev.onClick msg
         , alignRight
@@ -48,8 +48,8 @@ menuClosed color msg =
         }
 
 
-menuOpen : Color -> msg -> Element msg
-menuOpen color msg =
+menuOpen : Color -> Float -> msg -> Element msg
+menuOpen color fontSize msg =
     link
         [ Ev.onClick msg
         , alignRight
@@ -69,8 +69,8 @@ menuOpen color msg =
         }
 
 
-pageCurl : Pal -> Element msg
-pageCurl c =
+pageCurl : Pal -> Float -> Element msg
+pageCurl c fontSize =
     let
         fg : Color
         fg =
@@ -134,8 +134,8 @@ pageCurl c =
         ]
 
 
-home : Color -> Element msg
-home color =
+home : Color -> Float -> Element msg
+home color fontSize =
     svg
         [ Ta.viewBox 0 0 26.213 26.458
         , Ta.height <| Tt.px <| fontSize * 1.6
@@ -148,8 +148,8 @@ home color =
         ]
 
 
-calendar : Color -> Element msg
-calendar color =
+calendar : Color -> Float -> Element msg
+calendar color fontSize =
     svg
         [ Ta.viewBox 0 0 23.64 26.458
         , Ta.height <| Tt.px <| fontSize * 1.6
@@ -162,8 +162,8 @@ calendar color =
         ]
 
 
-blog : Color -> Element msg
-blog color =
+blog : Color -> Float -> Element msg
+blog color fontSize =
     svg
         [ Ta.viewBox 0 0 23.657 26.458
         , Ta.height <| Tt.px <| fontSize * 1.6
@@ -176,8 +176,8 @@ blog color =
         ]
 
 
-solutions : Color -> Element msg
-solutions color =
+solutions : Color -> Float -> Element msg
+solutions color fontSize =
     svg
         [ Ta.viewBox 0 0 19.59 26.458
         , Ta.height <| Tt.px <| fontSize * 1.6
@@ -207,8 +207,8 @@ solutions color =
 -}
 
 
-loc : Color -> Element msg
-loc color =
+loc : Color -> Float -> Element msg
+loc color fontSize =
     svg
         [ Ta.viewBox 0 0 22.933 26.458
         , Ta.height <| Tt.px <| fontSize * 1.6
@@ -221,8 +221,8 @@ loc color =
         ]
 
 
-bullet : Color -> Element msg
-bullet color =
+bullet : Color -> Float -> Element msg
+bullet color fontSize =
     svg
         [ Ta.viewBox 0 0 26.458 26.458
         , Ta.height <| Tt.px <| fontSize
@@ -235,8 +235,8 @@ bullet color =
         ]
 
 
-checked : Color -> Element msg
-checked color =
+checked : Color -> Float -> Element msg
+checked color fontSize =
     svg
         [ Ta.viewBox 0 0 26.458 26.458
         , Ta.height <| Tt.px <| fontSize
@@ -249,8 +249,8 @@ checked color =
         ]
 
 
-unchecked : Color -> Element msg
-unchecked color =
+unchecked : Color -> Float -> Element msg
+unchecked color fontSize =
     svg
         [ Ta.viewBox 0 0 26.458 26.458
         , Ta.height <| Tt.px <| fontSize
@@ -263,8 +263,8 @@ unchecked color =
         ]
 
 
-settings : Color -> Element msg
-settings color =
+settings : Color -> Float -> Element msg
+settings color fontSize =
     svg
         [ Ta.viewBox 0 0 26.458 26.458
         , Ta.height <| Tt.px <| fontSize * 1.6
@@ -277,8 +277,8 @@ settings color =
         ]
 
 
-dark : Color -> Element msg
-dark color =
+dark : Color -> Float -> Element msg
+dark color fontSize =
     svg
         [ Ta.viewBox 0 0 26.856 26.459
         , Ta.height <| Tt.px <| fontSize * 1.6
@@ -291,8 +291,8 @@ dark color =
         ]
 
 
-light : Color -> Element msg
-light color =
+light : Color -> Float -> Element msg
+light color fontSize =
     svg
         [ Ta.viewBox 0 0 26.856 26.458
         , Ta.height <| Tt.px <| fontSize * 1.6
@@ -305,8 +305,8 @@ light color =
         ]
 
 
-dims : Color -> Element msg
-dims bg =
+dims : Color -> Float -> Element msg
+dims bg fontSize =
     svg
         [ Ta.viewBox 0 0 25.034 26.458
         , Ta.height <| Tt.px <| fontSize * 1.6

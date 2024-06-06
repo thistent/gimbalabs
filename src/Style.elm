@@ -16,9 +16,9 @@ lineSize =
     2
 
 
-fontSize : number
-fontSize =
-    18
+fontSizeMultiplier : Float -> Int
+fontSizeMultiplier pixelRatio =
+    12 * pixelRatio |> round
 
 
 

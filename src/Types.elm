@@ -21,7 +21,7 @@ type alias Model =
     , url : Url.Url
     , page : Page
     , menu : Menu
-    , color : Pal
+    , pal : Pal
     , size : Delay Dom.Viewport
     , zone : Time.Zone
     , time : Maybe Time.Posix
@@ -32,6 +32,7 @@ type alias Model =
     , clock : Orientation
     , selectDate : Maybe Date
     , dpi : Float
+    , fontSize : Float
     }
 
 

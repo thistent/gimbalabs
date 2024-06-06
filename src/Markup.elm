@@ -1,7 +1,8 @@
 module Markup exposing (..)
 
+-- import Docs exposing (..)
+
 import Browser.Dom exposing (Viewport)
-import Docs exposing (..)
 import Html
 import Html.Attributes as Attrs
 import Markdown.Block as Md
@@ -14,6 +15,7 @@ import Types exposing (..)
 import Ui exposing (..)
 import Ui.Background as Bg
 import Ui.Border as Border
+import Ui.Events as Ev
 import Ui.Font as Font
 
 
@@ -77,7 +79,7 @@ renderMd model vp str =
         |> tokenize
         |> nestHeadings
         |> List.map (renderToken model vp)
-        |> textColumn [ fillSpace, spacing <| fontSize * 2 ]
+        |> textColumn [ fillSpace, spacing <| round <| model.fontSize * 2 ]
 
 
 mdTokenizer : Md.Renderer MdToken
@@ -275,28 +277,36 @@ renderToken model vp tok =
             if level == 1.0 then
                 textColumn
                     [ width fill
-                    , spacing <| fontSize * 2
+                    , spacing <| round <| model.fontSize * 2
                     ]
                 <|
                     column
                         [ width fill
-                        , Bg.color <| Style.mix 0.9 model.color.fg model.color.bg
-                        , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2 }
+                        , Bg.color <| Style.mix 0.9 model.pal.fg model.pal.bg
+                        , Border.roundEach
+                            { corners
+                                | topLeft = round <| model.fontSize / 2
+                                , topRight = round <| model.fontSize / 2
+                            }
                         ]
                         [ paragraph
-                            [ paddingXY (fontSize * 2) fontSize
+                            [ paddingXY (round model.fontSize * 2) <| round model.fontSize
                             , width fill
-                            , Font.size <| round <| fontSize * 2 * (1.0 - ((level - 1) * 0.1))
-                            , spacing <| fontSize
+                            , Font.size <| round <| model.fontSize * 2 * (1.0 - ((level - 1) * 0.1))
+                            , spacing <| round <| model.fontSize
                             ]
                             (render title)
                         , el
                             [ width fill
-                            , height <| px <| fontSize // 2
-                            , Border.color <| Style.mix 0.5 model.color.bg model.color.fg
+                            , height <| px <| round <| model.fontSize / 2
+                            , Border.color <| Style.mix 0.5 model.pal.bg model.pal.fg
                             , Border.widthEach { edges | top = lineSize * 2 }
-                            , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2 }
-                            , Bg.color model.color.bg
+                            , Border.roundEach
+                                { corners
+                                    | topLeft = round <| model.fontSize / 2
+                                    , topRight = round <| model.fontSize / 2
+                                }
+                            , Bg.color model.pal.bg
                             ]
                             none
                         ]
@@ -306,27 +316,36 @@ renderToken model vp tok =
                 textColumn [ width fill ] <|
                     [ paragraph
                         [ Border.widthEach { edges | left = lineSize * 2 }
-                        , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2, bottomRight = fontSize // 2 }
-                        , Border.color <| Style.mix 0.5 model.color.bg model.color.fg
-                        , paddingXY (fontSize * 2) fontSize
-                        , Bg.color <| Style.mix 0.9 model.color.fg model.color.bg
-                        , Font.size <| round <| fontSize * 2 * (1.0 - ((level - 1) * 0.1))
-                        , spacing <| fontSize
+                        , Border.roundEach
+                            { corners
+                                | topLeft = round <| model.fontSize / 2
+                                , topRight = round <| model.fontSize / 2
+                                , bottomRight = round <| model.fontSize / 2
+                            }
+                        , Border.color <| Style.mix 0.5 model.pal.bg model.pal.fg
+                        , paddingXY (round <| model.fontSize * 2) <| round model.fontSize
+                        , Bg.color <| Style.mix 0.9 model.pal.fg model.pal.bg
+                        , Font.size <| round <| model.fontSize * 2 * (1.0 - ((level - 1) * 0.1))
+                        , spacing <| round <| model.fontSize
                         , width fill
                         ]
                         (render title)
                     , el
-                        [ height <| px <| fontSize * 2
-                        , Border.color <| Style.mix 0.5 model.color.bg model.color.fg
+                        [ height <| px <| round <| model.fontSize * 2
+                        , Border.color <| Style.mix 0.5 model.pal.bg model.pal.fg
                         , Border.widthEach { edges | left = lineSize * 2 }
                         ]
                         none
                     , textColumn
                         [ Border.widthEach { edges | left = lineSize * 2 }
-                        , Border.roundEach { corners | bottomLeft = fontSize // 2 }
-                        , Border.color <| Style.mix 0.5 model.color.bg model.color.fg
-                        , paddingEach { edges | left = fontSize, bottom = fontSize }
-                        , spacing <| fontSize * 2
+                        , Border.roundEach { corners | bottomLeft = round <| model.fontSize / 2 }
+                        , Border.color <| Style.mix 0.5 model.pal.bg model.pal.fg
+                        , paddingEach
+                            { edges
+                                | left = round <| model.fontSize
+                                , bottom = round <| model.fontSize
+                            }
+                        , spacing <| round <| model.fontSize * 2
                         , width fill
                         ]
                       <|
@@ -335,7 +354,7 @@ renderToken model vp tok =
 
         Paragraph toks ->
             paragraph
-                [ spacing <| fontSize // 2
+                [ spacing <| round <| model.fontSize / 2
                 , width fill
                 ]
             <|
@@ -343,12 +362,16 @@ renderToken model vp tok =
 
         BlockQuote toks ->
             paragraph
-                [ spacing <| fontSize // 2
+                [ spacing <| round <| model.fontSize / 2
                 , width fill
-                , Border.color <| Style.mix 0.75 model.color.fg model.color.bg
+                , Border.color <| Style.mix 0.75 model.pal.fg model.pal.bg
                 , Border.widthEach { edges | left = lineSize * 2 }
-                , Border.roundEach { corners | topLeft = fontSize // 2, bottomLeft = fontSize // 2 }
-                , paddingXY (fontSize * 2) 0
+                , Border.roundEach
+                    { corners
+                        | topLeft = round <| model.fontSize / 2
+                        , bottomLeft = round <| model.fontSize / 2
+                    }
+                , paddingXY (round <| model.fontSize * 2) 0
                 ]
             <|
                 List.map (renderToken model vp) toks
@@ -363,7 +386,7 @@ renderToken model vp tok =
         CodeSpan str ->
             paragraph
                 [ width fill
-                , Bg.color <| Style.mix 0.08 model.color.bg model.color.fg
+                , Bg.color <| Style.mix 0.08 model.pal.bg model.pal.fg
                 , paddingXY 5 2
                 ]
                 [ wrappedRow
@@ -392,7 +415,7 @@ renderToken model vp tok =
 
         LineBreak ->
             paragraph
-                [ spacing <| fontSize // 2
+                [ spacing <| round <| model.fontSize / 2
                 , width fill
                 ]
                 [ text "<br>" ]
@@ -409,7 +432,7 @@ renderToken model vp tok =
         Image { alt, src, title } ->
             column
                 [ width <| px <| round <| vp.viewport.width * 0.33
-                , paddingEach { edges | right = fontSize * 2 }
+                , paddingEach { edges | right = round <| model.fontSize * 2 }
                 ]
                 [ image
                     [ width fill
@@ -421,14 +444,18 @@ renderToken model vp tok =
                     Just t ->
                         paragraph
                             [ centerX
-                            , Bg.color <| Style.mix 0.05 model.color.bg model.color.fg
-                            , paddingXY fontSize <| fontSize // 2
-                            , Font.size fontSize
+                            , Bg.color <| Style.mix 0.05 model.pal.bg model.pal.fg
+                            , paddingXY (round <| model.fontSize) <| round <| model.fontSize / 2
+                            , Font.size <| round <| model.fontSize
                             , Font.bold
                             , Font.italic
                             , width fill
-                            , Border.roundEach { corners | bottomLeft = fontSize // 2, bottomRight = fontSize // 4 }
-                            , spacing <| fontSize // 2
+                            , Border.roundEach
+                                { corners
+                                    | bottomLeft = round <| model.fontSize / 2
+                                    , bottomRight = round <| model.fontSize / 4
+                                }
+                            , spacing <| round <| model.fontSize / 2
                             ]
                             [ text t ]
 
@@ -439,14 +466,14 @@ renderToken model vp tok =
         ListBlock toks ->
             -- ListBlock maybeIndex toks ->
             textColumn
-                [ spacing <| fontSize
-                , paddingEach { edges | top = fontSize }
+                [ spacing <| round <| model.fontSize
+                , paddingEach { edges | top = round <| model.fontSize }
                 , width fill
                 ]
                 (render toks)
 
         ListItem { task, content, children } ->
-            mdItem model.color task (render content) (render children)
+            mdItem model task (render content) (render children)
 
         CodeBlock codeRec ->
             el [ width fill ] <|
@@ -458,8 +485,8 @@ renderToken model vp tok =
         Table toks ->
             el [ fillSpace ] <|
                 column
-                    [ Bg.color <| Style.mix 0.15 model.color.bg model.color.fg
-                    , Border.rounded <| fontSize // 2
+                    [ Bg.color <| Style.mix 0.15 model.pal.bg model.pal.fg
+                    , Border.rounded <| round <| model.fontSize / 2
                     , width <| px <| round <| vp.viewport.width * 0.85
 
                     --, centerX
@@ -471,18 +498,22 @@ renderToken model vp tok =
             row
                 [ width fill
                 , height fill
-                , spacing fontSize
-                , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2 }
-                , Bg.color <| Style.mix 0.15 model.color.bg model.color.fg
+                , spacing <| round <| model.fontSize
+                , Border.roundEach
+                    { corners
+                        | topLeft = round <| model.fontSize / 2
+                        , topRight = round <| model.fontSize / 2
+                    }
+                , Bg.color <| Style.mix 0.15 model.pal.bg model.pal.fg
                 ]
                 (render toks)
 
         TableBody toks ->
             column
                 [ width fill
-                , Border.roundEach { corners | bottomRight = fontSize }
-                , Border.rounded <| fontSize // 2
-                , Bg.color <| Style.mix 0.05 model.color.bg model.color.fg
+                , Border.roundEach { corners | bottomRight = round model.fontSize }
+                , Border.rounded <| round <| model.fontSize / 2
+                , Bg.color <| Style.mix 0.05 model.pal.bg model.pal.fg
                 ]
                 (render toks)
 
@@ -490,15 +521,19 @@ renderToken model vp tok =
             row
                 [ width fill
                 , height fill
-                , Border.color <| Style.mix 0.2 model.color.bg model.color.fg
-                , Border.roundEach { corners | topLeft = fontSize // 2, topRight = fontSize // 2 }
+                , Border.color <| Style.mix 0.2 model.pal.bg model.pal.fg
+                , Border.roundEach
+                    { corners
+                        | topLeft = round <| model.fontSize / 2
+                        , topRight = round <| model.fontSize / 2
+                    }
                 , Border.widthEach { edges | top = 3 }
                 ]
                 (render toks
                     |> List.intersperse
                         (el
                             [ height fill
-                            , Border.color <| Style.mix 0.2 model.color.bg model.color.fg
+                            , Border.color <| Style.mix 0.2 model.pal.bg model.pal.fg
                             , Border.widthEach { edges | left = 3, top = 3, bottom = 3 }
                             ]
                             none
@@ -509,8 +544,8 @@ renderToken model vp tok =
             paragraph
                 [ width fill
                 , centerY
-                , spacing fontSize
-                , paddingXY (fontSize * 2) fontSize
+                , spacing <| round model.fontSize
+                , paddingXY (round model.fontSize * 2) <| round model.fontSize
                 , Font.justify
                 , case maybeAlign of
                     Just arg ->
@@ -534,8 +569,8 @@ renderToken model vp tok =
             paragraph
                 [ width fill
                 , Font.bold
-                , spacing fontSize
-                , paddingXY (fontSize * 2) fontSize
+                , spacing <| round model.fontSize
+                , paddingXY (round <| model.fontSize * 2) <| round model.fontSize
                 , case maybeAlign of
                     Just arg ->
                         case arg of
@@ -552,6 +587,138 @@ renderToken model vp tok =
                         batch []
                 ]
                 (render toks)
+
+
+
+-- Doc Stuff --
+
+
+iconButton : Model -> Msg -> Maybe (Color -> Float -> Element Msg) -> Element Msg -> Element Msg
+iconButton model msg maybeIcon content =
+    let
+        isLink : Bool
+        isLink =
+            case msg of
+                GotoPage page ->
+                    page /= model.page
+
+                ChangeMenu menu ->
+                    menu /= model.menu
+
+                ChangeColor pal ->
+                    pal /= model.pal
+
+                _ ->
+                    True
+
+        color : Color
+        color =
+            if isLink then
+                case msg of
+                    GetDoc str ->
+                        let
+                            testStr : String
+                            testStr =
+                                String.left 4 str
+                        in
+                        if testStr == "http" then
+                            model.pal.extLink
+
+                        else
+                            model.pal.link
+
+                    _ ->
+                        model.pal.link
+
+            else
+                model.pal.fg
+
+        linkStyle : Attribute Msg
+        linkStyle =
+            batch
+                [ paddingXY 0 3
+                , Font.bold
+                , Font.underline
+                , Font.color color
+                ]
+
+        linkContent : Element Msg
+        linkContent =
+            case maybeIcon of
+                Just icon ->
+                    row
+                        []
+                        [ icon color model.fontSize
+                        , el [ width <| px <| lineSize * 3 ] none
+                        , el [ linkStyle ] <| content
+                        ]
+
+                Nothing ->
+                    el [ linkStyle ] <| content
+    in
+    if isLink then
+        link
+            [ Ev.onClick msg
+            ]
+            { url =
+                case msg of
+                    GetDoc str ->
+                        let
+                            testStr : String
+                            testStr =
+                                String.left 4 str
+                        in
+                        if testStr == "http" then
+                            str
+
+                        else
+                            ""
+
+                    _ ->
+                        ""
+            , label = linkContent
+            }
+
+    else
+        linkContent
+
+
+vBar : Element Msg
+vBar =
+    el
+        [ height fill
+        , width <| px <| lineSize * 2
+        , Border.widthEach
+            { edges
+                | left = lineSize
+                , right = lineSize // 2
+            }
+        ]
+        none
+
+
+hBar : Element Msg
+hBar =
+    el
+        [ width fill
+        , height <| px <| lineSize * 2
+        , Border.widthEach
+            { edges
+                | top = lineSize
+                , bottom = lineSize // 2
+            }
+        ]
+        none
+
+
+notFound : Element Msg
+notFound =
+    el
+        [ centerXY
+        , Font.italic
+        ]
+    <|
+        text "Slide not found!"
 
 
 
@@ -583,40 +750,41 @@ isInline tok =
             False
 
 
-mdItem : Pal -> Md.Task -> List (Element Msg) -> List (Element Msg) -> Element Msg
-mdItem pal task content children =
+mdItem : Model -> Md.Task -> List (Element Msg) -> List (Element Msg) -> Element Msg
+mdItem model task content children =
     row
         [ width fill
-        , spacing <| fontSize // 2
+        , spacing <| round <| model.fontSize / 2
         ]
         [ case task of
             Md.NoTask ->
                 el
                     [ alignTop
-                    , width <| px <| fontSize * 5 // 4
-                    , moveDown <| fontSize / 16
+                    , width <| px <| round <| model.fontSize * 1.25
+                    , moveDown <| model.fontSize / 16
                     ]
                 <|
-                    Pic.bullet pal.fg
+                    Pic.bullet model.pal.fg model.fontSize
 
             Md.IncompleteTask ->
                 el
                     [ alignTop
-                    , width <| px <| fontSize * 5 // 4
-                    , moveDown <| fontSize / 16
+                    , width <| px <| round <| model.fontSize * 1.25
+                    , moveDown <| model.fontSize / 16
                     ]
                 <|
-                    Pic.unchecked <|
-                        Style.mix 0.3 pal.bg pal.fg
+                    Pic.unchecked
+                        (Style.mix 0.3 model.pal.bg model.pal.fg)
+                        model.fontSize
 
             Md.CompletedTask ->
                 el
                     [ alignTop
-                    , width <| px <| fontSize * 5 // 4
-                    , moveDown <| fontSize / 16
+                    , width <| px <| round <| model.fontSize * 1.25
+                    , moveDown <| model.fontSize / 16
                     ]
                 <|
-                    Pic.checked pal.link
+                    Pic.checked model.pal.link model.fontSize
 
         -- ■▨▣□⬚▨▩●▪
         , paragraph
@@ -633,18 +801,18 @@ renderCodeBlock : Model -> Viewport -> { body : String, language : Maybe String 
 renderCodeBlock model vp { body, language } =
     textColumn
         [ Font.family [ Font.monospace ]
-        , Bg.color <| Style.mix 0.2 model.color.bg model.color.fg
+        , Bg.color <| Style.mix 0.2 model.pal.bg model.pal.fg
         , width <| px <| round <| vp.viewport.width * 0.85
-        , Border.rounded <| fontSize // 2
+        , Border.rounded <| round <| model.fontSize / 2
 
         --, centerX
         , alignRight
         ]
         [ el
-            [ Font.size <| fontSize
-            , padding <| fontSize // 2
-            , Bg.color <| Style.mix 0.2 model.color.bg model.color.fg
-            , Border.rounded <| fontSize // 2
+            [ Font.size <| round <| model.fontSize
+            , padding <| round <| model.fontSize / 2
+            , Bg.color <| Style.mix 0.2 model.pal.bg model.pal.fg
+            , Border.rounded <| round <| model.fontSize / 2
             , noSelect
             ]
           <|
@@ -657,14 +825,14 @@ renderCodeBlock model vp { body, language } =
         , el
             [ width fill
             , Bg.color <|
-                Style.mix 0.05 model.color.bg model.color.fg
+                Style.mix 0.05 model.pal.bg model.pal.fg
             , clip
             , scrollbars
             ]
           <|
             column
                 [ Bg.color <|
-                    Style.mix 0.05 model.color.bg model.color.fg
+                    Style.mix 0.05 model.pal.bg model.pal.fg
                 , width fill
                 ]
                 (body
@@ -682,23 +850,23 @@ renderCodeBlock model vp { body, language } =
                                             bg =
                                                 if modBy 2 i == 0 then
                                                     { num =
-                                                        Style.mix 0.1 model.color.bg model.color.fg
+                                                        Style.mix 0.1 model.pal.bg model.pal.fg
                                                     , text =
-                                                        Style.mix 0.05 model.color.bg model.color.fg
+                                                        Style.mix 0.05 model.pal.bg model.pal.fg
                                                     }
 
                                                 else
                                                     { num =
-                                                        Style.mix 0.15 model.color.bg model.color.fg
+                                                        Style.mix 0.15 model.pal.bg model.pal.fg
                                                     , text =
-                                                        Style.mix 0.1 model.color.bg model.color.fg
+                                                        Style.mix 0.1 model.pal.bg model.pal.fg
                                                     }
                                         in
                                         row
                                             [ width fill ]
                                             [ el
                                                 [ Bg.color bg.num
-                                                , padding <| fontSize // 2
+                                                , padding <| round <| model.fontSize / 2
                                                 , height fill
                                                 ]
                                                 (i
@@ -715,7 +883,7 @@ renderCodeBlock model vp { body, language } =
                                                 )
                                             , paragraph
                                                 [ Bg.color bg.text
-                                                , paddingXY (fontSize // 2) 0
+                                                , paddingXY (model.fontSize / 2 |> round) 0
                                                 , width fill
                                                 , height fill
                                                 ]
