@@ -294,21 +294,10 @@ renderToken model vp tok =
                             , width fill
                             , Font.size <| round <| model.fontSize * 2 * (1.0 - ((level - 1) * 0.1))
                             , spacing <| round <| model.fontSize
+                            , Border.color <| Style.mix 0.5 model.pal.bg model.pal.fg
+                            , Border.widthEach { edges | bottom = lineSize * 2 }
                             ]
                             (render title)
-                        , el
-                            [ width fill
-                            , height <| px <| round <| model.fontSize / 2
-                            , Border.color <| Style.mix 0.5 model.pal.bg model.pal.fg
-                            , Border.widthEach { edges | top = lineSize * 2 }
-                            , Border.roundEach
-                                { corners
-                                    | topLeft = round <| model.fontSize / 2
-                                    , topRight = round <| model.fontSize / 2
-                                }
-                            , Bg.color model.pal.bg
-                            ]
-                            none
                         ]
                         :: render subsections
 
@@ -355,6 +344,7 @@ renderToken model vp tok =
         Paragraph toks ->
             paragraph
                 [ spacing <| round <| model.fontSize / 2
+                , paddingXY lineSize 0
                 , width fill
                 ]
             <|
@@ -414,11 +404,7 @@ renderToken model vp tok =
                 ]
 
         LineBreak ->
-            paragraph
-                [ spacing <| round <| model.fontSize / 2
-                , width fill
-                ]
-                [ text "<br>" ]
+            el [ width fill ] none
 
         Link { destination } toks ->
             -- { title, destination }
@@ -431,7 +417,7 @@ renderToken model vp tok =
 
         Image { alt, src, title } ->
             column
-                [ width <| px <| round <| vp.viewport.width * 0.33
+                [ width <| minimum 300 <| px <| round <| vp.viewport.width * 0.33
                 , paddingEach { edges | right = round <| model.fontSize * 2 }
                 ]
                 [ image
@@ -487,8 +473,9 @@ renderToken model vp tok =
                 column
                     [ Bg.color <| Style.mix 0.15 model.pal.bg model.pal.fg
                     , Border.rounded <| round <| model.fontSize / 2
-                    , width <| px <| round <| vp.viewport.width * 0.85
+                    , width fill
 
+                    --, width <| px <| round <| vp.viewport.width * 0.85
                     --, centerX
                     , alignRight
                     ]
@@ -611,24 +598,32 @@ iconButton model msg maybeIcon content =
                 _ ->
                     True
 
+        isExtLink : Bool
+        isExtLink =
+            case msg of
+                GetDoc str ->
+                    let
+                        testStr : String
+                        testStr =
+                            String.left 4 str
+                    in
+                    if testStr == "http" then
+                        True
+
+                    else
+                        False
+
+                _ ->
+                    False
+
         color : Color
         color =
             if isLink then
-                case msg of
-                    GetDoc str ->
-                        let
-                            testStr : String
-                            testStr =
-                                String.left 4 str
-                        in
-                        if testStr == "http" then
-                            model.pal.extLink
+                if isExtLink then
+                    model.pal.extLink
 
-                        else
-                            model.pal.link
-
-                    _ ->
-                        model.pal.link
+                else
+                    model.pal.link
 
             else
                 model.pal.fg
@@ -648,7 +643,7 @@ iconButton model msg maybeIcon content =
                 Just icon ->
                     row
                         []
-                        [ icon color model.fontSize
+                        [ icon color <| model.fontSize * 1.6
                         , el [ width <| px <| lineSize * 3 ] none
                         , el [ linkStyle ] <| content
                         ]
@@ -657,18 +652,18 @@ iconButton model msg maybeIcon content =
                     el [ linkStyle ] <| content
     in
     if isLink then
-        link
+        (if isExtLink then
+            newTabLink
+
+         else
+            link
+        )
             [ Ev.onClick msg
             ]
             { url =
                 case msg of
                     GetDoc str ->
-                        let
-                            testStr : String
-                            testStr =
-                                String.left 4 str
-                        in
-                        if testStr == "http" then
+                        if isExtLink then
                             str
 
                         else
@@ -799,105 +794,107 @@ mdItem model task content children =
 
 renderCodeBlock : Model -> Viewport -> { body : String, language : Maybe String } -> Element Msg
 renderCodeBlock model vp { body, language } =
-    textColumn
-        [ Font.family [ Font.monospace ]
-        , Bg.color <| Style.mix 0.2 model.pal.bg model.pal.fg
-        , width <| px <| round <| vp.viewport.width * 0.85
-        , Border.rounded <| round <| model.fontSize / 2
-
-        --, centerX
-        , alignRight
-        ]
-        [ el
-            [ Font.size <| round <| model.fontSize
-            , padding <| round <| model.fontSize / 2
+    el [ width fill ] <|
+        textColumn
+            [ Font.family [ Font.monospace ]
             , Bg.color <| Style.mix 0.2 model.pal.bg model.pal.fg
+            , width fill -- <| px <| round <| vp.viewport.width * 0.85
             , Border.rounded <| round <| model.fontSize / 2
-            , noSelect
-            ]
-          <|
-            case language of
-                Just l ->
-                    text l
 
-                Nothing ->
-                    none
-        , el
-            [ width fill
-            , Bg.color <|
-                Style.mix 0.05 model.pal.bg model.pal.fg
-            , clip
-            , scrollbars
+            --, centerX
+            , alignRight
             ]
-          <|
-            column
-                [ Bg.color <|
-                    Style.mix 0.05 model.pal.bg model.pal.fg
-                , width fill
+            [ el
+                [ Font.size <| round <| model.fontSize
+                , padding <| round <| model.fontSize / 2
+                , Bg.color <| Style.mix 0.2 model.pal.bg model.pal.fg
+                , Border.rounded <| round <| model.fontSize / 2
+                , noSelect
                 ]
-                (body
-                    |> String.split "\n"
-                    |> (\xs ->
-                            xs
-                                |> List.reverse
-                                |> splitWhile (\x -> x == "")
-                                |> Tuple.second
-                                |> List.reverse
-                                |> List.indexedMap
-                                    (\i str ->
-                                        let
-                                            bg : { num : Color, text : Color }
-                                            bg =
-                                                if modBy 2 i == 0 then
-                                                    { num =
-                                                        Style.mix 0.1 model.pal.bg model.pal.fg
-                                                    , text =
-                                                        Style.mix 0.05 model.pal.bg model.pal.fg
-                                                    }
+              <|
+                case language of
+                    Just l ->
+                        text l
 
-                                                else
-                                                    { num =
-                                                        Style.mix 0.15 model.pal.bg model.pal.fg
-                                                    , text =
-                                                        Style.mix 0.1 model.pal.bg model.pal.fg
-                                                    }
-                                        in
-                                        row
-                                            [ width fill ]
-                                            [ el
-                                                [ Bg.color bg.num
-                                                , padding <| round <| model.fontSize / 2
-                                                , height fill
-                                                ]
-                                                (i
-                                                    + 1
-                                                    |> String.fromInt
-                                                    |> String.padLeft
-                                                        (List.length xs
-                                                            |> toFloat
-                                                            |> logBase 10
-                                                            |> (\x -> floor x + 1)
-                                                        )
-                                                        '0'
-                                                    |> (\s -> el [ centerY, noSelect ] (text s))
-                                                )
-                                            , paragraph
-                                                [ Bg.color bg.text
-                                                , paddingXY (model.fontSize / 2 |> round) 0
-                                                , width fill
-                                                , height fill
-                                                ]
-                                                [ if str /= "" then
-                                                    spaceText str
+                    Nothing ->
+                        none
+            , el
+                [ width fill
+                , Bg.color <|
+                    Style.mix 0.05 model.pal.bg model.pal.fg
+                , clip
+                , scrollbars
+                ]
+              <|
+                column
+                    [ Bg.color <|
+                        Style.mix 0.05 model.pal.bg model.pal.fg
+                    , width fill
+                    ]
+                    (body
+                        |> String.split "\n"
+                        |> (\xs ->
+                                xs
+                                    |> List.reverse
+                                    |> splitWhile (\x -> x == "")
+                                    |> Tuple.second
+                                    |> List.reverse
+                                    |> List.indexedMap
+                                        (\i str ->
+                                            let
+                                                bg : { num : Color, text : Color }
+                                                bg =
+                                                    if modBy 2 i == 0 then
+                                                        { num =
+                                                            Style.mix 0.1 model.pal.bg model.pal.fg
+                                                        , text =
+                                                            Style.mix 0.05 model.pal.bg model.pal.fg
+                                                        }
 
-                                                  else
-                                                    spaceText "\n"
+                                                    else
+                                                        { num =
+                                                            Style.mix 0.15 model.pal.bg model.pal.fg
+                                                        , text =
+                                                            Style.mix 0.1 model.pal.bg model.pal.fg
+                                                        }
+                                            in
+                                            row
+                                                [ width fill ]
+                                                [ el
+                                                    [ Bg.color bg.num
+                                                    , Font.bold
+                                                    , padding <| round <| model.fontSize / 2
+                                                    , height fill
+                                                    ]
+                                                    (i
+                                                        + 1
+                                                        |> String.fromInt
+                                                        |> String.padLeft
+                                                            (List.length xs
+                                                                |> toFloat
+                                                                |> logBase 10
+                                                                |> (\x -> floor x + 1)
+                                                            )
+                                                            '0'
+                                                        |> (\s -> el [ centerY, noSelect ] (text s))
+                                                    )
+                                                , paragraph
+                                                    [ Bg.color bg.text
+                                                    , paddingXY (model.fontSize / 2 |> round) 0
+                                                    , width fill
+                                                    , height fill
+                                                    ]
+                                                    [ if str /= "" then
+                                                        spaceText str
+
+                                                      else
+                                                        spaceText "\n"
+                                                    ]
                                                 ]
-                                            ]
-                                    )
-                       )
-                )
-        ]
+                                        )
+                           )
+                    )
+            ]
 
 
 spaceText : String -> Element msg

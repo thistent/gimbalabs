@@ -1,4 +1,9 @@
-# Post-01
+# Welcome to the Gimbalabs Blog
+
+```
+date = 2024-01-02
+author = "James Dunseith"
+```
 
 Happy New Year, and welcome to the brand-new Gimbalabs blog!
 

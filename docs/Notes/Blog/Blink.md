@@ -1,4 +1,9 @@
-# Post-02
+# Blink Labs, TxPipe, and the power of collaborations.
+
+```
+date = 2024-03-31
+author = "Sebastian Pabon"
+```
 
 ## In this blog
 
@@ -48,6 +53,11 @@ Hindsight is misleading, because it makes people think that there is something s
 
 ![Alt text](https://www.gimbalabs.com/blog_006/non-linear2.png "non-linearity") _**Source: Taleb’s Antifragility website by [abdelazizalgh](https://ghannami.com/talebs-antifragility/)**_
 
+
+[Nassim Taleb](https://www.fooledbyrandomness.com/), a renowned scholar and author, is widely recognized for his work on non-linearity. Taleb's insights into non-linear systems emphasize the inherent unpredictability and complexity of the world, challenging traditional linear thinking and forecasting methods. In this context, collaborations take on a new significance.
+
+![Alt text](https://www.gimbalabs.com/blog_006/non-linear2.png "non-linearity") _**Source: Taleb’s Antifragility website by [abdelazizalgh](https://ghannami.com/talebs-antifragility/)**_
+
 By bringing together diverse perspectives, expertise, and resources, collaborations can help navigate the uncertainties and complexities of non-linear systems more effectively. They offer a platform for collective learning, adaptability, and resilience, enabling individuals and organizations to better anticipate, respond to, and capitalize on unexpected opportunities and challenges.
 
 Thus, Taleb's ideas underscore the transformative potential of collaborations in an increasingly interconnected and unpredictable world.
@@ -91,11 +101,6 @@ ___
     
 -   At **Gimbalabs**, we are excited to make sure that **UTxO RPC** services and many others from other builders are accessible. The variety of data providers coming online right now, and the variety of ways these services can be deployed and shared, gives us confidence that the Cardano ecosystem will be build applications on robust, reliable, and distributed foundations. We will surely be playing with the UTxO RPC interface in our next **[Gimbalabs Playground](https://gimbalabs.com/pbl/playground)** and **[Gimbalabs Open Spaces](https://gimbalabs.com/gimbalgrid/62)** sessions.
     
--   Did you notice in one of the images above the following?
-    
-
-![Alt text](https://www.gimbalabs.com/blog_006/andamio-contributors-1.png "non-linearity") _**Source: [UTxO RPC docs](https://utxorpc.org/)**_
-
 In Cardano's best projects there is always an open door for new contributors. The best startups in the ecosystem know that making their projects a thriving endeavor that cultivates a community of dedicated contributors and encourages engaging interactions is key to making them vibrant projects that accelerate their _**de-commit**_ rate sooner than expected.
 
 ![Alt text](https://www.gimbalabs.com/blog_006/andamio-contributors-2.png "non-linearity") _**Source: [Andamio](https://www.andamio.io/)**_

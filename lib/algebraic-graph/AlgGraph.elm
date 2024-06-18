@@ -235,22 +235,6 @@ mapEdges fun graph =
             Connect (fun e) (mapEdges fun a) (mapEdges fun b)
 
 
-{-| TODO:
-
-
-## Consider a similar function for edges
-
-If you have a function of type: `(e -> Graph f a) -> Graph e a -> Graph f a`
-then the only output of the `(e -> Graph f a)` part can be `Empty` because
-there is no source of an `a` typed value.
-
-It may be possible to have the following type:
-
-      concatMap : (e -> a -> Graph f b) -> Graph e a -> Graph f b
-
-The problem with this is that FIXME!
-
--}
 concatMap : (a -> Graph e b) -> Graph e a -> Graph e b
 concatMap fun graph =
     case graph of
@@ -265,6 +249,11 @@ concatMap fun graph =
 
         Connect e a b ->
             Connect e (concatMap fun a) (concatMap fun b)
+
+
+
+-- concatMapEdge : (e -> Graph f a) -> Graph e a -> Graph f a
+-- concatMapEdge fun graph =
 
 
 foldVertices : (a -> b -> b) -> b -> Graph e a -> b

@@ -1,27 +1,26 @@
-port module Main exposing (..)
+module Main exposing (..)
 
 -- import Pane
--- import Docs exposing (..)
 
+import Array exposing (Array)
 import Browser
 import Browser.Dom as Dom exposing (Viewport)
 import Browser.Events as Events exposing (onResize)
 import Browser.Navigation as Nav
-import Calendar
+import Calendar exposing (CalendarDate)
 import Date exposing (Date)
 import Delay exposing (Timer)
 import Dict
+import Docs exposing (..)
 import Ease
 import Html exposing (Html)
 import Http
-import Json.Decode as Decode
-import Json.Encode as Encode
-import Markup exposing (hBar, iconButton, notFound, renderMd, vBar)
+import Markup exposing (hBar, iconButton, renderMd, vBar)
 import Pic
 import Return exposing (Return)
 import Style exposing (..)
 import Task
-import Time
+import Time exposing (Month(..))
 import Types exposing (..)
 import Ui exposing (..)
 import Ui.Background as Bg
@@ -32,23 +31,7 @@ import Url
 
 
 
--- Ports --
-
-
-port saveCache : Encode.Value -> Cmd msg
-
-
-port clearCache : Encode.Value -> Cmd msg
-
-
-
--- port cache : Encode.Value -> Cmd msg
--- port fetch : (Encode.Value -> msg) -> Sub msg
 -- Main --
-
-
-type alias Flags =
-    { dpi : Float }
 
 
 main : Program Flags Model Msg
@@ -113,7 +96,9 @@ loadingPage model t =
                         ]
                       <|
                         el [ centerXY, scale 1.4 ] <|
-                            Pic.gimbalogo bg model.fontSize
+                            Pic.gimbalogo bg <|
+                                model.fontSize
+                                    * 1.6
                     , text " GIMBA"
                     , el [ Font.bold ] <| text "LABS"
                     ]
@@ -137,6 +122,7 @@ init flags url key =
     let
         startDoc : String
         startDoc =
+            -- "Types.md"
             "Main.md"
     in
     Return.return
@@ -144,25 +130,80 @@ init flags url key =
         , url = url
         , page = Home
         , menu = MenuClosed
-        , pal = newspaper
-        , size = Delay.wait 1000 Nothing
+        , pal = newspaper -- dark
+        , size = Delay.wait 500 Nothing
         , zone = Time.utc
         , time = Nothing
         , currentSlide = "start"
         , slides = Dict.empty
         , docText = ""
         , docName = ""
-        , clock = North
+        , hemisphere = North
         , selectDate = Nothing
-        , dpi = flags.dpi
+        , events =
+            Array.fromList
+                [ { firstDate = Date.fromCalendarDate 2024 Mar 11
+                  , lastDate = Date.fromCalendarDate 2024 Dec (30 + 1)
+                  , startTime = 13 * 60 + 0
+                  , duration = 1 * 60 + 0
+                  , exceptions =
+                        []
+                  , title = "Cardano Go Live Coding"
+                  , description = "[Zoom Link](https://us06web.zoom.us/meeting/register/tZwtcemrqTwoG9fYL2pYvrCwQG9u2tJNmqa6)"
+                  , color = rgb255 0xCC 0xAA 0x00 -- #ccaa00
+                  }
+                , { firstDate = Date.fromCalendarDate 2024 Mar 5
+                  , lastDate = Date.fromCalendarDate 2024 Aug (27 + 1)
+                  , startTime = 13 * 60 + 0
+                  , duration = 1 * 60 + 0
+                  , exceptions =
+                        [ Date.fromCalendarDate 2024 Jun 4
+                        ]
+                  , title = "Mesh Live Coding"
+                  , description = "[Zoom Link](https://us06web.zoom.us/meeting/register/tZEqcuGgpz8oG9d-DgQBDEnICud-mF4uyQCs)"
+                  , color = rgb255 0xBB 0x77 0xDD -- #bb77dd
+                  }
+                , { firstDate = Date.fromCalendarDate 2024 Jan 9
+                  , lastDate = Date.fromCalendarDate 2024 Jun (25 + 1)
+                  , startTime = 18 * 60 + 0
+                  , duration = 1 * 60 + 30
+                  , exceptions =
+                        [ Date.fromCalendarDate 2024 Jun 18
+                        ]
+                  , title = "Gimbalabs Playground"
+                  , description = "[Zoom Link](https://us06web.zoom.us/meeting/register/tZYoduuqpjsqGtdzMHXoRVVnJqcQGOtpQRQv)"
+                  , color = rgb255 0x00 0x99 0xCC -- #0099cc
+                  }
+                , { firstDate = Date.fromCalendarDate 2024 Feb 29
+                  , lastDate = Date.fromCalendarDate 2024 Dec (26 + 1)
+                  , startTime = 14 * 60 + 30
+                  , duration = 1 * 60 + 30
+                  , exceptions =
+                        []
+                  , title = "Gimbalabs Open Spaces"
+                  , description = "[Zoom Link](https://us06web.zoom.us/meeting/register/tZErceCqpzMtG9XldfuPnBQEus5MBivl9OZe)"
+                  , color = rgb255 0x99 0xCC 0x66 -- #99cc66
+                  }
+                , { firstDate = Date.fromCalendarDate 2024 May 22
+                  , lastDate = Date.fromCalendarDate 2024 Dec (25 + 1)
+                  , startTime = 14 * 60 + 0
+                  , duration = 1 * 60 + 30
+                  , exceptions =
+                        []
+                  , title = "Plutus PBL Live Coding"
+                  , description = "[Zoom Link](https://us06web.zoom.us/meeting/register/tZwoduCgrTgiHt3u34gOSGRL5pY4pdZlT5MM)"
+                  , color = rgb255 0xDD 0x77 0x99 -- #dd7799
+                  }
+                ]
         , fontSize = 12 * flags.dpi
+        , dpi = flags.dpi
         }
     <|
         Cmd.batch
             [ Task.perform SceneInfo Dom.getViewport
             , Task.perform AdjustTimeZone Time.here
             , Http.get
-                { url = "notes/" ++ startDoc
+                { url = "Notes/" ++ startDoc
                 , expect =
                     Http.expectString <| ReceiveDoc startDoc
                 }
@@ -241,7 +282,7 @@ update msg model =
                 model
             <|
                 Http.get
-                    { url = "notes/" ++ doc
+                    { url = "Notes/" ++ doc
                     , expect =
                         Http.expectString <| ReceiveDoc doc
                     }
@@ -260,12 +301,14 @@ update msg model =
                     Return.singleton model
 
         ToggleClockOrientation ->
-            case model.clock of
+            case model.hemisphere of
                 North ->
-                    Return.singleton { model | clock = South }
+                    Return.singleton
+                        { model | hemisphere = South }
 
                 South ->
-                    Return.singleton { model | clock = North }
+                    Return.singleton
+                        { model | hemisphere = North }
 
         SelectDate maybeDate ->
             Return.singleton { model | selectDate = maybeDate }
@@ -280,7 +323,7 @@ subs _ =
     Sub.batch
         [ onResize WindowResize
         , Events.onAnimationFrameDelta FrameDelta
-        , Time.every 100 Tick
+        , Time.every 20 Tick
         ]
 
 
@@ -290,465 +333,138 @@ subs _ =
 
 view : Model -> Viewport -> Html Msg
 view model vp =
+    let
+        m : Pal -> Pal -> Model
+        m oldPal newPal =
+            { model
+                | pal =
+                    { newPal
+                        | bg = Style.mix 0.6 oldPal.bg newPal.bg
+                        , fg = Style.mix 0.85 oldPal.bg newPal.fg
+                    }
+            }
+    in
     layout
         [ Font.size <| round model.fontSize
         , Font.family [ Font.serif ]
         , Font.color model.pal.fg
         , Font.letterSpacing 0.2
-        , Bg.color <| Style.mix 0.5 model.pal.bg model.pal.fg
+        , Bg.color model.pal.bg
+        , inFront <|
+            el
+                [ padding <| round <| model.fontSize / 2
+                , width fill
+                , Bg.color <| addAlpha 0.9 model.pal.bg
+                , Style.shadow
+                ]
+            <|
+                titleBar model vp
         ]
     <|
-        el
-            [ Bg.color <| Style.mix 0.5 model.pal.bg model.pal.fg
-            , fillSpace
+        column
+            [ fillSpace
+            , Bg.color model.pal.bg
+            , spacing <| round <| model.fontSize
+            , padding <| round <| model.fontSize / 2
             ]
-        <|
-            column
-                [ fillSpace
-                , spacing <| round <| model.fontSize * 0.4
-                ]
-                [ turningPage model 0 <|
+            [ el [ height <| px <| round <| model.fontSize * 3.5 ] none
+            , case model.page of
+                Home ->
                     column
                         [ fillSpace
                         , spacing <| round <| model.fontSize * 2
+                        , padding <| round <| model.fontSize / 2
                         ]
-                        [ titleBar model
-                        , case model.page of
-                            Home ->
-                                column [ fillSpace, spacing <| round model.fontSize ]
-                                    [ el [ centerX, Font.bold, Font.size <| round <| model.fontSize * 2 ] <| text "Under Construction!"
-                                    , vp.viewport
-                                        |> (\{ height, width } ->
-                                                { height = height / model.dpi |> round
-                                                , width = width / model.dpi |> round
-                                                }
-                                           )
-                                        |> classifyDevice
-                                        |> Debug.toString
-                                        |> text
-                                        |> el [ centerX ]
-                                    , vp.viewport
-                                        |> (\{ height, width } ->
-                                                { height = height / model.dpi |> round
-                                                , width = width / model.dpi |> round
-                                                }
-                                           )
-                                        |> Debug.toString
-                                        |> text
-                                        |> el [ centerX ]
-                                    , model.fontSize
-                                        |> String.fromFloat
-                                        |> text
-                                        |> el [ centerX ]
-                                    ]
-
-                            {-
-                               let
-                                   m : Pal -> Model
-                                   m pal =
-                                       { model | color = pal }
-
-                                   p : Pal
-                                   p =
-                                       model.pal
-                               in
-                               column
-                                   [ fillSpace
-                                   , spacing <| round <| model.fontSize * 2
-                                   , padding <| round <| model.fontSize / 2
-                                   ]
-                                   [ row [ fillSpace, spacing <| round <| model.fontSize * 2 ]
-                                       [ el [ width <| fillPortion 3, height fill ] <|
-                                           topGroup p
-                                               [ heading p "Welcome to Gimbalabs!"
-                                               , item p <|
-                                                   "Right now, we are building Plutus PBL 2024, "
-                                                       ++ "running weekly live coding sessions, "
-                                                       ++ "and hosting Gimbalabs Open Spaces."
-                                               , item p <|
-                                                   "This version of the website is still under construction!"
-                                               , item p <| String.fromFloat model.dpi
-
-                                               {- , item p <|
-                                                  Debug.toString <|
-                                                      classifyDevice <|
-                                                          (\{ height, width } -> { height = round height, width = round width }) <|
-                                                              vp.viewport
-                                               -}
-                                               ]
-                                       , vBar
-                                       , topGroup p
-                                           [ heading p "Events"
-                                           , item p "Open Spaces"
-                                           , item p "Playground"
-                                           ]
-                                       ]
-                                   , row
-                                       [ fillSpace
-                                       , spacing <| round <| model.fontSize * 2
-                                       ]
-                                       [ turningPage (m orangeNote) 0.02 <|
-                                           el [ fillSpace ] <|
-                                               column [ centerX, spacing <| round model.fontSize ]
-                                                   [ heading p "Learn"
-                                                   , el [] <| text "⯀ Starter Kits"
-                                                   , el [] <| text "⯀ Plutus"
-                                                   , el [] <| text "⯀ Playground"
-                                                   ]
-                                       , turningPage (m yellowNote) 0 <|
-                                           el [ fillSpace ] <|
-                                               column [ centerX, spacing <| round model.fontSize ]
-                                                   [ heading p "APIs"
-                                                   , el [] <| text "⯀ Dandelion"
-                                                   , el [] <| text "⯀ Endpoints"
-                                                   ]
-                                       , turningPage (m greenNote) -0.02 <|
-                                           el [ fillSpace ] <|
-                                               column [ centerX, spacing <| round model.fontSize ]
-                                                   [ heading p "Updates"
-                                                   , el [] <| text "⯀ Updates"
-                                                   ]
-                                       , turningPage (m blueNote) 0.01 <|
-                                           el [ fillSpace ] <|
-                                               column [ centerX, spacing <| round model.fontSize ]
-                                                   [ paragraph
-                                                       [ Border.widthEach { edges | bottom = lineSize }
-                                                       , paddingEach
-                                                           { edges
-                                                               | left = round model.fontSize
-                                                               , bottom = round model.fontSize
-                                                           }
-                                                       , width fill
-                                                       , Font.size <| round <| model.fontSize * 2
-                                                       , spacing <| round model.fontSize
-                                                       ]
-                                                       [ text "About Us" ]
-                                                   , el [] <| text "⯀ Team"
-                                                   , el [] <| text "⯀ Calendar"
-                                                   , el [] <| text "⯀ Stake Pool"
-                                                   ]
-                                       ]
-                                   ]
-                            -}
-                            Calendar ->
-                                row [ fillSpace, spacing <| round <| model.fontSize * 2 ]
-                                    [ el [ width <| fillPortion 5, height fill ] <|
-                                        calendar model
-                                    , el
-                                        [ width <| fillPortion 2
-                                        , inFront <|
-                                            case model.selectDate of
-                                                Nothing ->
-                                                    none
-
-                                                Just date ->
-                                                    column
-                                                        [ fillSpace
-                                                        , padding <| round model.fontSize
-                                                        , spacing <| round model.fontSize * 2
-                                                        , Border.width lineSize
-                                                        , Border.rounded <| round <| model.fontSize / 2
-                                                        , Bg.color <| Style.addAlpha 0.9 model.pal.bg
-                                                        ]
-                                                        [ column
-                                                            [ spacing <| round <| model.fontSize * 0.65
-                                                            , width fill
-                                                            ]
-                                                            [ el
-                                                                [ centerX
-                                                                , Font.size <| round <| model.fontSize * 1.5
-                                                                , Font.bold
-                                                                ]
-                                                              <|
-                                                                text <|
-                                                                    (weekdayToString <| Date.weekday date)
-                                                            , el
-                                                                [ centerX
-                                                                , Font.size <| round <| model.fontSize * 1.5
-                                                                , Font.bold
-                                                                ]
-                                                              <|
-                                                                text <|
-                                                                    (monthToString <| Date.month date)
-                                                                        ++ " "
-                                                                        ++ String.fromInt (Date.day date)
-                                                                        ++ ", "
-                                                                        ++ String.fromInt (Date.year date)
-                                                            , hBar
-                                                            ]
-                                                        , column
-                                                            [ spacing <| round <| model.fontSize * 2
-                                                            , paddingXY (round <| model.fontSize / 2) 0
-                                                            , width fill
-                                                            ]
-                                                            [ el [ width fill ] <| text "This is the first event!"
-                                                            , el [ width fill ] <| text "This is the second event!"
-                                                            , el [ width fill ] <| text "This is the third event!"
-                                                            ]
-                                                        ]
-                                        , height fill
-                                        ]
-                                      <|
-                                        el [ alignTop, centerX, moveDown 20.0 ] <|
-                                            clock model
-                                    ]
-
-                            Blog ->
-                                column [ fillSpace, spacing <| round <| model.fontSize * 2 ]
-                                    [ row [ width fill, spacing <| round model.fontSize ]
-                                        [ el [ Font.bold ] <| text "File:"
-                                        , text <| "/notes/" ++ model.docName
-                                        , el [ alignRight ] <| iconButton model (GetDoc "Main.md") Nothing <| text "Go back to the Main Page"
-                                        ]
-                                    , renderMd model vp model.docText
-                                    ]
-
-                            Solutions ->
-                                el [ centerXY ] <| text "Solutions"
-
-                            {-
-                               let
-                                   slide : Pal -> Element Msg
-                                   slide =
-                                       Maybe.withDefault (\_ -> notFound) <|
-                                           Dict.get model.currentSlide model.slides
-                               in
-                               row
-                                   [ fillSpace
-                                   , spacing <| round <| model.fontSize * 2
-                                   ]
-                                   [ el
-                                       [ width <| fillPortion 3
-                                       , alignTop
-                                       , alignLeft
-                                       , spacing <| round <| model.fontSize * 2
-                                       ]
-                                     <|
-                                       slide model.pal
-                                   , vBar
-                                   , column
-                                       [ spacing <| round <| model.fontSize * 2
-                                       , fillSpace
-                                       ]
-                                     <|
-                                       heading model.pal "Outline"
-                                           :: outline model.pal
-                                   ]
-                            -}
-                            Settings ->
-                                el [ fillSpace ] <| el [ centerXY ] <| text "Settings!"
-                        ]
-                ]
-
-
-calendar : Model -> Element Msg
-calendar model =
-    column
-        [ fillSpace
-        , Border.width lineSize
-        , Border.roundEach
-            { corners
-                | topLeft = round <| model.fontSize / 2
-                , topRight = round <| model.fontSize / 2
-            }
-        , Style.shadow
-        ]
-        [ column
-            [ width fill
-            , Border.widthEach { edges | bottom = lineSize }
-            , Border.roundEach
-                { corners
-                    | topLeft = round <| model.fontSize / 2
-                    , topRight = round <| model.fontSize / 2
-                }
-            , Bg.color <| Style.mix 0.075 model.pal.bg model.pal.fg
-            ]
-            [ el
-                [ centerX
-                , Font.size <| round <| model.fontSize * 1.5
-                , Font.bold
-                , paddingXY 0 <| round model.fontSize
-                ]
-              <|
-                text <|
-                    (model.time
-                        |> Maybe.map
-                            (\t ->
-                                monthToString (Time.toMonth Time.utc t)
-                                    ++ " "
-                                    ++ String.fromInt (Time.toYear Time.utc t)
-                            )
-                        |> Maybe.withDefault "Calendar"
-                    )
-            , row
-                [ width fill
-                , paddingXY 0 <| round <| model.fontSize * 0.4
-                ]
-                [ el [ width fill, Font.bold ] <| el [ centerX ] <| text "Sunday"
-                , el [ width fill, Font.bold ] <| el [ centerX ] <| text "Monday"
-                , el [ width fill, Font.bold ] <| el [ centerX ] <| text "Tuesday"
-                , el [ width fill, Font.bold ] <| el [ centerX ] <| text "Wednesday"
-                , el [ width fill, Font.bold ] <| el [ centerX ] <| text "Thursday"
-                , el [ width fill, Font.bold ] <| el [ centerX ] <| text "Friday"
-                , el [ width fill, Font.bold ] <| el [ centerX ] <| text "Saturday"
-                ]
-            ]
-        , el
-            [ fillSpace
-            ]
-          <|
-            (model.time
-                |> Maybe.map (Calendar.fromTime Nothing Time.utc)
-                |> Maybe.map
-                    (\weeks ->
-                        column
-                            [ fillSpace
+                        [ el [ width <| fillPortion 3, height fill ] <|
+                            topGroup model
+                                [ heading model "Welcome to Gimbalabs!"
+                                , item model <|
+                                    "Right now, we are building Plutus PBL 2024, "
+                                        ++ "running weekly live coding sessions, "
+                                        ++ "and hosting Gimbalabs Open Spaces."
+                                ]
+                        , heading model "Today's Events"
+                        , column
+                            [ spacing <| round <| model.fontSize * 2
+                            , paddingXY (round <| model.fontSize / 2) 0
+                            , width fill
                             ]
-                        <|
-                            List.map
-                                (\days ->
-                                    row
-                                        [ fillSpace
-                                        ]
-                                        (List.map
-                                            (\d ->
-                                                let
-                                                    date :
-                                                        { year : Int
-                                                        , month : Time.Month
-                                                        , day : Int
-                                                        , posix : Time.Posix
-                                                        }
-                                                    date =
-                                                        model.time
-                                                            |> Maybe.map
-                                                                (\t ->
-                                                                    { year = Time.toYear Time.utc t
-                                                                    , month = Time.toMonth Time.utc t
-                                                                    , day = Time.toDay Time.utc t
-                                                                    , posix = t
-                                                                    }
-                                                                )
-                                                            |> Maybe.withDefault
-                                                                { year = 0
-                                                                , month = Time.Jan
-                                                                , day = 0
-                                                                , posix = Time.millisToPosix 0
-                                                                }
+                            (case model.time of
+                                Nothing ->
+                                    [ text "(Nothing Today)"
+                                    ]
 
-                                                    isToday : Bool
-                                                    isToday =
-                                                        Date.compare d.date (Date.fromPosix Time.utc date.posix) == EQ
+                                Just time ->
+                                    model.events
+                                        |> eventsOfDay (Date.fromPosix model.zone time)
+                                        |> List.map (renderEvent model vp)
+                            )
+                        ]
 
-                                                    isSelected : Bool
-                                                    isSelected =
-                                                        case model.selectDate of
-                                                            Just sd ->
-                                                                Date.compare d.date sd == EQ
+                Calendar ->
+                    calendarView model vp
 
-                                                            Nothing ->
-                                                                False
+                Blog ->
+                    blogView model vp
 
-                                                    isThisMonth : Bool
-                                                    isThisMonth =
-                                                        Date.month d.date == date.month
+                Solutions ->
+                    el [ centerXY ] <| text "Solutions"
 
-                                                    bg : Color
-                                                    bg =
-                                                        case ( isSelected, isThisMonth ) of
-                                                            ( True, True ) ->
-                                                                Style.mix 0.5 model.pal.link model.pal.bg
+                Settings ->
+                    settingsView model vp
 
-                                                            ( True, False ) ->
-                                                                Style.mix 0.5 model.pal.link <| Style.mix 0.35 model.pal.bg model.pal.fg
-
-                                                            ( False, True ) ->
-                                                                model.pal.bg
-
-                                                            ( False, False ) ->
-                                                                Style.mix 0.35 model.pal.bg model.pal.fg
-
-                                                    internalBorder : Color
-                                                    internalBorder =
-                                                        if isToday then
-                                                            --Style.mix 0.5 model.pal.bg model.pal.link
-                                                            model.pal.fg
-
-                                                        else
-                                                            bg
-                                                in
-                                                el
-                                                    [ fillSpace
-                                                    , padding <| round <| model.fontSize / 6
-                                                    , Border.width 1
-                                                    , Bg.color internalBorder
-                                                    ]
-                                                <|
-                                                    link
-                                                        [ fillSpace
-                                                        , Ev.onClick <|
-                                                            SelectDate <|
-                                                                if isSelected then
-                                                                    Nothing
-
-                                                                else
-                                                                    Just d.date
-                                                        ]
-                                                        { url = ""
-                                                        , label =
-                                                            column
-                                                                [ fillSpace
-                                                                , padding <| round <| model.fontSize / 2 - model.fontSize / 6
-                                                                , spacing <| round <| model.fontSize / 2 - model.fontSize / 6
-                                                                , Font.size 10
-                                                                , Bg.color bg
-                                                                ]
-                                                                [ el [ Font.size 16, Font.bold ] <| text <| String.fromInt <| Date.day d.date
-                                                                , paragraph
-                                                                    [ width fill
-                                                                    , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg model.pal.error
-                                                                    , Border.color <| Style.mix 0.5 model.pal.bg model.pal.error
-                                                                    , Border.width 1
-                                                                    , Border.rounded <| round <| model.fontSize / 3
-                                                                    , padding <| round <| model.fontSize / 2 - model.fontSize / 6
-                                                                    ]
-                                                                    [ text "Event: This is Important!"
-                                                                    ]
-                                                                , paragraph
-                                                                    [ width fill
-                                                                    , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg model.pal.link
-                                                                    , Border.color <| Style.mix 0.5 model.pal.bg model.pal.link
-                                                                    , Border.width 1
-                                                                    , Border.rounded <| round <| model.fontSize / 3
-                                                                    , padding <| round <| model.fontSize / 2 - model.fontSize / 6
-                                                                    ]
-                                                                    [ text "Event: This is Important!"
-                                                                    ]
-                                                                , paragraph
-                                                                    [ width fill
-                                                                    , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg model.pal.extLink
-                                                                    , Border.color <| Style.mix 0.5 model.pal.bg model.pal.extLink
-                                                                    , Border.width 1
-                                                                    , Border.rounded <| round <| model.fontSize / 3
-                                                                    , padding <| round <| model.fontSize / 2 - model.fontSize / 6
-                                                                    ]
-                                                                    [ text "Event: This is Important!"
-                                                                    ]
-                                                                ]
-                                                        }
-                                            )
-                                            days
-                                        )
-                                )
-                                weeks
-                    )
-                |> Maybe.withDefault none
-            )
-        ]
+                Graph ->
+                    graphView model vp
+            , hBar
+            , textColumn
+                [ fillSpace
+                ]
+                [ wrappedRow
+                    [ fillSpace
+                    , spacing <| round <| model.fontSize * 2
+                    , padding <| round <| model.fontSize
+                    ]
+                    [ turningPage (m model.pal orangeNote) 0.02 <|
+                        el [ fillSpace ] <|
+                            column [ centerX, spacing <| round model.fontSize ]
+                                [ heading model "Learn"
+                                , el [] <| text "⯀ Starter Kits"
+                                , el [] <| text "⯀ Plutus"
+                                , el [] <| text "⯀ Playground"
+                                ]
+                    , turningPage (m model.pal yellowNote) 0 <|
+                        el [ fillSpace ] <|
+                            column [ centerX, spacing <| round model.fontSize ]
+                                [ heading model "APIs"
+                                , el [] <| text "⯀ Dandelion"
+                                , el [] <| text "⯀ Endpoints"
+                                ]
+                    , turningPage (m model.pal greenNote) -0.02 <|
+                        el [ fillSpace ] <|
+                            column [ centerX, spacing <| round model.fontSize ]
+                                [ heading model "Updates"
+                                , el [] <| text "⯀ Updates"
+                                ]
+                    , turningPage (m model.pal blueNote) 0.01 <|
+                        el [ fillSpace ] <|
+                            column [ centerX, spacing <| round model.fontSize ]
+                                [ heading model "About Us"
+                                , el [] <| text "⯀ Team"
+                                , el [] <| text "⯀ Calendar"
+                                , el [] <| text "⯀ Stake Pool"
+                                ]
+                    ]
+                ]
+            ]
 
 
-clock : Model -> Element Msg
-clock model =
+graphView : Model -> Viewport -> Element Msg
+graphView model vp =
+    el [ centerXY ] <| text "Graph View"
+
+
+calendarView : Model -> Viewport -> Element Msg
+calendarView model vp =
     let
         time :
             { localHours : Int
@@ -788,7 +504,7 @@ clock model =
             , op : String
             }
         c =
-            case model.clock of
+            case model.hemisphere of
                 North ->
                     { hourRotation = 0 - (toFloat time.hours + toFloat time.minutes / 60) / 12 * pi
                     , localHourRotation = 0 - (toFloat time.localHours + toFloat time.minutes / 60) / 12 * pi
@@ -814,60 +530,74 @@ clock model =
                     }
     in
     column
-        [ clip ]
-        [ image
-            [ centerXY
+        [ fillSpace
+        , spacing <| round <| model.fontSize
+        , paddingEach { edges | bottom = round <| model.fontSize }
+        ]
+        [ el
+            [ fillSpace
             , inFront <|
-                image
-                    [ rotate c.localHourRotation
-                    ]
-                    { src = "assets/earth-local-hour.png"
-                    , description = "local hour hand"
-                    }
-            , behindContent <|
-                image
-                    [ rotate c.hourRotation
-                    , inFront <|
-                        image
-                            [ rotate c.secondRotation
-                            ]
-                            { src = "assets/earth-second.png"
-                            , description = "second hand"
-                            }
-                    , inFront <|
-                        image
-                            [ rotate c.minuteRotation
-                            ]
-                            { src = "assets/earth-minute.png"
-                            , description = "minute hand"
-                            }
-                    ]
-                    { src = c.picUrl
-                    , description = "earth clock"
-                    }
+                dayView model vp
             ]
-            { src = c.hourLines, description = "earth" }
-        , el [ height <| px <| round <| model.fontSize * 2 ] none
+          <|
+            calendar model
+        , hBar
+        , el [ centerX ] <|
+            image
+                [ centerXY
+                , clip
+                , inFront <|
+                    image
+                        [ rotate c.localHourRotation
+                        ]
+                        { src = "assets/earth-local-hour.png"
+                        , description = "local hour hand"
+                        }
+                , behindContent <|
+                    image
+                        [ rotate c.hourRotation
+                        , inFront <|
+                            image
+                                [ rotate c.secondRotation
+                                ]
+                                { src = "assets/earth-second.png"
+                                , description = "second hand"
+                                }
+                        , inFront <|
+                            image
+                                [ rotate c.minuteRotation
+                                ]
+                                { src = "assets/earth-minute.png"
+                                , description = "minute hand"
+                                }
+                        ]
+                        { src = c.picUrl
+                        , description = "earth clock"
+                        }
+                ]
+                { src = c.hourLines, description = "earth" }
         , el [ centerX ] <|
             iconButton model ToggleClockOrientation Nothing <|
                 text ("Flip Clock to " ++ c.op ++ " Hemisphere")
-        , el [ height <| px <| round <| model.fontSize * 2 ] none
         , el
             [ centerX
-            , Font.size <| round <| model.fontSize * 1.33
             , Font.bold
             ]
           <|
             text "Current Time:"
-        , el [ height <| px <| round model.fontSize ] none
-        , el [ centerX, Font.size <| round <| model.fontSize * 1.33 ] <|
+        , el
+            [ centerX
+            ]
+          <|
             text <|
                 String.fromInt time.hours
                     ++ ":"
                     ++ (String.padLeft 2 '0' <| String.fromInt time.minutes)
                     ++ " UTC"
-        , el [ height <| px <| round model.fontSize ] none
-        , el [ centerX, Font.size <| round <| model.fontSize * 1.33 ] <|
+        , el
+            [ centerX
+            ]
+          <|
             text <|
                 String.fromInt time.localHours
                     ++ ":"
@@ -876,10 +606,385 @@ clock model =
         ]
 
 
+blogView : Model -> Viewport -> Element Msg
+blogView model vp =
+    column
+        [ fillSpace
+        , spacing <| round <| model.fontSize
+        , paddingEach
+            { edges
+                | right = round model.fontSize
+                , left = round model.fontSize
+                , bottom = round model.fontSize
+            }
+        ]
+        [ row
+            [ width fill
+            , paddingXY lineSize 0
+            , spacing <| round model.fontSize
+            ]
+            [ el [ Font.bold ] <| text "File:"
+            , text <| "/Notes/" ++ model.docName
+            , el [ alignRight ] <| iconButton model (GetDoc "Main.md") Nothing <| text "Main.md"
+            ]
+        , hBar
+        , renderMd model vp model.docText
+        ]
+
+
+settingsView : Model -> Viewport -> Element Msg
+settingsView model vp =
+    column [ centerXY, spacing <| round model.fontSize ]
+        [ el [ centerX, Font.bold, Font.size <| round <| model.fontSize * 2 ] <| text "Under Construction!"
+        , el [ centerXY ] <| text "( Settings )"
+        , vp.viewport
+            |> (\{ height, width } ->
+                    { height = height / model.dpi |> round
+                    , width = width / model.dpi |> round
+                    }
+               )
+            |> classifyDevice
+            |> Debug.toString
+            |> text
+            |> el [ centerX ]
+        , vp.viewport
+            |> (\{ height, width } ->
+                    "{ width = "
+                        ++ String.fromFloat (width / model.dpi)
+                        ++ ", height = "
+                        ++ String.fromFloat (height / model.dpi)
+                        ++ " }"
+               )
+            |> text
+            |> el [ centerX ]
+        , model.fontSize
+            |> String.fromFloat
+            |> text
+            |> el [ centerX ]
+        , model.dpi
+            |> String.fromFloat
+            |> text
+            |> el [ centerX ]
+        ]
+
+
+dayView : Model -> Viewport -> Element Msg
+dayView model vp =
+    case model.selectDate of
+        Nothing ->
+            none
+
+        Just date ->
+            column
+                [ height fill
+                , width <| minimum 500 fill
+                , padding <| round model.fontSize
+                , spacing <| round model.fontSize * 2
+                , Border.width lineSize
+                , Border.roundEach
+                    { corners
+                        | topLeft = round <| model.fontSize / 2
+                        , topRight = round <| model.fontSize / 2
+                    }
+                , Bg.color <| Style.addAlpha 0.9 model.pal.bg
+                , scrollbarY
+                ]
+                [ column
+                    [ spacing <| round <| model.fontSize * 0.65
+                    , width fill
+                    , inFront <|
+                        el
+                            [ alignTop
+                            , alignRight
+                            ]
+                        <|
+                            iconButton model
+                                (SelectDate Nothing)
+                                Nothing
+                            <|
+                                text "Close"
+                    ]
+                    [ el
+                        [ centerX
+                        , Font.size <| round <| model.fontSize * 1.5
+                        , Font.bold
+                        ]
+                      <|
+                        text <|
+                            Date.format "EEEE" date
+                    , el
+                        [ centerX
+                        , Font.size <| round <| model.fontSize * 1.5
+                        , Font.bold
+                        ]
+                      <|
+                        text <|
+                            Date.format "MMMM ddd, y" date
+                    , hBar
+                    ]
+                , column
+                    [ spacing <| round <| model.fontSize * 2
+                    , paddingXY (round <| model.fontSize / 2) 0
+                    , width fill
+                    ]
+                    (model.events
+                        |> eventsOfDay date
+                        |> List.map (renderEvent model vp)
+                    )
+                ]
+
+
+renderEvent : Model -> Viewport -> WeeklyEvent -> Element Msg
+renderEvent model vp event =
+    textColumn
+        [ width fill
+        , spacing <| round model.fontSize
+        , paddingEach { edges | left = round model.fontSize }
+        , Border.widthEach { edges | left = lineSize * 2 }
+        , Border.roundEach
+            { corners
+                | topLeft = round <| model.fontSize / 2
+                , bottomLeft = round <| model.fontSize / 2
+            }
+        ]
+        [ paragraph [ width fill, Font.size <| round <| model.fontSize * 1.75, Font.bold ] [ text event.title ]
+        , paragraph [ width fill, Font.bold ] [ text <| eventTimeString event.startTime event.duration ]
+        , renderMd model vp event.description
+        ]
+
+
+calendar : Model -> Element Msg
+calendar model =
+    column
+        [ fillSpace
+        , Border.width lineSize
+        , Border.roundEach
+            { corners
+                | topLeft = round <| model.fontSize / 2
+                , topRight = round <| model.fontSize / 2
+            }
+        , Style.shadow
+        ]
+        [ column
+            [ width fill
+            , Border.widthEach { edges | bottom = lineSize }
+            , Border.roundEach
+                { corners
+                    | topLeft = round <| model.fontSize / 2
+                    , topRight = round <| model.fontSize / 2
+                }
+            , Bg.color <| Style.mix 0.075 model.pal.bg model.pal.fg
+            ]
+            [ el
+                [ centerX
+                , Font.size <| round <| model.fontSize * 1.5
+                , Font.bold
+                , paddingXY 0 <| round model.fontSize
+                ]
+              <|
+                text <|
+                    (model.time
+                        |> Maybe.map (Date.fromPosix model.zone)
+                        |> Maybe.map (Date.format "MMMM y")
+                        |> Maybe.withDefault "Calendar"
+                    )
+            , row
+                [ width fill
+                , paddingXY 0 <| round <| model.fontSize * 0.4
+                ]
+                ([ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ]
+                    |> List.map (text >> el [ centerX ] >> el [ width fill, Font.bold ])
+                )
+            ]
+        , el
+            [ fillSpace
+            ]
+          <|
+            (model.time
+                |> Maybe.map (Calendar.fromTime Nothing Time.utc)
+                |> Maybe.map (List.map (weekOnCalendar model) >> column [ fillSpace ])
+                |> Maybe.withDefault none
+            )
+        ]
+
+
+weekOnCalendar : Model -> List CalendarDate -> Element Msg
+weekOnCalendar model =
+    List.map (dayOnCalendar model) >> row [ fillSpace ]
+
+
+dayOnCalendar : Model -> CalendarDate -> Element Msg
+dayOnCalendar model day =
+    let
+        date :
+            { year : Int
+            , month : Time.Month
+            , day : Int
+            , posix : Time.Posix
+            }
+        date =
+            model.time
+                |> Maybe.map
+                    (\t ->
+                        { year = Time.toYear Time.utc t
+                        , month = Time.toMonth Time.utc t
+                        , day = Time.toDay Time.utc t
+                        , posix = t
+                        }
+                    )
+                |> Maybe.withDefault
+                    { year = 0
+                    , month = Time.Jan
+                    , day = 0
+                    , posix = Time.millisToPosix 0
+                    }
+
+        isToday : Bool
+        isToday =
+            Date.compare day.date (Date.fromPosix Time.utc date.posix) == EQ
+
+        isSelected : Bool
+        isSelected =
+            case model.selectDate of
+                Just sd ->
+                    Date.compare day.date sd == EQ
+
+                Nothing ->
+                    False
+
+        isThisMonth : Bool
+        isThisMonth =
+            Date.month day.date == date.month
+
+        bg : Color
+        bg =
+            case ( isSelected, isThisMonth ) of
+                ( True, True ) ->
+                    Style.mix 0.5 model.pal.link model.pal.bg
+
+                ( True, False ) ->
+                    Style.mix 0.5 model.pal.link <| Style.mix 0.35 model.pal.bg model.pal.fg
+
+                ( False, True ) ->
+                    model.pal.bg
+
+                ( False, False ) ->
+                    Style.mix 0.35 model.pal.bg model.pal.fg
+
+        internalBorder : Color
+        internalBorder =
+            if isToday then
+                model.pal.fg
+
+            else
+                bg
+    in
+    el
+        [ fillSpace
+        , padding <| round <| model.fontSize / 6
+        , Border.width 1
+        , Bg.color internalBorder
+        ]
+    <|
+        link
+            [ fillSpace
+            , Ev.onClick <|
+                SelectDate <|
+                    if isSelected then
+                        Nothing
+
+                    else
+                        Just day.date
+            ]
+            { url = ""
+            , label =
+                column
+                    [ fillSpace
+
+                    --, padding <| round <| model.fontSize / 2 - model.fontSize / 6
+                    , spacing <| round <| model.fontSize / 2 - model.fontSize / 6
+                    , Font.size 10
+                    , Bg.color bg
+                    ]
+                <|
+                    el
+                        [ Font.size 16
+                        , Font.bold
+                        , Font.color <| model.pal.bg
+                        , Bg.color <| Style.mix 0.75 model.pal.bg model.pal.fg
+                        , padding <| lineSize * 2
+                        , Border.roundEach
+                            { corners
+                                | topRight = lineSize * 4
+                                , bottomLeft = lineSize * 4
+                                , bottomRight = lineSize * 4
+                            }
+                        ]
+                        (day.date
+                            |> Date.day
+                            |> String.fromInt
+                            |> String.padLeft 2 '0'
+                            |> text
+                        )
+                        :: (model.events
+                                |> eventsOfDay day.date
+                                |> List.map (calendarItem model)
+                           )
+
+            {-
+               paragraph
+                   [ width fill
+                   , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg model.pal.error
+                   , Border.color <| Style.mix 0.5 model.pal.bg model.pal.error
+                   , Border.width 1
+                   , Border.rounded <| round <| model.fontSize / 3
+                   , padding <| round <| model.fontSize / 2 - model.fontSize / 6
+                   ]
+                   [ text "Open Spaces"
+                   ]
+               , paragraph
+                   [ width fill
+                   , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg model.pal.link
+                   , Border.color <| Style.mix 0.5 model.pal.bg model.pal.link
+                   , Border.width 1
+                   , Border.rounded <| round <| model.fontSize / 3
+                   , padding <| round <| model.fontSize / 2 - model.fontSize / 6
+                   ]
+                   [ text "Live Coding"
+                   ]
+               , paragraph
+                   [ width fill
+                   , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg model.pal.extLink
+                   , Border.color <| Style.mix 0.5 model.pal.bg model.pal.extLink
+                   , Border.width 1
+                   , Border.rounded <| round <| model.fontSize / 3
+                   , padding <| round <| model.fontSize / 2 - model.fontSize / 6
+                   ]
+                   [ text "Playground"
+                   ]
+            -}
+            }
+
+
+calendarItem : Model -> WeeklyEvent -> Element Msg
+calendarItem model event =
+    paragraph
+        [ width fill
+        , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg event.color
+        , Border.color <| Style.mix 0.5 model.pal.bg event.color
+        , Border.width 1
+        , Border.rounded <| round <| model.fontSize / 3
+        , padding <| round <| model.fontSize / 2 - model.fontSize / 6
+        ]
+        [ text event.title
+        ]
+
+
 turningPage : Model -> Float -> Element Msg -> Element Msg
 turningPage model rot content =
     row
         [ Font.color model.pal.fg
+        , Bg.color model.pal.bg
         , Border.roundEach { corners | bottomRight = round <| model.fontSize * 2 }
         , shadow
         , fillSpace
@@ -928,16 +1033,53 @@ turningPage model rot content =
                 , Border.roundEach { corners | bottomRight = round <| model.fontSize * 2 }
                 ]
               <|
-                Pic.pageCurl model.pal model.fontSize
+                Pic.pageCurl model.pal <|
+                    model.fontSize
+                        * 2
             ]
         ]
 
 
-titleBar : Model -> Element Msg
-titleBar model =
+titleBar : Model -> Viewport -> Element Msg
+titleBar model vp =
     row
         [ width fill
         , spacing <| round <| model.fontSize / 2
+        , case model.menu of
+            MenuClosed ->
+                batch []
+
+            MenuOpen ->
+                below <|
+                    column
+                        [ alignTop
+                        , alignRight
+                        , width <| px <| round <| vp.viewport.width * 0.9
+                        , height <| px <| round <| vp.viewport.height * 0.9
+                        ]
+                        [ row [ fillSpace ]
+                            [ el
+                                [ fillSpace
+                                , Ev.onClick <| ChangeMenu MenuClosed
+                                ]
+                                none
+                            , el
+                                [ alignTop
+                                , alignRight
+                                , Bg.color <| addAlpha 0.95 <| model.pal.bg
+                                , Font.size <| round model.fontSize
+                                , padding <| round <| model.fontSize
+                                , Style.shadow
+                                ]
+                              <|
+                                mainMenu model
+                            ]
+                        , el
+                            [ fillSpace
+                            , Ev.onClick <| ChangeMenu MenuClosed
+                            ]
+                            none
+                        ]
         ]
         [ link
             [ Ev.onClick <| GotoPage Home ]
@@ -951,7 +1093,9 @@ titleBar model =
                     ]
                 <|
                     el [ centerXY, scale 1.4 ] <|
-                        Pic.gimbalogo model.pal.bg model.fontSize
+                        Pic.gimbalogo model.pal.bg <|
+                            model.fontSize
+                                * 1.6
             }
         , el [ fillSpace, paddingXY 0 lineSize ] <|
             row
@@ -966,41 +1110,43 @@ titleBar model =
                     , centerY
                     ]
                   <|
-                    case model.menu of
-                        MenuClosed ->
-                            [ link [ Ev.onClick <| GotoPage Home ]
-                                { url = ""
-                                , label =
-                                    row
-                                        [ Font.size <| round <| model.fontSize * 1.5
-                                        , Font.color model.pal.link
-                                        , Font.letterSpacing 1.25
-                                        ]
-                                        [ text "GIMBA"
-                                        , el [ Font.heavy, Font.bold ] <| text "LABS"
-                                        ]
-                                }
-                            , el [ alignRight ] <|
-                                text <|
-                                    viewTimeDate model.zone <|
-                                        model.time
-                            , Pic.menuClosed model.pal.link
-                                model.fontSize
-                                (ChangeMenu MainMenu)
-                            ]
-
-                        MainMenu ->
-                            [ el
+                    [ link [ Ev.onClick <| GotoPage Home ]
+                        { url = ""
+                        , label =
+                            row
                                 [ Font.size <| round <| model.fontSize * 1.5
-                                , Font.bold
+                                , Font.color model.pal.link
+                                , Font.letterSpacing 1.25
                                 ]
-                              <|
-                                text "Menu:"
-                            , el [ alignRight ] <| mainMenu model
-                            , Pic.menuOpen model.pal.link
-                                model.fontSize
+                                [ text "GIMBA"
+                                , el [ Font.heavy, Font.bold ] <| text "LABS"
+                                ]
+                        }
+                    , el [ alignRight ] <|
+                        text <|
+                            viewTimeDate model.zone <|
+                                model.time
+                    , case model.menu of
+                        MenuClosed ->
+                            iconButton model
+                                (ChangeMenu MenuOpen)
+                                (Just Pic.menuClosed)
+                                none
+
+                        {- Pic.menuClosed model.pal.link
+                           model.fontSize
+                        -}
+                        MenuOpen ->
+                            iconButton model
                                 (ChangeMenu MenuClosed)
-                            ]
+                                (Just Pic.menuOpen)
+                                none
+
+                    {- Pic.menuOpen model.pal.link
+                       model.fontSize
+                       (ChangeMenu MenuClosed)
+                    -}
+                    ]
                 ]
         ]
 
@@ -1014,7 +1160,7 @@ titleBar model =
            [ spacing <| round <| fontSize * 1.5
            , Font.letterSpacing 1.25
            ]
-           [ iconButton model (ChangeMenu MainMenu) Nothing <| text "🠈 Back"
+           [ iconButton model (ChangeMenu MenuOpen) Nothing <| text "🠈 Back"
            , iconButton model ResetView Nothing <| text "Reset"
            ]
 
@@ -1037,7 +1183,7 @@ titleBar model =
 
 mainMenu : Model -> Element Msg
 mainMenu model =
-    row
+    column
         [ spacing <| round <| model.fontSize * 1.5
         , Font.letterSpacing 1.25
         ]
@@ -1061,24 +1207,14 @@ mainMenu model =
             (Just Pic.solutions)
           <|
             text "Solutions"
+        , iconButton model (GotoPage Graph) (Just Pic.dims) <| text "Graph"
+        , hBar
+        , if model.pal.name == "Newspaper" then
+            iconButton model (ChangeColor dark) (Just Pic.dark) <| text "Mode"
+
+          else
+            iconButton model (ChangeColor newspaper) (Just Pic.light) <| text "Mode"
         , iconButton model (GotoPage Settings) (Just Pic.settings) <| text "Settings"
-        , row
-            [ Border.widthEach { edges | left = lineSize, right = lineSize }
-            , paddingXY (round <| model.fontSize / 2) 0
-            , spacing (round <| model.fontSize / 2)
-            ]
-          <|
-            if model.pal.name == "Newspaper" then
-                [ iconButton model (ChangeColor dark) (Just Pic.dark) none
-                , iconButton model (GotoPage Settings) (Just Pic.dims) none
-
-                --, iconButton model (GotoPage Settings) (Just Pic.gimbalogo) <| text "Gimbalabs"
-                ]
-
-            else
-                [ iconButton model (ChangeColor newspaper) (Just Pic.light) none
-                , iconButton model (GotoPage Settings) (Just Pic.dims) none
-                ]
         ]
 
 
@@ -1149,23 +1285,10 @@ monthToString month =
 
 viewTimeDate : Time.Zone -> Maybe Time.Posix -> String
 viewTimeDate zone maybeTime =
-    case maybeTime of
-        Just time ->
-            let
-                date : Date
-                date =
-                    Date.fromPosix zone time
-            in
-            weekdayToString (Date.weekday date)
-                ++ ", "
-                ++ monthToString (Date.month date)
-                ++ " "
-                ++ String.fromInt (Date.day date)
-                ++ ", "
-                ++ String.fromInt (Date.year date)
-
-        Nothing ->
-            ""
+    maybeTime
+        |> Maybe.map (Date.fromPosix zone)
+        |> Maybe.map (Date.format "EEEE, MMMM ddd, y")
+        |> Maybe.withDefault ""
 
 
 

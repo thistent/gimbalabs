@@ -15,7 +15,7 @@ import Ui.Font as Font
 -- Slides --
 
 
-outline : Pal -> List (Element Msg)
+outline : Model -> List (Element Msg)
 outline m =
     let
         li : String -> String -> Element Msg
@@ -32,7 +32,7 @@ outline m =
     ]
 
 
-initSlides : Dict String (Pal -> Element Msg)
+initSlides : Dict String (Model -> Element Msg)
 initSlides =
     Dict.fromList
         [ ( "start"
@@ -128,69 +128,74 @@ notFound =
         text "Slide not found!"
 
 
-topGroup : Pal -> List (Element Msg) -> Element Msg
-topGroup _ =
+topGroup : Model -> List (Element Msg) -> Element Msg
+topGroup m =
     column
-        [ spacing <| fontSize * 2
+        [ spacing <| round <| m.fontSize * 2
         , fillSpace
         ]
 
 
-heading : Pal -> String -> Element Msg
-heading _ txt =
-    paragraph
+heading : Model -> String -> Element Msg
+heading m txt =
+    el
         [ Border.widthEach { edges | bottom = lineSize }
-        , paddingEach { edges | left = fontSize, bottom = fontSize }
+        , paddingEach { edges | bottom = round m.fontSize }
+        , Font.size <| round <| m.fontSize * 2
         , width fill
-        , Font.size <| fontSize * 2
-        , spacing <| fontSize
         ]
-        [ text txt
-        ]
+    <|
+        paragraph
+            [ spacing <| round <| m.fontSize
+            , centerX
+            , Font.center
+            ]
+            [ text txt
+            ]
 
 
-linkItem : Pal -> String -> String -> Element Msg
-linkItem color msg txt =
+linkItem : Model -> String -> String -> Element Msg
+linkItem m msg txt =
     link [ Ev.onClick <| NextSlide msg ]
         { url = ""
         , label =
             row
-                [ spacing <| fontSize
-                , Font.color color.link
+                [ spacing <| round m.fontSize
+                , Font.color m.pal.link
                 , Font.alignLeft
                 ]
                 [ el
                     [ alignTop
-                    , width <| px <| fontSize
+                    , width <| px <| round <| m.fontSize
                     ]
                   <|
-                    Pic.loc color.link
-                , paragraph [ spacing <| fontSize * 2 // 3 ]
+                    Pic.location m.pal.link m.fontSize
+                , paragraph [ spacing <| round <| m.fontSize * 2 / 3 ]
                     [ text txt
                     ]
                 ]
         }
 
 
-item : Pal -> String -> Element Msg
-item color txt =
+item : Model -> String -> Element Msg
+item m txt =
     row
-        [ spacing <| fontSize
+        [ spacing <| round m.fontSize
         ]
         [ el
             [ alignTop
-            , width <| px <| fontSize
+            , width <| px <| round m.fontSize
             ]
           <|
-            Pic.bullet color.fg
-        , paragraph [ spacing <| fontSize * 2 // 3 ]
+            Pic.bullet m.pal.fg m.fontSize
+        , paragraph [ spacing <| round <| m.fontSize * 2 / 3 ]
             [ text txt
             ]
         ]
 
 
-group : Pal -> String -> List (Element Msg) -> Element Msg
-group pal hd els =
+group : Model -> String -> List (Element Msg) -> Element Msg
+group m hd els =
     column
         [ Border.widthEach
             { edges
@@ -198,150 +203,32 @@ group pal hd els =
             }
         , Border.roundEach
             { corners
-                | topLeft = fontSize // 2
-                , bottomLeft = fontSize // 2
+                | topLeft = round <| m.fontSize / 2
+                , bottomLeft = round <| m.fontSize / 2
             }
-        , spacing <| fontSize
+        , spacing <| round <| m.fontSize
         , width fill
         ]
         [ paragraph
             [ Font.bold
-            , paddingXY fontSize (fontSize * 2 // 3)
-            , spacing <| fontSize // 2
+            , paddingXY (round m.fontSize) (round <| m.fontSize * 2 / 3)
+            , spacing <| round <| m.fontSize / 2
             , Border.roundEach
                 { corners
-                    | topRight = fontSize // 2
-                    , bottomRight = fontSize // 2
+                    | topRight = round <| m.fontSize / 2
+                    , bottomRight = round <| m.fontSize / 2
                 }
             , moveDown <| lineSize * 3.0
-            , Bg.color <| Style.mix 0.9 pal.fg pal.bg
+            , Bg.color <| Style.mix 0.9 m.pal.fg m.pal.bg
             ]
             [ text hd
             ]
 
         --, hBar
         , column
-            [ spacing <| fontSize
+            [ spacing <| round <| m.fontSize
             , width fill
-            , paddingEach { edges | left = fontSize }
+            , paddingEach { edges | left = round <| m.fontSize }
             ]
             els
         ]
-
-
-vBar : Element Msg
-vBar =
-    el
-        [ height fill
-        , width <| px <| lineSize * 2
-        , Border.widthEach
-            { edges
-                | left = lineSize
-                , right = lineSize // 2
-            }
-        ]
-        none
-
-
-hBar : Element Msg
-hBar =
-    el
-        [ width fill
-        , height <| px <| lineSize * 2
-        , Border.widthEach
-            { edges
-                | top = lineSize
-                , bottom = lineSize // 2
-            }
-        ]
-        none
-
-
-iconButton : Model -> Msg -> Maybe (Color -> Element Msg) -> Element Msg -> Element Msg
-iconButton model msg maybeIcon content =
-    let
-        isLink : Bool
-        isLink =
-            case msg of
-                GotoPage page ->
-                    page /= model.page
-
-                ChangeMenu menu ->
-                    menu /= model.menu
-
-                ChangeColor pal ->
-                    pal /= model.color
-
-                _ ->
-                    True
-
-        color : Color
-        color =
-            if isLink then
-                case msg of
-                    GetDoc str ->
-                        let
-                            testStr : String
-                            testStr =
-                                String.left 4 str
-                        in
-                        if testStr == "http" then
-                            model.color.extLink
-
-                        else
-                            model.color.link
-
-                    _ ->
-                        model.color.link
-
-            else
-                model.color.fg
-
-        linkStyle : Attribute Msg
-        linkStyle =
-            batch
-                [ paddingXY 0 3
-                , Font.bold
-                , Font.underline
-                , Font.color color
-                ]
-
-        linkContent : Element Msg
-        linkContent =
-            case maybeIcon of
-                Just icon ->
-                    row
-                        []
-                        [ icon color
-                        , el [ width <| px <| lineSize * 3 ] none
-                        , el [ linkStyle ] <| content
-                        ]
-
-                Nothing ->
-                    el [ linkStyle ] <| content
-    in
-    if isLink then
-        link
-            [ Ev.onClick msg
-            ]
-            { url =
-                case msg of
-                    GetDoc str ->
-                        let
-                            testStr : String
-                            testStr =
-                                String.left 4 str
-                        in
-                        if testStr == "http" then
-                            str
-
-                        else
-                            ""
-
-                    _ ->
-                        ""
-            , label = linkContent
-            }
-
-    else
-        linkContent

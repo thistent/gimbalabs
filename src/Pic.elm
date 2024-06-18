@@ -5,72 +5,126 @@ module Pic exposing (..)
 import Color
 import Style
 import TypedSvg as Ts
-import TypedSvg.Attributes as Ta
+import TypedSvg.Attributes as Ta exposing (fontSize)
 import TypedSvg.Core as Tc
 import TypedSvg.Types as Tt
 import Types exposing (..)
 import Ui exposing (..)
-import Ui.Events as Ev
 
 
 gimbalogo : Color -> Float -> Element msg
-gimbalogo bg fontSize =
+gimbalogo =
+    svgIcon gimbalogoPath 15.236 26.458
+
+
+menuClosed : Color -> Float -> Element msg
+menuClosed =
+    svgIcon menuClosedPath 29.104 26.458
+
+
+menuOpen : Color -> Float -> Element msg
+menuOpen =
+    svgIcon menuOpenPath 29.104 26.458
+
+
+home : Color -> Float -> Element msg
+home =
+    svgIcon homePath 26.213 26.458
+
+
+calendar : Color -> Float -> Element msg
+calendar =
+    svgIcon calendarPath 23.64 26.458
+
+
+blog : Color -> Float -> Element msg
+blog =
+    svgIcon blogPath 23.657 26.458
+
+
+solutions : Color -> Float -> Element msg
+solutions =
+    svgIcon solutionsPath 19.59 26.458
+
+
+settings : Color -> Float -> Element msg
+settings =
+    svgIcon settingsPath 26.458 26.458
+
+
+bullet : Color -> Float -> Element msg
+bullet =
+    svgIcon bulletPath 26.458 26.458
+
+
+checked : Color -> Float -> Element msg
+checked =
+    svgIcon checkedPath 26.458 26.458
+
+
+unchecked : Color -> Float -> Element msg
+unchecked =
+    svgIcon uncheckedPath 26.458 26.458
+
+
+dark : Color -> Float -> Element msg
+dark =
+    svgIcon darkPath 26.856 26.458
+
+
+light : Color -> Float -> Element msg
+light =
+    svgIcon lightPath 26.856 26.458
+
+
+dims : Color -> Float -> Element msg
+dims =
+    svgIcon dimsPath 25.034 26.458
+
+
+
+{-
+   pal : Color -> Float -> Element msg
+   pal =
+       svgIcon palPath 26.458 26.458
+-}
+
+
+location : Color -> Float -> Element msg
+location =
+    svgIcon locPath 22.933 26.458
+
+
+
+-- Svg Functions --
+
+
+svg : List (Tc.Attribute msg) -> List (Tc.Svg msg) -> Element msg
+svg svgAttrs svgElems =
+    html <|
+        Ts.svg svgAttrs svgElems
+
+
+svgIcon : String -> Float -> Float -> Color -> Float -> Element msg
+svgIcon path vbWidth vbHeight color height =
     svg
-        [ Ta.viewBox 0 0 15.236 26.458
-        , Ta.height <| Tt.px <| fontSize * 1.6
+        [ Ta.viewBox 0 0 vbWidth vbHeight
+        , Ta.height <| Tt.px <| height
         ]
         [ Ts.path
-            [ Ta.d gimbalogoPath
-            , Ta.fill <| Tt.Paint bg
+            [ Ta.d path
+            , Ta.fill <| Tt.Paint color
             ]
             []
         ]
 
 
-menuClosed : Color -> Float -> msg -> Element msg
-menuClosed color fontSize msg =
-    link
-        [ Ev.onClick msg
-        , alignRight
-        ]
-        { url = ""
-        , label =
-            svg
-                [ Ta.viewBox 0 0 26.458 26.458
-                , Ta.height <| Tt.px <| fontSize * 1.5
-                ]
-                [ Ts.path
-                    [ Ta.d menuClosedPath
-                    , Ta.fill <| Tt.Paint color
-                    ]
-                    []
-                ]
-        }
 
-
-menuOpen : Color -> Float -> msg -> Element msg
-menuOpen color fontSize msg =
-    link
-        [ Ev.onClick msg
-        , alignRight
-        ]
-        { url = ""
-        , label =
-            svg
-                [ Ta.viewBox 0 0 26.458 26.458
-                , Ta.height <| Tt.px <| fontSize * 1.6
-                ]
-                [ Ts.path
-                    [ Ta.d menuOpenPath
-                    , Ta.fill <| Tt.Paint color
-                    ]
-                    []
-                ]
-        }
+-- Page Curl --
 
 
 pageCurl : Pal -> Float -> Element msg
-pageCurl c fontSize =
+pageCurl c size =
     let
         fg : Color
         fg =
@@ -86,8 +140,8 @@ pageCurl c fontSize =
     in
     svg
         [ Ta.viewBox 0 0 26.458 26.458
-        , Ta.width <| Tt.px <| fontSize * 2
-        , Ta.height <| Tt.px <| fontSize * 2
+        , Ta.width <| Tt.px size
+        , Ta.height <| Tt.px size
         ]
         [ Ts.defs []
             [ Ts.linearGradient
@@ -134,201 +188,6 @@ pageCurl c fontSize =
         ]
 
 
-home : Color -> Float -> Element msg
-home color fontSize =
-    svg
-        [ Ta.viewBox 0 0 26.213 26.458
-        , Ta.height <| Tt.px <| fontSize * 1.6
-        ]
-        [ Ts.path
-            [ Ta.d homePath
-            , Ta.fill <| Tt.Paint color
-            ]
-            []
-        ]
-
-
-calendar : Color -> Float -> Element msg
-calendar color fontSize =
-    svg
-        [ Ta.viewBox 0 0 23.64 26.458
-        , Ta.height <| Tt.px <| fontSize * 1.6
-        ]
-        [ Ts.path
-            [ Ta.d calendarPath
-            , Ta.fill <| Tt.Paint color
-            ]
-            []
-        ]
-
-
-blog : Color -> Float -> Element msg
-blog color fontSize =
-    svg
-        [ Ta.viewBox 0 0 23.657 26.458
-        , Ta.height <| Tt.px <| fontSize * 1.6
-        ]
-        [ Ts.path
-            [ Ta.d blogPath
-            , Ta.fill <| Tt.Paint color
-            ]
-            []
-        ]
-
-
-solutions : Color -> Float -> Element msg
-solutions color fontSize =
-    svg
-        [ Ta.viewBox 0 0 19.59 26.458
-        , Ta.height <| Tt.px <| fontSize * 1.6
-        ]
-        [ Ts.path
-            [ Ta.d solutionsPath
-            , Ta.fill <| Tt.Paint color
-            ]
-            []
-        ]
-
-
-
-{-
-   pal : Color -> Element msg
-   pal color =
-       svg
-           [ Ta.viewBox 0 0 26.458 26.458
-           , Ta.height <| Tt.px <| fontSize * 1.6
-           ]
-           [ Ts.path
-               [ Ta.d palPath
-               , Ta.fill <| Tt.Paint color
-               ]
-               []
-           ]
--}
-
-
-loc : Color -> Float -> Element msg
-loc color fontSize =
-    svg
-        [ Ta.viewBox 0 0 22.933 26.458
-        , Ta.height <| Tt.px <| fontSize * 1.6
-        ]
-        [ Ts.path
-            [ Ta.d locPath
-            , Ta.fill <| Tt.Paint color
-            ]
-            []
-        ]
-
-
-bullet : Color -> Float -> Element msg
-bullet color fontSize =
-    svg
-        [ Ta.viewBox 0 0 26.458 26.458
-        , Ta.height <| Tt.px <| fontSize
-        ]
-        [ Ts.path
-            [ Ta.d bulletPath
-            , Ta.fill <| Tt.Paint color
-            ]
-            []
-        ]
-
-
-checked : Color -> Float -> Element msg
-checked color fontSize =
-    svg
-        [ Ta.viewBox 0 0 26.458 26.458
-        , Ta.height <| Tt.px <| fontSize
-        ]
-        [ Ts.path
-            [ Ta.d checkedPath
-            , Ta.fill <| Tt.Paint color
-            ]
-            []
-        ]
-
-
-unchecked : Color -> Float -> Element msg
-unchecked color fontSize =
-    svg
-        [ Ta.viewBox 0 0 26.458 26.458
-        , Ta.height <| Tt.px <| fontSize
-        ]
-        [ Ts.path
-            [ Ta.d uncheckedPath
-            , Ta.fill <| Tt.Paint color
-            ]
-            []
-        ]
-
-
-settings : Color -> Float -> Element msg
-settings color fontSize =
-    svg
-        [ Ta.viewBox 0 0 26.458 26.458
-        , Ta.height <| Tt.px <| fontSize * 1.6
-        ]
-        [ Ts.path
-            [ Ta.d settingsPath
-            , Ta.fill <| Tt.Paint color
-            ]
-            []
-        ]
-
-
-dark : Color -> Float -> Element msg
-dark color fontSize =
-    svg
-        [ Ta.viewBox 0 0 26.856 26.459
-        , Ta.height <| Tt.px <| fontSize * 1.6
-        ]
-        [ Ts.path
-            [ Ta.d darkPath
-            , Ta.fill <| Tt.Paint color
-            ]
-            []
-        ]
-
-
-light : Color -> Float -> Element msg
-light color fontSize =
-    svg
-        [ Ta.viewBox 0 0 26.856 26.458
-        , Ta.height <| Tt.px <| fontSize * 1.6
-        ]
-        [ Ts.path
-            [ Ta.d lightPath
-            , Ta.fill <| Tt.Paint color
-            ]
-            []
-        ]
-
-
-dims : Color -> Float -> Element msg
-dims bg fontSize =
-    svg
-        [ Ta.viewBox 0 0 25.034 26.458
-        , Ta.height <| Tt.px <| fontSize * 1.6
-        ]
-        [ Ts.path
-            [ Ta.d dimsPath
-            , Ta.fill <| Tt.Paint bg
-            ]
-            []
-        ]
-
-
-
--- Misc Functions --
-
-
-svg : List (Tc.Attribute msg) -> List (Tc.Svg msg) -> Element msg
-svg svgAttrs svgElems =
-    html <|
-        Ts.svg svgAttrs svgElems
-
-
 
 -- Svg Paths --
 
@@ -340,12 +199,12 @@ gimbalogoPath =
 
 menuClosedPath : String
 menuClosedPath =
-    "m-1.2495e-4 0v3.3329h26.458v-3.3329zm2.499e-4 11.601h26.457v3.2559h-26.457zm0 11.524h26.457v3.3334h-26.457z"
+    "m0 0v4.9614h29.104v-4.9614zm0 10.747v4.9619h29.104v-4.9619zm0 10.749v4.9614h29.104v-4.9614z"
 
 
 menuOpenPath : String
 menuOpenPath =
-    "m26.458-1.67e-4 -12.314 13.229 12.314 13.23v-6.141l-6.5973-7.0882 6.5973-7.0882v-6.14zm-26.458 1.67e-4v3.3326h17.667l3.1434-3.3326zm0 11.601v3.2561h9.8693l-1.5353-1.6278 1.5358-1.6283zm0 11.524v3.3331h20.81l-3.1434-3.3331z"
+    "m0 0v4.9614h18.155l4.6183-4.9614zm0 10.747v4.9619h12.769l-2.3089-2.4804 2.3099-2.4815zm0 10.749v4.9614h22.772l-4.6177-4.9614zm29.104-21.496-12.314 13.228 12.314 13.23v-6.8217l-5.9639-6.4078 5.9639-6.4073v-6.8197z"
 
 
 curlFront : String

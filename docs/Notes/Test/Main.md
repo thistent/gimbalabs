@@ -2,6 +2,10 @@
 
 Look at this [Other Page](Other.md)!
 
+This page does not exist: [Nothing](Nothing.md)
+
+A presentation: [Scopes of Authority](Auth.md)
+
 Code: `You can [Reload the Main Page](Main.md) or view the [Other Page](Other.md)!`
 
 ## Markdown files like this [blog post](Post-01.md)!

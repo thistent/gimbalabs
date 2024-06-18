@@ -5677,7 +5677,14 @@ var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $author$project$Types$AdjustTimeZone = function (a) {
 	return {$: 'AdjustTimeZone', a: a};
 };
+var $elm$time$Time$Aug = {$: 'Aug'};
+var $elm$time$Time$Dec = {$: 'Dec'};
+var $elm$time$Time$Feb = {$: 'Feb'};
 var $author$project$Types$Home = {$: 'Home'};
+var $elm$time$Time$Jan = {$: 'Jan'};
+var $elm$time$Time$Jun = {$: 'Jun'};
+var $elm$time$Time$Mar = {$: 'Mar'};
+var $elm$time$Time$May = {$: 'May'};
 var $author$project$Types$MenuClosed = {$: 'MenuClosed'};
 var $author$project$Types$North = {$: 'North'};
 var $author$project$Types$ReceiveDoc = F2(
@@ -6294,6 +6301,130 @@ var $elm$http$Http$expectString = function (toMsg) {
 		toMsg,
 		$elm$http$Http$resolve($elm$core$Result$Ok));
 };
+var $justinmimbs$date$Date$RD = function (a) {
+	return {$: 'RD', a: a};
+};
+var $elm$core$Basics$clamp = F3(
+	function (low, high, number) {
+		return (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number);
+	});
+var $elm$core$Basics$modBy = _Basics_modBy;
+var $elm$core$Basics$neq = _Utils_notEqual;
+var $justinmimbs$date$Date$isLeapYear = function (y) {
+	return ((!A2($elm$core$Basics$modBy, 4, y)) && (!(!A2($elm$core$Basics$modBy, 100, y)))) || (!A2($elm$core$Basics$modBy, 400, y));
+};
+var $justinmimbs$date$Date$daysBeforeMonth = F2(
+	function (y, m) {
+		var leapDays = $justinmimbs$date$Date$isLeapYear(y) ? 1 : 0;
+		switch (m.$) {
+			case 'Jan':
+				return 0;
+			case 'Feb':
+				return 31;
+			case 'Mar':
+				return 59 + leapDays;
+			case 'Apr':
+				return 90 + leapDays;
+			case 'May':
+				return 120 + leapDays;
+			case 'Jun':
+				return 151 + leapDays;
+			case 'Jul':
+				return 181 + leapDays;
+			case 'Aug':
+				return 212 + leapDays;
+			case 'Sep':
+				return 243 + leapDays;
+			case 'Oct':
+				return 273 + leapDays;
+			case 'Nov':
+				return 304 + leapDays;
+			default:
+				return 334 + leapDays;
+		}
+	});
+var $justinmimbs$date$Date$floorDiv = F2(
+	function (a, b) {
+		return $elm$core$Basics$floor(a / b);
+	});
+var $justinmimbs$date$Date$daysBeforeYear = function (y1) {
+	var y = y1 - 1;
+	var leapYears = (A2($justinmimbs$date$Date$floorDiv, y, 4) - A2($justinmimbs$date$Date$floorDiv, y, 100)) + A2($justinmimbs$date$Date$floorDiv, y, 400);
+	return (365 * y) + leapYears;
+};
+var $justinmimbs$date$Date$daysInMonth = F2(
+	function (y, m) {
+		switch (m.$) {
+			case 'Jan':
+				return 31;
+			case 'Feb':
+				return $justinmimbs$date$Date$isLeapYear(y) ? 29 : 28;
+			case 'Mar':
+				return 31;
+			case 'Apr':
+				return 30;
+			case 'May':
+				return 31;
+			case 'Jun':
+				return 30;
+			case 'Jul':
+				return 31;
+			case 'Aug':
+				return 31;
+			case 'Sep':
+				return 30;
+			case 'Oct':
+				return 31;
+			case 'Nov':
+				return 30;
+			default:
+				return 31;
+		}
+	});
+var $justinmimbs$date$Date$fromCalendarDate = F3(
+	function (y, m, d) {
+		return $justinmimbs$date$Date$RD(
+			($justinmimbs$date$Date$daysBeforeYear(y) + A2($justinmimbs$date$Date$daysBeforeMonth, y, m)) + A3(
+				$elm$core$Basics$clamp,
+				1,
+				A2($justinmimbs$date$Date$daysInMonth, y, m),
+				d));
+	});
+var $elm$core$Array$fromListHelp = F3(
+	function (list, nodeList, nodeListSize) {
+		fromListHelp:
+		while (true) {
+			var _v0 = A2($elm$core$Elm$JsArray$initializeFromList, $elm$core$Array$branchFactor, list);
+			var jsArray = _v0.a;
+			var remainingItems = _v0.b;
+			if (_Utils_cmp(
+				$elm$core$Elm$JsArray$length(jsArray),
+				$elm$core$Array$branchFactor) < 0) {
+				return A2(
+					$elm$core$Array$builderToArray,
+					true,
+					{nodeList: nodeList, nodeListSize: nodeListSize, tail: jsArray});
+			} else {
+				var $temp$list = remainingItems,
+					$temp$nodeList = A2(
+					$elm$core$List$cons,
+					$elm$core$Array$Leaf(jsArray),
+					nodeList),
+					$temp$nodeListSize = nodeListSize + 1;
+				list = $temp$list;
+				nodeList = $temp$nodeList;
+				nodeListSize = $temp$nodeListSize;
+				continue fromListHelp;
+			}
+		}
+	});
+var $elm$core$Array$fromList = function (list) {
+	if (!list.b) {
+		return $elm$core$Array$empty;
+	} else {
+		return A3($elm$core$Array$fromListHelp, list, _List_Nil, 0);
+	}
+};
 var $elm$http$Http$emptyBody = _Http_emptyBody;
 var $elm$http$Http$Request = function (a) {
 	return {$: 'Request', a: a};
@@ -6498,7 +6629,7 @@ var $avh4$elm_color$Color$rgb255 = F3(
 	});
 var $author$project$Ui$rgb255 = $avh4$elm_color$Color$rgb255;
 var $author$project$Style$newspaper = {
-	bg: A3($author$project$Ui$rgb255, 155, 153, 148),
+	bg: A3($author$project$Ui$rgb255, 157, 153, 146),
 	error: A3($author$project$Ui$rgb255, 141, 25, 0),
 	extLink: A3($author$project$Ui$rgb255, 0, 51, 112),
 	fg: A3($author$project$Ui$rgb255, 43, 22, 0),
@@ -6532,18 +6663,78 @@ var $author$project$Main$init = F3(
 		return A2(
 			$Fresheyeball$elm_return$Return$return,
 			{
-				clock: $author$project$Types$North,
 				currentSlide: 'start',
 				docName: '',
 				docText: '',
 				dpi: flags.dpi,
+				events: $elm$core$Array$fromList(
+					_List_fromArray(
+						[
+							{
+							color: A3($author$project$Ui$rgb255, 204, 170, 0),
+							description: '[Zoom Link](https://us06web.zoom.us/meeting/register/tZwtcemrqTwoG9fYL2pYvrCwQG9u2tJNmqa6)',
+							duration: (1 * 60) + 0,
+							exceptions: _List_Nil,
+							firstDate: A3($justinmimbs$date$Date$fromCalendarDate, 2024, $elm$time$Time$Mar, 11),
+							lastDate: A3($justinmimbs$date$Date$fromCalendarDate, 2024, $elm$time$Time$Dec, 30 + 1),
+							startTime: (13 * 60) + 0,
+							title: 'Cardano Go Live Coding'
+						},
+							{
+							color: A3($author$project$Ui$rgb255, 187, 119, 221),
+							description: '[Zoom Link](https://us06web.zoom.us/meeting/register/tZEqcuGgpz8oG9d-DgQBDEnICud-mF4uyQCs)',
+							duration: (1 * 60) + 0,
+							exceptions: _List_fromArray(
+								[
+									A3($justinmimbs$date$Date$fromCalendarDate, 2024, $elm$time$Time$Jun, 4)
+								]),
+							firstDate: A3($justinmimbs$date$Date$fromCalendarDate, 2024, $elm$time$Time$Mar, 5),
+							lastDate: A3($justinmimbs$date$Date$fromCalendarDate, 2024, $elm$time$Time$Aug, 27 + 1),
+							startTime: (13 * 60) + 0,
+							title: 'Mesh Live Coding'
+						},
+							{
+							color: A3($author$project$Ui$rgb255, 0, 153, 204),
+							description: '[Zoom Link](https://us06web.zoom.us/meeting/register/tZYoduuqpjsqGtdzMHXoRVVnJqcQGOtpQRQv)',
+							duration: (1 * 60) + 30,
+							exceptions: _List_fromArray(
+								[
+									A3($justinmimbs$date$Date$fromCalendarDate, 2024, $elm$time$Time$Jun, 18)
+								]),
+							firstDate: A3($justinmimbs$date$Date$fromCalendarDate, 2024, $elm$time$Time$Jan, 9),
+							lastDate: A3($justinmimbs$date$Date$fromCalendarDate, 2024, $elm$time$Time$Jun, 25 + 1),
+							startTime: (18 * 60) + 0,
+							title: 'Gimbalabs Playground'
+						},
+							{
+							color: A3($author$project$Ui$rgb255, 153, 204, 102),
+							description: '[Zoom Link](https://us06web.zoom.us/meeting/register/tZErceCqpzMtG9XldfuPnBQEus5MBivl9OZe)',
+							duration: (1 * 60) + 30,
+							exceptions: _List_Nil,
+							firstDate: A3($justinmimbs$date$Date$fromCalendarDate, 2024, $elm$time$Time$Feb, 29),
+							lastDate: A3($justinmimbs$date$Date$fromCalendarDate, 2024, $elm$time$Time$Dec, 26 + 1),
+							startTime: (14 * 60) + 30,
+							title: 'Gimbalabs Open Spaces'
+						},
+							{
+							color: A3($author$project$Ui$rgb255, 221, 119, 153),
+							description: '[Zoom Link](https://us06web.zoom.us/meeting/register/tZwoduCgrTgiHt3u34gOSGRL5pY4pdZlT5MM)',
+							duration: (1 * 60) + 30,
+							exceptions: _List_Nil,
+							firstDate: A3($justinmimbs$date$Date$fromCalendarDate, 2024, $elm$time$Time$May, 22),
+							lastDate: A3($justinmimbs$date$Date$fromCalendarDate, 2024, $elm$time$Time$Dec, 25 + 1),
+							startTime: (14 * 60) + 0,
+							title: 'Plutus PBL Live Coding'
+						}
+						])),
 				fontSize: 12 * flags.dpi,
+				hemisphere: $author$project$Types$North,
 				menu: $author$project$Types$MenuClosed,
 				navKey: key,
 				page: $author$project$Types$Home,
 				pal: $author$project$Style$newspaper,
 				selectDate: $elm$core$Maybe$Nothing,
-				size: A2($author$project$Delay$wait, 1000, $elm$core$Maybe$Nothing),
+				size: A2($author$project$Delay$wait, 500, $elm$core$Maybe$Nothing),
 				slides: $elm$core$Dict$empty,
 				time: $elm$core$Maybe$Nothing,
 				url: url,
@@ -6558,7 +6749,7 @@ var $author$project$Main$init = F3(
 						{
 							expect: $elm$http$Http$expectString(
 								$author$project$Types$ReceiveDoc(startDoc)),
-							url: 'notes/' + startDoc
+							url: 'Notes/' + startDoc
 						})
 					])));
 	});
@@ -10037,7 +10228,6 @@ var $elm$core$List$minimum = function (list) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $elm$core$Basics$neq = _Utils_notEqual;
 var $mdgriffith$elm_ui$Internal$Model$convertAdjustment = function (adjustment) {
 	var lines = _List_fromArray(
 		[adjustment.capital, adjustment.baseline, adjustment.descender, adjustment.lowercase]);
@@ -12248,6 +12438,7 @@ var $author$project$Style$fillSpace = $author$project$Ui$batch(
 			$author$project$Ui$width($author$project$Ui$fill),
 			$author$project$Ui$height($author$project$Ui$fill)
 		]));
+var $author$project$Pic$gimbalogoPath = 'm12.506-5.16e-5c-1.0293 0.49442-1.472 1.835-2.5571 2.1537-1.9544-0.039688-3.9131-0.027946-5.8692-0.046709-1.1367 2.267-2.872 4.1608-4.0793 6.386 1.5446 2.1403 2.68 4.5378 4.15 6.7263 2.2414 0.013 4.4827 0.026 6.7242 0.03894 0.86787 1.5851 1.7358 3.1704 2.6035 4.7555-0.89363 1.7207-1.7873 3.4413-2.681 5.162-1.9152-0.01116-3.8303-0.02219-5.7455-0.03327-0.75505-0.51591-1.8186-1.8333-2.4001-1.8254 0.36292 1.0212 0.93988 1.9644 1.4243 2.9251 0.45654 0.37361 1.1023 0.09618 1.6545 0.18136 1.986 0.01152 3.9723 0.02306 5.9585 0.03449 1.1772-2.1801 2.6605-4.2056 3.5479-6.5341-1.0056-2.0616-2.0515-4.103-3.0729-6.1567-0.13609-0.80284 0.44097-2.5666-0.13232-2.7775-0.73114 0.70718-1.0814 2.1016-2.2086 2.2341-1.6392-0.0095-3.2785-0.01896-4.9175-0.02843-0.93021-1.6182-1.8604-3.2363-2.7907-4.8547 0.96335-1.7259 1.9267-3.4522 2.8901-5.1781 1.9561 0.011321 3.9121 0.022662 5.8683 0.033973 0.94943 1.5578 1.8988 3.1152 2.8483 4.6729-0.26047 0.61027-1.3392 1.8534-1.0077 2.0883 0.74242-0.69001 2.8028-1.4062 1.8361-2.6342-0.83496-1.5881-1.6696-3.1762-2.5046-4.7644 0.06555-0.79786 1.1367-1.8864 0.46097-2.5592z';
 var $elm_community$typed_svg$TypedSvg$Types$Paint = function (a) {
 	return {$: 'Paint', a: a};
 };
@@ -12314,7 +12505,6 @@ var $elm_community$typed_svg$TypedSvg$Attributes$fill = A2(
 	$elm$core$Basics$composeL,
 	$elm_community$typed_svg$TypedSvg$Core$attribute('fill'),
 	$elm_community$typed_svg$TypedSvg$TypesToStrings$paintToString);
-var $author$project$Pic$gimbalogoPath = 'm12.506-5.16e-5c-1.0293 0.49442-1.472 1.835-2.5571 2.1537-1.9544-0.039688-3.9131-0.027946-5.8692-0.046709-1.1367 2.267-2.872 4.1608-4.0793 6.386 1.5446 2.1403 2.68 4.5378 4.15 6.7263 2.2414 0.013 4.4827 0.026 6.7242 0.03894 0.86787 1.5851 1.7358 3.1704 2.6035 4.7555-0.89363 1.7207-1.7873 3.4413-2.681 5.162-1.9152-0.01116-3.8303-0.02219-5.7455-0.03327-0.75505-0.51591-1.8186-1.8333-2.4001-1.8254 0.36292 1.0212 0.93988 1.9644 1.4243 2.9251 0.45654 0.37361 1.1023 0.09618 1.6545 0.18136 1.986 0.01152 3.9723 0.02306 5.9585 0.03449 1.1772-2.1801 2.6605-4.2056 3.5479-6.5341-1.0056-2.0616-2.0515-4.103-3.0729-6.1567-0.13609-0.80284 0.44097-2.5666-0.13232-2.7775-0.73114 0.70718-1.0814 2.1016-2.2086 2.2341-1.6392-0.0095-3.2785-0.01896-4.9175-0.02843-0.93021-1.6182-1.8604-3.2363-2.7907-4.8547 0.96335-1.7259 1.9267-3.4522 2.8901-5.1781 1.9561 0.011321 3.9121 0.022662 5.8683 0.033973 0.94943 1.5578 1.8988 3.1152 2.8483 4.6729-0.26047 0.61027-1.3392 1.8534-1.0077 2.0883 0.74242-0.69001 2.8028-1.4062 1.8361-2.6342-0.83496-1.5881-1.6696-3.1762-2.5046-4.7644 0.06555-0.79786 1.1367-1.8864 0.46097-2.5592z';
 var $elm_community$typed_svg$TypedSvg$TypesToStrings$lengthToString = function (length) {
 	switch (length.$) {
 		case 'Cm':
@@ -12398,15 +12588,15 @@ var $elm_community$typed_svg$TypedSvg$Attributes$viewBox = F4(
 					_List_fromArray(
 						[minX, minY, vWidth, vHeight]))));
 	});
-var $author$project$Pic$gimbalogo = F2(
-	function (bg, fontSize) {
+var $author$project$Pic$svgIcon = F5(
+	function (path, vbWidth, vbHeight, color, height) {
 		return A2(
 			$author$project$Pic$svg,
 			_List_fromArray(
 				[
-					A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, 15.236, 26.458),
+					A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, vbWidth, vbHeight),
 					$elm_community$typed_svg$TypedSvg$Attributes$height(
-					$elm_community$typed_svg$TypedSvg$Types$px(fontSize * 1.6))
+					$elm_community$typed_svg$TypedSvg$Types$px(height))
 				]),
 			_List_fromArray(
 				[
@@ -12414,13 +12604,14 @@ var $author$project$Pic$gimbalogo = F2(
 					$elm_community$typed_svg$TypedSvg$path,
 					_List_fromArray(
 						[
-							$elm_community$typed_svg$TypedSvg$Attributes$d($author$project$Pic$gimbalogoPath),
+							$elm_community$typed_svg$TypedSvg$Attributes$d(path),
 							$elm_community$typed_svg$TypedSvg$Attributes$fill(
-							$elm_community$typed_svg$TypedSvg$Types$Paint(bg))
+							$elm_community$typed_svg$TypedSvg$Types$Paint(color))
 						]),
 					_List_Nil)
 				]));
 	});
+var $author$project$Pic$gimbalogo = A3($author$project$Pic$svgIcon, $author$project$Pic$gimbalogoPath, 15.236, 26.458);
 var $mdgriffith$elm_ui$Internal$Model$OnlyDynamic = F2(
 	function (a, b) {
 		return {$: 'OnlyDynamic', a: a, b: b};
@@ -12664,10 +12855,6 @@ var $noahzgordon$elm_color_extra$Color$Manipulate$calculateWeight = F3(
 		var a = a1 - a2;
 		var w2 = _Utils_eq(w1 * a, -1) ? w1 : ((w1 + a) / (1 + (w1 * a)));
 		return (w2 + 1) / 2;
-	});
-var $elm$core$Basics$clamp = F3(
-	function (low, high, number) {
-		return (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number);
 	});
 var $noahzgordon$elm_color_extra$Color$Manipulate$mixChannel = F3(
 	function (weight, c1, c2) {
@@ -12932,7 +13119,7 @@ var $author$project$Main$loadingPage = F2(
 												$author$project$Style$centerXY,
 												$author$project$Ui$scale(1.4)
 											]),
-										A2($author$project$Pic$gimbalogo, bg, model.fontSize))),
+										A2($author$project$Pic$gimbalogo, bg, model.fontSize * 1.6))),
 									$author$project$Ui$text(' GIMBA'),
 									A2(
 									$author$project$Ui$el,
@@ -13545,7 +13732,7 @@ var $author$project$Main$subs = function (_v0) {
 			[
 				$elm$browser$Browser$Events$onResize($author$project$Types$WindowResize),
 				$elm$browser$Browser$Events$onAnimationFrameDelta($author$project$Types$FrameDelta),
-				A2($elm$time$Time$every, 100, $author$project$Types$Tick)
+				A2($elm$time$Time$every, 20, $author$project$Types$Tick)
 			]));
 };
 var $author$project$Delay$switch = F3(
@@ -13761,7 +13948,7 @@ var $author$project$Main$update = F2(
 						{
 							expect: $elm$http$Http$expectString(
 								$author$project$Types$ReceiveDoc(doc)),
-							url: 'notes/' + doc
+							url: 'Notes/' + doc
 						}));
 			case 'ReceiveDoc':
 				var doc = msg.a;
@@ -13776,17 +13963,17 @@ var $author$project$Main$update = F2(
 					return $Fresheyeball$elm_return$Return$singleton(model);
 				}
 			case 'ToggleClockOrientation':
-				var _v3 = model.clock;
+				var _v3 = model.hemisphere;
 				if (_v3.$ === 'North') {
 					return $Fresheyeball$elm_return$Return$singleton(
 						_Utils_update(
 							model,
-							{clock: $author$project$Types$South}));
+							{hemisphere: $author$project$Types$South}));
 				} else {
 					return $Fresheyeball$elm_return$Return$singleton(
 						_Utils_update(
 							model,
-							{clock: $author$project$Types$North}));
+							{hemisphere: $author$project$Types$North}));
 				}
 			default:
 				var maybeDate = msg.a;
@@ -13796,9 +13983,6 @@ var $author$project$Main$update = F2(
 						{selectDate: maybeDate}));
 		}
 	});
-var $author$project$Types$GetDoc = function (a) {
-	return {$: 'GetDoc', a: a};
-};
 var $avh4$elm_color$Color$fromRgba = function (components) {
 	return A4($avh4$elm_color$Color$RgbaSpace, components.red, components.green, components.blue, components.alpha);
 };
@@ -13812,796 +13996,82 @@ var $author$project$Style$addAlpha = F2(
 				colorRec,
 				{alpha: alph}));
 	});
+var $author$project$Types$GetDoc = function (a) {
+	return {$: 'GetDoc', a: a};
+};
 var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
 var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
 var $author$project$Ui$alignRight = _List_fromArray(
 	[$mdgriffith$elm_ui$Element$alignRight]);
-var $mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
-var $mdgriffith$elm_ui$Element$alignTop = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Top);
-var $author$project$Ui$alignTop = _List_fromArray(
-	[$mdgriffith$elm_ui$Element$alignTop]);
-var $elm$time$Time$Jan = {$: 'Jan'};
-var $author$project$Types$SelectDate = function (a) {
-	return {$: 'SelectDate', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
-var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
+var $author$project$Types$edges = {bottom: 0, left: 0, right: 0, top: 0};
+var $author$project$Style$lineSize = 2;
+var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
+var $mdgriffith$elm_ui$Element$none = $mdgriffith$elm_ui$Internal$Model$Empty;
+var $author$project$Ui$none = $mdgriffith$elm_ui$Element$none;
+var $mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
+	function (a, b, c, d, e) {
+		return {$: 'BorderWidth', a: a, b: b, c: c, d: d, e: e};
+	});
+var $mdgriffith$elm_ui$Element$Border$width = function (v) {
 	return A2(
 		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderColor,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Colored,
-			'bc-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
-			'border-color',
-			clr));
+		$mdgriffith$elm_ui$Internal$Flag$borderWidth,
+		A5(
+			$mdgriffith$elm_ui$Internal$Model$BorderWidth,
+			'b-' + $elm$core$String$fromInt(v),
+			v,
+			v,
+			v,
+			v));
 };
-var $author$project$Ui$Border$color = function (clr) {
+var $mdgriffith$elm_ui$Element$Border$widthXY = F2(
+	function (x, y) {
+		return A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$borderWidth,
+			A5(
+				$mdgriffith$elm_ui$Internal$Model$BorderWidth,
+				'b-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y))),
+				y,
+				x,
+				y,
+				x));
+	});
+var $mdgriffith$elm_ui$Element$Border$widthEach = function (_v0) {
+	var bottom = _v0.bottom;
+	var top = _v0.top;
+	var left = _v0.left;
+	var right = _v0.right;
+	return (_Utils_eq(top, bottom) && _Utils_eq(left, right)) ? (_Utils_eq(top, right) ? $mdgriffith$elm_ui$Element$Border$width(top) : A2($mdgriffith$elm_ui$Element$Border$widthXY, left, top)) : A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderWidth,
+		A5(
+			$mdgriffith$elm_ui$Internal$Model$BorderWidth,
+			'b-' + ($elm$core$String$fromInt(top) + ('-' + ($elm$core$String$fromInt(right) + ('-' + ($elm$core$String$fromInt(bottom) + ('-' + $elm$core$String$fromInt(left))))))),
+			top,
+			right,
+			bottom,
+			left));
+};
+var $author$project$Ui$Border$widthEach = function (edges) {
 	return _List_fromArray(
 		[
-			$mdgriffith$elm_ui$Element$Border$color(
-			$author$project$Ui$Util$cc(clr))
+			$mdgriffith$elm_ui$Element$Border$widthEach(edges)
 		]);
 };
-var $justinmimbs$date$Date$compare = F2(
-	function (_v0, _v1) {
-		var a = _v0.a;
-		var b = _v1.a;
-		return A2($elm$core$Basics$compare, a, b);
-	});
-var $author$project$Types$corners = {bottomLeft: 0, bottomRight: 0, topLeft: 0, topRight: 0};
-var $justinmimbs$date$Date$RD = function (a) {
-	return {$: 'RD', a: a};
-};
-var $elm$core$Basics$modBy = _Basics_modBy;
-var $justinmimbs$date$Date$isLeapYear = function (y) {
-	return ((!A2($elm$core$Basics$modBy, 4, y)) && (!(!A2($elm$core$Basics$modBy, 100, y)))) || (!A2($elm$core$Basics$modBy, 400, y));
-};
-var $justinmimbs$date$Date$daysInMonth = F2(
-	function (y, m) {
-		switch (m.$) {
-			case 'Jan':
-				return 31;
-			case 'Feb':
-				return $justinmimbs$date$Date$isLeapYear(y) ? 29 : 28;
-			case 'Mar':
-				return 31;
-			case 'Apr':
-				return 30;
-			case 'May':
-				return 31;
-			case 'Jun':
-				return 30;
-			case 'Jul':
-				return 31;
-			case 'Aug':
-				return 31;
-			case 'Sep':
-				return 30;
-			case 'Oct':
-				return 31;
-			case 'Nov':
-				return 30;
-			default:
-				return 31;
-		}
-	});
-var $justinmimbs$date$Date$monthToNumber = function (m) {
-	switch (m.$) {
-		case 'Jan':
-			return 1;
-		case 'Feb':
-			return 2;
-		case 'Mar':
-			return 3;
-		case 'Apr':
-			return 4;
-		case 'May':
-			return 5;
-		case 'Jun':
-			return 6;
-		case 'Jul':
-			return 7;
-		case 'Aug':
-			return 8;
-		case 'Sep':
-			return 9;
-		case 'Oct':
-			return 10;
-		case 'Nov':
-			return 11;
-		default:
-			return 12;
-	}
-};
-var $elm$time$Time$Apr = {$: 'Apr'};
-var $elm$time$Time$Aug = {$: 'Aug'};
-var $elm$time$Time$Dec = {$: 'Dec'};
-var $elm$time$Time$Feb = {$: 'Feb'};
-var $elm$time$Time$Jul = {$: 'Jul'};
-var $elm$time$Time$Jun = {$: 'Jun'};
-var $elm$time$Time$Mar = {$: 'Mar'};
-var $elm$time$Time$May = {$: 'May'};
-var $elm$time$Time$Nov = {$: 'Nov'};
-var $elm$time$Time$Oct = {$: 'Oct'};
-var $elm$time$Time$Sep = {$: 'Sep'};
-var $justinmimbs$date$Date$numberToMonth = function (mn) {
-	var _v0 = A2($elm$core$Basics$max, 1, mn);
-	switch (_v0) {
-		case 1:
-			return $elm$time$Time$Jan;
-		case 2:
-			return $elm$time$Time$Feb;
-		case 3:
-			return $elm$time$Time$Mar;
-		case 4:
-			return $elm$time$Time$Apr;
-		case 5:
-			return $elm$time$Time$May;
-		case 6:
-			return $elm$time$Time$Jun;
-		case 7:
-			return $elm$time$Time$Jul;
-		case 8:
-			return $elm$time$Time$Aug;
-		case 9:
-			return $elm$time$Time$Sep;
-		case 10:
-			return $elm$time$Time$Oct;
-		case 11:
-			return $elm$time$Time$Nov;
-		default:
-			return $elm$time$Time$Dec;
-	}
-};
-var $justinmimbs$date$Date$toCalendarDateHelp = F3(
-	function (y, m, d) {
-		toCalendarDateHelp:
-		while (true) {
-			var monthDays = A2($justinmimbs$date$Date$daysInMonth, y, m);
-			var mn = $justinmimbs$date$Date$monthToNumber(m);
-			if ((mn < 12) && (_Utils_cmp(d, monthDays) > 0)) {
-				var $temp$y = y,
-					$temp$m = $justinmimbs$date$Date$numberToMonth(mn + 1),
-					$temp$d = d - monthDays;
-				y = $temp$y;
-				m = $temp$m;
-				d = $temp$d;
-				continue toCalendarDateHelp;
-			} else {
-				return {day: d, month: m, year: y};
-			}
-		}
-	});
-var $justinmimbs$date$Date$floorDiv = F2(
-	function (a, b) {
-		return $elm$core$Basics$floor(a / b);
-	});
-var $justinmimbs$date$Date$daysBeforeYear = function (y1) {
-	var y = y1 - 1;
-	var leapYears = (A2($justinmimbs$date$Date$floorDiv, y, 4) - A2($justinmimbs$date$Date$floorDiv, y, 100)) + A2($justinmimbs$date$Date$floorDiv, y, 400);
-	return (365 * y) + leapYears;
-};
-var $justinmimbs$date$Date$divWithRemainder = F2(
-	function (a, b) {
-		return _Utils_Tuple2(
-			A2($justinmimbs$date$Date$floorDiv, a, b),
-			A2($elm$core$Basics$modBy, b, a));
-	});
-var $justinmimbs$date$Date$year = function (_v0) {
-	var rd = _v0.a;
-	var _v1 = A2($justinmimbs$date$Date$divWithRemainder, rd, 146097);
-	var n400 = _v1.a;
-	var r400 = _v1.b;
-	var _v2 = A2($justinmimbs$date$Date$divWithRemainder, r400, 36524);
-	var n100 = _v2.a;
-	var r100 = _v2.b;
-	var _v3 = A2($justinmimbs$date$Date$divWithRemainder, r100, 1461);
-	var n4 = _v3.a;
-	var r4 = _v3.b;
-	var _v4 = A2($justinmimbs$date$Date$divWithRemainder, r4, 365);
-	var n1 = _v4.a;
-	var r1 = _v4.b;
-	var n = (!r1) ? 0 : 1;
-	return ((((n400 * 400) + (n100 * 100)) + (n4 * 4)) + n1) + n;
-};
-var $justinmimbs$date$Date$toOrdinalDate = function (_v0) {
-	var rd = _v0.a;
-	var y = $justinmimbs$date$Date$year(
-		$justinmimbs$date$Date$RD(rd));
-	return {
-		ordinalDay: rd - $justinmimbs$date$Date$daysBeforeYear(y),
-		year: y
-	};
-};
-var $justinmimbs$date$Date$toCalendarDate = function (_v0) {
-	var rd = _v0.a;
-	var date = $justinmimbs$date$Date$toOrdinalDate(
-		$justinmimbs$date$Date$RD(rd));
-	return A3($justinmimbs$date$Date$toCalendarDateHelp, date.year, $elm$time$Time$Jan, date.ordinalDay);
-};
-var $justinmimbs$date$Date$day = A2(
-	$elm$core$Basics$composeR,
-	$justinmimbs$date$Date$toCalendarDate,
-	function ($) {
-		return $.day;
-	});
-var $author$project$Types$edges = {bottom: 0, left: 0, right: 0, top: 0};
-var $justinmimbs$date$Date$daysBeforeMonth = F2(
-	function (y, m) {
-		var leapDays = $justinmimbs$date$Date$isLeapYear(y) ? 1 : 0;
-		switch (m.$) {
-			case 'Jan':
-				return 0;
-			case 'Feb':
-				return 31;
-			case 'Mar':
-				return 59 + leapDays;
-			case 'Apr':
-				return 90 + leapDays;
-			case 'May':
-				return 120 + leapDays;
-			case 'Jun':
-				return 151 + leapDays;
-			case 'Jul':
-				return 181 + leapDays;
-			case 'Aug':
-				return 212 + leapDays;
-			case 'Sep':
-				return 243 + leapDays;
-			case 'Oct':
-				return 273 + leapDays;
-			case 'Nov':
-				return 304 + leapDays;
-			default:
-				return 334 + leapDays;
-		}
-	});
-var $justinmimbs$date$Date$fromCalendarDate = F3(
-	function (y, m, d) {
-		return $justinmimbs$date$Date$RD(
-			($justinmimbs$date$Date$daysBeforeYear(y) + A2($justinmimbs$date$Date$daysBeforeMonth, y, m)) + A3(
-				$elm$core$Basics$clamp,
-				1,
-				A2($justinmimbs$date$Date$daysInMonth, y, m),
-				d));
-	});
-var $elm$time$Time$flooredDiv = F2(
-	function (numerator, denominator) {
-		return $elm$core$Basics$floor(numerator / denominator);
-	});
-var $elm$time$Time$posixToMillis = function (_v0) {
-	var millis = _v0.a;
-	return millis;
-};
-var $elm$time$Time$toAdjustedMinutesHelp = F3(
-	function (defaultOffset, posixMinutes, eras) {
-		toAdjustedMinutesHelp:
-		while (true) {
-			if (!eras.b) {
-				return posixMinutes + defaultOffset;
-			} else {
-				var era = eras.a;
-				var olderEras = eras.b;
-				if (_Utils_cmp(era.start, posixMinutes) < 0) {
-					return posixMinutes + era.offset;
-				} else {
-					var $temp$defaultOffset = defaultOffset,
-						$temp$posixMinutes = posixMinutes,
-						$temp$eras = olderEras;
-					defaultOffset = $temp$defaultOffset;
-					posixMinutes = $temp$posixMinutes;
-					eras = $temp$eras;
-					continue toAdjustedMinutesHelp;
-				}
-			}
-		}
-	});
-var $elm$time$Time$toAdjustedMinutes = F2(
-	function (_v0, time) {
-		var defaultOffset = _v0.a;
-		var eras = _v0.b;
-		return A3(
-			$elm$time$Time$toAdjustedMinutesHelp,
-			defaultOffset,
-			A2(
-				$elm$time$Time$flooredDiv,
-				$elm$time$Time$posixToMillis(time),
-				60000),
-			eras);
-	});
-var $elm$time$Time$toCivil = function (minutes) {
-	var rawDay = A2($elm$time$Time$flooredDiv, minutes, 60 * 24) + 719468;
-	var era = (((rawDay >= 0) ? rawDay : (rawDay - 146096)) / 146097) | 0;
-	var dayOfEra = rawDay - (era * 146097);
-	var yearOfEra = ((((dayOfEra - ((dayOfEra / 1460) | 0)) + ((dayOfEra / 36524) | 0)) - ((dayOfEra / 146096) | 0)) / 365) | 0;
-	var dayOfYear = dayOfEra - (((365 * yearOfEra) + ((yearOfEra / 4) | 0)) - ((yearOfEra / 100) | 0));
-	var mp = (((5 * dayOfYear) + 2) / 153) | 0;
-	var month = mp + ((mp < 10) ? 3 : (-9));
-	var year = yearOfEra + (era * 400);
-	return {
-		day: (dayOfYear - ((((153 * mp) + 2) / 5) | 0)) + 1,
-		month: month,
-		year: year + ((month <= 2) ? 1 : 0)
-	};
-};
-var $elm$time$Time$toDay = F2(
-	function (zone, time) {
-		return $elm$time$Time$toCivil(
-			A2($elm$time$Time$toAdjustedMinutes, zone, time)).day;
-	});
-var $elm$time$Time$toMonth = F2(
-	function (zone, time) {
-		var _v0 = $elm$time$Time$toCivil(
-			A2($elm$time$Time$toAdjustedMinutes, zone, time)).month;
-		switch (_v0) {
-			case 1:
-				return $elm$time$Time$Jan;
-			case 2:
-				return $elm$time$Time$Feb;
-			case 3:
-				return $elm$time$Time$Mar;
-			case 4:
-				return $elm$time$Time$Apr;
-			case 5:
-				return $elm$time$Time$May;
-			case 6:
-				return $elm$time$Time$Jun;
-			case 7:
-				return $elm$time$Time$Jul;
-			case 8:
-				return $elm$time$Time$Aug;
-			case 9:
-				return $elm$time$Time$Sep;
-			case 10:
-				return $elm$time$Time$Oct;
-			case 11:
-				return $elm$time$Time$Nov;
-			default:
-				return $elm$time$Time$Dec;
-		}
-	});
-var $elm$time$Time$toYear = F2(
-	function (zone, time) {
-		return $elm$time$Time$toCivil(
-			A2($elm$time$Time$toAdjustedMinutes, zone, time)).year;
-	});
-var $justinmimbs$date$Date$fromPosix = F2(
-	function (zone, posix) {
-		return A3(
-			$justinmimbs$date$Date$fromCalendarDate,
-			A2($elm$time$Time$toYear, zone, posix),
-			A2($elm$time$Time$toMonth, zone, posix),
-			A2($elm$time$Time$toDay, zone, posix));
-	});
-var $abradley2$elm_calendar$Calendar$CalendarDate = F3(
-	function (dayDisplay, weekdayNumber, date) {
-		return {date: date, dayDisplay: dayDisplay, weekdayNumber: weekdayNumber};
-	});
-var $elm$time$Time$Sun = {$: 'Sun'};
-var $abradley2$elm_calendar$Calendar$defaultConfig = {startWeekday: $elm$time$Time$Sun};
-var $justinmimbs$date$Date$Days = {$: 'Days'};
-var $justinmimbs$date$Date$Months = {$: 'Months'};
-var $justinmimbs$date$Date$add = F3(
-	function (unit, n, _v0) {
-		var rd = _v0.a;
-		switch (unit.$) {
-			case 'Years':
-				return A3(
-					$justinmimbs$date$Date$add,
-					$justinmimbs$date$Date$Months,
-					12 * n,
-					$justinmimbs$date$Date$RD(rd));
-			case 'Months':
-				var date = $justinmimbs$date$Date$toCalendarDate(
-					$justinmimbs$date$Date$RD(rd));
-				var wholeMonths = ((12 * (date.year - 1)) + ($justinmimbs$date$Date$monthToNumber(date.month) - 1)) + n;
-				var m = $justinmimbs$date$Date$numberToMonth(
-					A2($elm$core$Basics$modBy, 12, wholeMonths) + 1);
-				var y = A2($justinmimbs$date$Date$floorDiv, wholeMonths, 12) + 1;
-				return $justinmimbs$date$Date$RD(
-					($justinmimbs$date$Date$daysBeforeYear(y) + A2($justinmimbs$date$Date$daysBeforeMonth, y, m)) + A2(
-						$elm$core$Basics$min,
-						date.day,
-						A2($justinmimbs$date$Date$daysInMonth, y, m)));
-			case 'Weeks':
-				return $justinmimbs$date$Date$RD(rd + (7 * n));
-			default:
-				return $justinmimbs$date$Date$RD(rd + n);
-		}
-	});
-var $justinmimbs$date$Date$month = A2(
-	$elm$core$Basics$composeR,
-	$justinmimbs$date$Date$toCalendarDate,
-	function ($) {
-		return $.month;
-	});
-var $elm$core$String$cons = _String_cons;
-var $elm$core$String$fromChar = function (_char) {
-	return A2($elm$core$String$cons, _char, '');
-};
-var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
-var $elm$core$String$repeatHelp = F3(
-	function (n, chunk, result) {
-		return (n <= 0) ? result : A3(
-			$elm$core$String$repeatHelp,
-			n >> 1,
-			_Utils_ap(chunk, chunk),
-			(!(n & 1)) ? result : _Utils_ap(result, chunk));
-	});
-var $elm$core$String$repeat = F2(
-	function (n, chunk) {
-		return A3($elm$core$String$repeatHelp, n, chunk, '');
-	});
-var $elm$core$String$padLeft = F3(
-	function (n, _char, string) {
-		return _Utils_ap(
-			A2(
-				$elm$core$String$repeat,
-				n - $elm$core$String$length(string),
-				$elm$core$String$fromChar(_char)),
-			string);
-	});
-var $justinmimbs$date$Date$weekdayNumber = function (_v0) {
-	var rd = _v0.a;
-	var _v1 = A2($elm$core$Basics$modBy, 7, rd);
-	if (!_v1) {
-		return 7;
-	} else {
-		var n = _v1;
-		return n;
-	}
-};
-var $abradley2$elm_calendar$Calendar$fillMonth = function (_v0) {
-	fillMonth:
-	while (true) {
-		var currentDate = _v0.a;
-		var currentList = _v0.b;
-		var nextDate = A3($justinmimbs$date$Date$add, $justinmimbs$date$Date$Days, 1, currentDate);
-		if (_Utils_eq(
-			$justinmimbs$date$Date$month(nextDate),
-			$justinmimbs$date$Date$month(currentDate))) {
-			var $temp$_v0 = _Utils_Tuple2(
-				nextDate,
-				_Utils_ap(
-					currentList,
-					_List_fromArray(
-						[
-							{
-							date: nextDate,
-							dayDisplay: A3(
-								$elm$core$String$padLeft,
-								2,
-								_Utils_chr(' '),
-								$elm$core$String$fromInt(
-									$justinmimbs$date$Date$day(nextDate))),
-							weekdayNumber: $justinmimbs$date$Date$weekdayNumber(nextDate)
-						}
-						])));
-			_v0 = $temp$_v0;
-			continue fillMonth;
-		} else {
-			return currentList;
-		}
-	}
-};
-var $elm$core$Maybe$andThen = F2(
-	function (callback, maybeValue) {
-		if (maybeValue.$ === 'Just') {
-			var value = maybeValue.a;
-			return callback(value);
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $abradley2$elm_calendar$Calendar$endWeekdayNumber = function (startWeekdayNumber) {
-	return (!(startWeekdayNumber - 1)) ? 7 : (startWeekdayNumber - 1);
-};
-var $abradley2$elm_calendar$Calendar$enumerateWeekday = function (w) {
-	switch (w.$) {
-		case 'Mon':
-			return 1;
-		case 'Tue':
-			return 2;
-		case 'Wed':
-			return 3;
-		case 'Thu':
-			return 4;
-		case 'Fri':
-			return 5;
-		case 'Sat':
-			return 6;
-		default:
-			return 7;
-	}
-};
-var $elm$core$List$head = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(x);
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
-var $abradley2$elm_calendar$Calendar$padMonthEnd = F2(
-	function (config, currentList) {
-		padMonthEnd:
-		while (true) {
-			var _v0 = A2(
-				$elm$core$Maybe$andThen,
-				function (date) {
-					return _Utils_eq(
-						$justinmimbs$date$Date$weekdayNumber(date),
-						$abradley2$elm_calendar$Calendar$endWeekdayNumber(
-							$abradley2$elm_calendar$Calendar$enumerateWeekday(config.startWeekday))) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
-						A3($justinmimbs$date$Date$add, $justinmimbs$date$Date$Days, 1, date));
-				},
-				A2(
-					$elm$core$Maybe$map,
-					function ($) {
-						return $.date;
-					},
-					$elm$core$List$head(
-						$elm$core$List$reverse(currentList))));
-			if (_v0.$ === 'Just') {
-				var padDate = _v0.a;
-				var $temp$config = config,
-					$temp$currentList = A2(
-					$elm$core$List$append,
-					currentList,
-					_List_fromArray(
-						[
-							{
-							date: padDate,
-							dayDisplay: '  ',
-							weekdayNumber: $justinmimbs$date$Date$weekdayNumber(padDate)
-						}
-						]));
-				config = $temp$config;
-				currentList = $temp$currentList;
-				continue padMonthEnd;
-			} else {
-				return currentList;
-			}
-		}
-	});
-var $abradley2$elm_calendar$Calendar$padMonthStart = F2(
-	function (config, currentList) {
-		padMonthStart:
-		while (true) {
-			var _v0 = A2(
-				$elm$core$Maybe$andThen,
-				function (date) {
-					return _Utils_eq(
-						$justinmimbs$date$Date$weekdayNumber(date),
-						$abradley2$elm_calendar$Calendar$enumerateWeekday(config.startWeekday)) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
-						A3($justinmimbs$date$Date$add, $justinmimbs$date$Date$Days, -1, date));
-				},
-				A2(
-					$elm$core$Maybe$map,
-					function ($) {
-						return $.date;
-					},
-					$elm$core$List$head(currentList)));
-			if (_v0.$ === 'Just') {
-				var padDate = _v0.a;
-				var $temp$config = config,
-					$temp$currentList = A2(
-					$elm$core$List$cons,
-					{
-						date: padDate,
-						dayDisplay: '  ',
-						weekdayNumber: $justinmimbs$date$Date$weekdayNumber(padDate)
-					},
-					currentList);
-				config = $temp$config;
-				currentList = $temp$currentList;
-				continue padMonthStart;
-			} else {
-				return currentList;
-			}
-		}
-	});
-var $elm$core$List$takeReverse = F3(
-	function (n, list, kept) {
-		takeReverse:
-		while (true) {
-			if (n <= 0) {
-				return kept;
-			} else {
-				if (!list.b) {
-					return kept;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs,
-						$temp$kept = A2($elm$core$List$cons, x, kept);
-					n = $temp$n;
-					list = $temp$list;
-					kept = $temp$kept;
-					continue takeReverse;
-				}
-			}
-		}
-	});
-var $elm$core$List$takeTailRec = F2(
-	function (n, list) {
-		return $elm$core$List$reverse(
-			A3($elm$core$List$takeReverse, n, list, _List_Nil));
-	});
-var $elm$core$List$takeFast = F3(
-	function (ctr, n, list) {
-		if (n <= 0) {
-			return _List_Nil;
-		} else {
-			var _v0 = _Utils_Tuple2(n, list);
-			_v0$1:
-			while (true) {
-				_v0$5:
-				while (true) {
-					if (!_v0.b.b) {
-						return list;
-					} else {
-						if (_v0.b.b.b) {
-							switch (_v0.a) {
-								case 1:
-									break _v0$1;
-								case 2:
-									var _v2 = _v0.b;
-									var x = _v2.a;
-									var _v3 = _v2.b;
-									var y = _v3.a;
-									return _List_fromArray(
-										[x, y]);
-								case 3:
-									if (_v0.b.b.b.b) {
-										var _v4 = _v0.b;
-										var x = _v4.a;
-										var _v5 = _v4.b;
-										var y = _v5.a;
-										var _v6 = _v5.b;
-										var z = _v6.a;
-										return _List_fromArray(
-											[x, y, z]);
-									} else {
-										break _v0$5;
-									}
-								default:
-									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
-										var _v7 = _v0.b;
-										var x = _v7.a;
-										var _v8 = _v7.b;
-										var y = _v8.a;
-										var _v9 = _v8.b;
-										var z = _v9.a;
-										var _v10 = _v9.b;
-										var w = _v10.a;
-										var tl = _v10.b;
-										return (ctr > 1000) ? A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
-									} else {
-										break _v0$5;
-									}
-							}
-						} else {
-							if (_v0.a === 1) {
-								break _v0$1;
-							} else {
-								break _v0$5;
-							}
-						}
-					}
-				}
-				return list;
-			}
-			var _v1 = _v0.b;
-			var x = _v1.a;
-			return _List_fromArray(
-				[x]);
-		}
-	});
-var $elm$core$List$take = F2(
-	function (n, list) {
-		return A3($elm$core$List$takeFast, 0, n, list);
-	});
-var $abradley2$elm_calendar$Calendar$partitionWeeks = F2(
-	function (curDate, partitioned) {
-		var _v0 = $elm$core$List$head(
-			$elm$core$List$reverse(partitioned));
-		if (_v0.$ === 'Just') {
-			var curWeek = _v0.a;
-			var _v1 = $elm$core$List$length(curWeek);
-			if (_v1 === 7) {
-				return _Utils_ap(
-					partitioned,
-					_List_fromArray(
-						[
-							_List_fromArray(
-							[curDate])
-						]));
-			} else {
-				return function (month) {
-					return _Utils_ap(
-						month,
-						_List_fromArray(
-							[
-								_Utils_ap(
-								curWeek,
-								_List_fromArray(
-									[curDate]))
-							]));
-				}(
-					A2(
-						$elm$core$List$take,
-						$elm$core$List$length(partitioned) - 1,
-						partitioned));
-			}
-		} else {
-			return _Utils_ap(
-				partitioned,
-				_List_fromArray(
-					[
-						_List_fromArray(
-						[curDate])
-					]));
-		}
-	});
-var $abradley2$elm_calendar$Calendar$fromTime = F3(
-	function (mConfig, zone, posix) {
-		return A3(
-			$elm$core$List$foldl,
-			$abradley2$elm_calendar$Calendar$partitionWeeks,
-			_List_Nil,
-			A2(
-				$abradley2$elm_calendar$Calendar$padMonthEnd,
-				A2($elm$core$Maybe$withDefault, $abradley2$elm_calendar$Calendar$defaultConfig, mConfig),
-				A2(
-					$abradley2$elm_calendar$Calendar$padMonthStart,
-					A2($elm$core$Maybe$withDefault, $abradley2$elm_calendar$Calendar$defaultConfig, mConfig),
-					$abradley2$elm_calendar$Calendar$fillMonth(
-						function (date) {
-							return _Utils_Tuple2(
-								date,
-								_List_fromArray(
-									[
-										A3(
-										$abradley2$elm_calendar$Calendar$CalendarDate,
-										' 1',
-										$justinmimbs$date$Date$weekdayNumber(date),
-										date)
-									]));
-						}(
-							A3(
-								$justinmimbs$date$Date$fromCalendarDate,
-								A2($elm$time$Time$toYear, zone, posix),
-								A2($elm$time$Time$toMonth, zone, posix),
-								1))))));
-	});
-var $author$project$Style$lineSize = 2;
+var $author$project$Markup$hBar = A2(
+	$author$project$Ui$el,
+	_List_fromArray(
+		[
+			$author$project$Ui$width($author$project$Ui$fill),
+			$author$project$Ui$height(
+			$author$project$Ui$px($author$project$Style$lineSize * 2)),
+			$author$project$Ui$Border$widthEach(
+			_Utils_update(
+				$author$project$Types$edges,
+				{bottom: ($author$project$Style$lineSize / 2) | 0, top: $author$project$Style$lineSize}))
+		]),
+	$author$project$Ui$none);
 var $elm$html$Html$Attributes$href = function (url) {
 	return A2(
 		$elm$html$Html$Attributes$stringProperty,
@@ -14643,37 +14113,45 @@ var $author$project$Ui$link = function (attrs) {
 	return $mdgriffith$elm_ui$Element$link(
 		$author$project$Ui$batch(attrs));
 };
-var $author$project$Main$monthToString = function (month) {
-	switch (month.$) {
-		case 'Jan':
-			return 'January';
-		case 'Feb':
-			return 'February';
-		case 'Mar':
-			return 'March';
-		case 'Apr':
-			return 'April';
-		case 'May':
-			return 'May';
-		case 'Jun':
-			return 'June';
-		case 'Jul':
-			return 'July';
-		case 'Aug':
-			return 'August';
-		case 'Sep':
-			return 'September';
-		case 'Oct':
-			return 'October';
-		case 'Nov':
-			return 'November';
-		default:
-			return 'December';
-	}
+var $elm$html$Html$Attributes$target = $elm$html$Html$Attributes$stringProperty('target');
+var $mdgriffith$elm_ui$Element$newTabLink = F2(
+	function (attrs, _v0) {
+		var url = _v0.url;
+		var label = _v0.label;
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asEl,
+			$mdgriffith$elm_ui$Internal$Model$NodeName('a'),
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Internal$Model$Attr(
+					$elm$html$Html$Attributes$href(url)),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Internal$Model$Attr(
+						$elm$html$Html$Attributes$rel('noopener noreferrer')),
+					A2(
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Internal$Model$Attr(
+							$elm$html$Html$Attributes$target('_blank')),
+						A2(
+							$elm$core$List$cons,
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+							A2(
+								$elm$core$List$cons,
+								$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+								A2(
+									$elm$core$List$cons,
+									$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentCenterX + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.link)))),
+									attrs)))))),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[label])));
+	});
+var $author$project$Ui$newTabLink = function (attrs) {
+	return $mdgriffith$elm_ui$Element$newTabLink(
+		$author$project$Ui$batch(attrs));
 };
-var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
-var $mdgriffith$elm_ui$Element$none = $mdgriffith$elm_ui$Internal$Model$Empty;
-var $author$project$Ui$none = $mdgriffith$elm_ui$Element$none;
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -14698,604 +14176,6 @@ var $author$project$Ui$Events$onClick = function (msg) {
 			$mdgriffith$elm_ui$Element$Events$onClick(msg)
 		]);
 };
-var $mdgriffith$elm_ui$Element$padding = function (x) {
-	var f = x;
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$padding,
-		A5(
-			$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-			'p-' + $elm$core$String$fromInt(x),
-			f,
-			f,
-			f,
-			f));
-};
-var $author$project$Ui$padding = function (x) {
-	return _List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$padding(x)
-		]);
-};
-var $mdgriffith$elm_ui$Internal$Model$Describe = function (a) {
-	return {$: 'Describe', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
-var $mdgriffith$elm_ui$Element$paragraph = F2(
-	function (attrs, children) {
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asParagraph,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$Paragraph),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Element$spacing(5),
-						attrs))),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
-var $author$project$Ui$paragraph = function (attrs) {
-	return $mdgriffith$elm_ui$Element$paragraph(
-		$author$project$Ui$batch(attrs));
-};
-var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
-var $mdgriffith$elm_ui$Element$Border$roundEach = function (_v0) {
-	var topLeft = _v0.topLeft;
-	var topRight = _v0.topRight;
-	var bottomLeft = _v0.bottomLeft;
-	var bottomRight = _v0.bottomRight;
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderRound,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Single,
-			'br-' + ($elm$core$String$fromInt(topLeft) + ('-' + ($elm$core$String$fromInt(topRight) + ($elm$core$String$fromInt(bottomLeft) + ('-' + $elm$core$String$fromInt(bottomRight)))))),
-			'border-radius',
-			$elm$core$String$fromInt(topLeft) + ('px ' + ($elm$core$String$fromInt(topRight) + ('px ' + ($elm$core$String$fromInt(bottomRight) + ('px ' + ($elm$core$String$fromInt(bottomLeft) + 'px'))))))));
-};
-var $author$project$Ui$Border$roundEach = function (corners) {
-	return _List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$Border$roundEach(corners)
-		]);
-};
-var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderRound,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Single,
-			'br-' + $elm$core$String$fromInt(radius),
-			'border-radius',
-			$elm$core$String$fromInt(radius) + 'px'));
-};
-var $author$project$Ui$Border$rounded = function (radius) {
-	return _List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$Border$rounded(radius)
-		]);
-};
-var $author$project$Style$black = A3($author$project$Ui$rgb, 0, 0, 0);
-var $mdgriffith$elm_ui$Internal$Model$boxShadowClass = function (shadow) {
-	return $elm$core$String$concat(
-		_List_fromArray(
-			[
-				shadow.inset ? 'box-inset' : 'box-',
-				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.a) + 'px',
-				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.b) + 'px',
-				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.blur) + 'px',
-				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.size) + 'px',
-				$mdgriffith$elm_ui$Internal$Model$formatColorClass(shadow.color)
-			]));
-};
-var $mdgriffith$elm_ui$Internal$Flag$shadows = $mdgriffith$elm_ui$Internal$Flag$flag(19);
-var $mdgriffith$elm_ui$Element$Border$shadow = function (almostShade) {
-	var shade = {blur: almostShade.blur, color: almostShade.color, inset: false, offset: almostShade.offset, size: almostShade.size};
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$shadows,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Single,
-			$mdgriffith$elm_ui$Internal$Model$boxShadowClass(shade),
-			'box-shadow',
-			$mdgriffith$elm_ui$Internal$Model$formatBoxShadow(shade)));
-};
-var $author$project$Ui$Border$shadow = function (sh) {
-	return _List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$Border$shadow(
-			{
-				blur: sh.blur,
-				color: $author$project$Ui$Util$cc(sh.color),
-				offset: sh.offset,
-				size: sh.size
-			})
-		]);
-};
-var $author$project$Style$shadow = $author$project$Ui$Border$shadow(
-	{
-		blur: 5.0,
-		color: A2($author$project$Style$addAlpha, 0.5, $author$project$Style$black),
-		offset: _Utils_Tuple2(1.0, 2.0),
-		size: 0
-	});
-var $mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
-	function (a, b, c, d, e) {
-		return {$: 'BorderWidth', a: a, b: b, c: c, d: d, e: e};
-	});
-var $mdgriffith$elm_ui$Element$Border$width = function (v) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderWidth,
-		A5(
-			$mdgriffith$elm_ui$Internal$Model$BorderWidth,
-			'b-' + $elm$core$String$fromInt(v),
-			v,
-			v,
-			v,
-			v));
-};
-var $author$project$Ui$Border$width = function (v) {
-	return _List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$Border$width(v)
-		]);
-};
-var $mdgriffith$elm_ui$Element$Border$widthXY = F2(
-	function (x, y) {
-		return A2(
-			$mdgriffith$elm_ui$Internal$Model$StyleClass,
-			$mdgriffith$elm_ui$Internal$Flag$borderWidth,
-			A5(
-				$mdgriffith$elm_ui$Internal$Model$BorderWidth,
-				'b-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y))),
-				y,
-				x,
-				y,
-				x));
-	});
-var $mdgriffith$elm_ui$Element$Border$widthEach = function (_v0) {
-	var bottom = _v0.bottom;
-	var top = _v0.top;
-	var left = _v0.left;
-	var right = _v0.right;
-	return (_Utils_eq(top, bottom) && _Utils_eq(left, right)) ? (_Utils_eq(top, right) ? $mdgriffith$elm_ui$Element$Border$width(top) : A2($mdgriffith$elm_ui$Element$Border$widthXY, left, top)) : A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderWidth,
-		A5(
-			$mdgriffith$elm_ui$Internal$Model$BorderWidth,
-			'b-' + ($elm$core$String$fromInt(top) + ('-' + ($elm$core$String$fromInt(right) + ('-' + ($elm$core$String$fromInt(bottom) + ('-' + $elm$core$String$fromInt(left))))))),
-			top,
-			right,
-			bottom,
-			left));
-};
-var $author$project$Ui$Border$widthEach = function (edges) {
-	return _List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$Border$widthEach(edges)
-		]);
-};
-var $author$project$Main$calendar = function (model) {
-	return A2(
-		$author$project$Ui$column,
-		_List_fromArray(
-			[
-				$author$project$Style$fillSpace,
-				$author$project$Ui$Border$width($author$project$Style$lineSize),
-				$author$project$Ui$Border$roundEach(
-				_Utils_update(
-					$author$project$Types$corners,
-					{
-						topLeft: $elm$core$Basics$round(model.fontSize / 2),
-						topRight: $elm$core$Basics$round(model.fontSize / 2)
-					})),
-				$author$project$Style$shadow
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$author$project$Ui$column,
-				_List_fromArray(
-					[
-						$author$project$Ui$width($author$project$Ui$fill),
-						$author$project$Ui$Border$widthEach(
-						_Utils_update(
-							$author$project$Types$edges,
-							{bottom: $author$project$Style$lineSize})),
-						$author$project$Ui$Border$roundEach(
-						_Utils_update(
-							$author$project$Types$corners,
-							{
-								topLeft: $elm$core$Basics$round(model.fontSize / 2),
-								topRight: $elm$core$Basics$round(model.fontSize / 2)
-							})),
-						$author$project$Ui$Background$color(
-						A3($author$project$Style$mix, 0.075, model.pal.bg, model.pal.fg))
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$author$project$Ui$el,
-						_List_fromArray(
-							[
-								$author$project$Ui$centerX,
-								$author$project$Ui$Font$size(
-								$elm$core$Basics$round(model.fontSize * 1.5)),
-								$author$project$Ui$Font$bold,
-								A2(
-								$author$project$Ui$paddingXY,
-								0,
-								$elm$core$Basics$round(model.fontSize))
-							]),
-						$author$project$Ui$text(
-							A2(
-								$elm$core$Maybe$withDefault,
-								'Calendar',
-								A2(
-									$elm$core$Maybe$map,
-									function (t) {
-										return $author$project$Main$monthToString(
-											A2($elm$time$Time$toMonth, $elm$time$Time$utc, t)) + (' ' + $elm$core$String$fromInt(
-											A2($elm$time$Time$toYear, $elm$time$Time$utc, t)));
-									},
-									model.time)))),
-						A2(
-						$author$project$Ui$row,
-						_List_fromArray(
-							[
-								$author$project$Ui$width($author$project$Ui$fill),
-								A2(
-								$author$project$Ui$paddingXY,
-								0,
-								$elm$core$Basics$round(model.fontSize * 0.4))
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$author$project$Ui$el,
-								_List_fromArray(
-									[
-										$author$project$Ui$width($author$project$Ui$fill),
-										$author$project$Ui$Font$bold
-									]),
-								A2(
-									$author$project$Ui$el,
-									_List_fromArray(
-										[$author$project$Ui$centerX]),
-									$author$project$Ui$text('Sunday'))),
-								A2(
-								$author$project$Ui$el,
-								_List_fromArray(
-									[
-										$author$project$Ui$width($author$project$Ui$fill),
-										$author$project$Ui$Font$bold
-									]),
-								A2(
-									$author$project$Ui$el,
-									_List_fromArray(
-										[$author$project$Ui$centerX]),
-									$author$project$Ui$text('Monday'))),
-								A2(
-								$author$project$Ui$el,
-								_List_fromArray(
-									[
-										$author$project$Ui$width($author$project$Ui$fill),
-										$author$project$Ui$Font$bold
-									]),
-								A2(
-									$author$project$Ui$el,
-									_List_fromArray(
-										[$author$project$Ui$centerX]),
-									$author$project$Ui$text('Tuesday'))),
-								A2(
-								$author$project$Ui$el,
-								_List_fromArray(
-									[
-										$author$project$Ui$width($author$project$Ui$fill),
-										$author$project$Ui$Font$bold
-									]),
-								A2(
-									$author$project$Ui$el,
-									_List_fromArray(
-										[$author$project$Ui$centerX]),
-									$author$project$Ui$text('Wednesday'))),
-								A2(
-								$author$project$Ui$el,
-								_List_fromArray(
-									[
-										$author$project$Ui$width($author$project$Ui$fill),
-										$author$project$Ui$Font$bold
-									]),
-								A2(
-									$author$project$Ui$el,
-									_List_fromArray(
-										[$author$project$Ui$centerX]),
-									$author$project$Ui$text('Thursday'))),
-								A2(
-								$author$project$Ui$el,
-								_List_fromArray(
-									[
-										$author$project$Ui$width($author$project$Ui$fill),
-										$author$project$Ui$Font$bold
-									]),
-								A2(
-									$author$project$Ui$el,
-									_List_fromArray(
-										[$author$project$Ui$centerX]),
-									$author$project$Ui$text('Friday'))),
-								A2(
-								$author$project$Ui$el,
-								_List_fromArray(
-									[
-										$author$project$Ui$width($author$project$Ui$fill),
-										$author$project$Ui$Font$bold
-									]),
-								A2(
-									$author$project$Ui$el,
-									_List_fromArray(
-										[$author$project$Ui$centerX]),
-									$author$project$Ui$text('Saturday')))
-							]))
-					])),
-				A2(
-				$author$project$Ui$el,
-				_List_fromArray(
-					[$author$project$Style$fillSpace]),
-				A2(
-					$elm$core$Maybe$withDefault,
-					$author$project$Ui$none,
-					A2(
-						$elm$core$Maybe$map,
-						function (weeks) {
-							return A2(
-								$author$project$Ui$column,
-								_List_fromArray(
-									[$author$project$Style$fillSpace]),
-								A2(
-									$elm$core$List$map,
-									function (days) {
-										return A2(
-											$author$project$Ui$row,
-											_List_fromArray(
-												[$author$project$Style$fillSpace]),
-											A2(
-												$elm$core$List$map,
-												function (d) {
-													var isSelected = function () {
-														var _v1 = model.selectDate;
-														if (_v1.$ === 'Just') {
-															var sd = _v1.a;
-															return _Utils_eq(
-																A2($justinmimbs$date$Date$compare, d.date, sd),
-																$elm$core$Basics$EQ);
-														} else {
-															return false;
-														}
-													}();
-													var date = A2(
-														$elm$core$Maybe$withDefault,
-														{
-															day: 0,
-															month: $elm$time$Time$Jan,
-															posix: $elm$time$Time$millisToPosix(0),
-															year: 0
-														},
-														A2(
-															$elm$core$Maybe$map,
-															function (t) {
-																return {
-																	day: A2($elm$time$Time$toDay, $elm$time$Time$utc, t),
-																	month: A2($elm$time$Time$toMonth, $elm$time$Time$utc, t),
-																	posix: t,
-																	year: A2($elm$time$Time$toYear, $elm$time$Time$utc, t)
-																};
-															},
-															model.time));
-													var isThisMonth = _Utils_eq(
-														$justinmimbs$date$Date$month(d.date),
-														date.month);
-													var isToday = _Utils_eq(
-														A2(
-															$justinmimbs$date$Date$compare,
-															d.date,
-															A2($justinmimbs$date$Date$fromPosix, $elm$time$Time$utc, date.posix)),
-														$elm$core$Basics$EQ);
-													var bg = function () {
-														var _v0 = _Utils_Tuple2(isSelected, isThisMonth);
-														if (_v0.a) {
-															if (_v0.b) {
-																return A3($author$project$Style$mix, 0.5, model.pal.link, model.pal.bg);
-															} else {
-																return A3(
-																	$author$project$Style$mix,
-																	0.5,
-																	model.pal.link,
-																	A3($author$project$Style$mix, 0.35, model.pal.bg, model.pal.fg));
-															}
-														} else {
-															if (_v0.b) {
-																return model.pal.bg;
-															} else {
-																return A3($author$project$Style$mix, 0.35, model.pal.bg, model.pal.fg);
-															}
-														}
-													}();
-													var internalBorder = isToday ? model.pal.fg : bg;
-													return A2(
-														$author$project$Ui$el,
-														_List_fromArray(
-															[
-																$author$project$Style$fillSpace,
-																$author$project$Ui$padding(
-																$elm$core$Basics$round(model.fontSize / 6)),
-																$author$project$Ui$Border$width(1),
-																$author$project$Ui$Background$color(internalBorder)
-															]),
-														A2(
-															$author$project$Ui$link,
-															_List_fromArray(
-																[
-																	$author$project$Style$fillSpace,
-																	$author$project$Ui$Events$onClick(
-																	$author$project$Types$SelectDate(
-																		isSelected ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(d.date)))
-																]),
-															{
-																label: A2(
-																	$author$project$Ui$column,
-																	_List_fromArray(
-																		[
-																			$author$project$Style$fillSpace,
-																			$author$project$Ui$padding(
-																			$elm$core$Basics$round((model.fontSize / 2) - (model.fontSize / 6))),
-																			$author$project$Ui$spacing(
-																			$elm$core$Basics$round((model.fontSize / 2) - (model.fontSize / 6))),
-																			$author$project$Ui$Font$size(10),
-																			$author$project$Ui$Background$color(bg)
-																		]),
-																	_List_fromArray(
-																		[
-																			A2(
-																			$author$project$Ui$el,
-																			_List_fromArray(
-																				[
-																					$author$project$Ui$Font$size(16),
-																					$author$project$Ui$Font$bold
-																				]),
-																			$author$project$Ui$text(
-																				$elm$core$String$fromInt(
-																					$justinmimbs$date$Date$day(d.date)))),
-																			A2(
-																			$author$project$Ui$paragraph,
-																			_List_fromArray(
-																				[
-																					$author$project$Ui$width($author$project$Ui$fill),
-																					$author$project$Ui$Background$color(
-																					A2(
-																						$author$project$Style$addAlpha,
-																						0.7,
-																						A3($author$project$Style$mix, 0.25, model.pal.bg, model.pal.error))),
-																					$author$project$Ui$Border$color(
-																					A3($author$project$Style$mix, 0.5, model.pal.bg, model.pal.error)),
-																					$author$project$Ui$Border$width(1),
-																					$author$project$Ui$Border$rounded(
-																					$elm$core$Basics$round(model.fontSize / 3)),
-																					$author$project$Ui$padding(
-																					$elm$core$Basics$round((model.fontSize / 2) - (model.fontSize / 6)))
-																				]),
-																			_List_fromArray(
-																				[
-																					$author$project$Ui$text('Event: This is Important!')
-																				])),
-																			A2(
-																			$author$project$Ui$paragraph,
-																			_List_fromArray(
-																				[
-																					$author$project$Ui$width($author$project$Ui$fill),
-																					$author$project$Ui$Background$color(
-																					A2(
-																						$author$project$Style$addAlpha,
-																						0.7,
-																						A3($author$project$Style$mix, 0.25, model.pal.bg, model.pal.link))),
-																					$author$project$Ui$Border$color(
-																					A3($author$project$Style$mix, 0.5, model.pal.bg, model.pal.link)),
-																					$author$project$Ui$Border$width(1),
-																					$author$project$Ui$Border$rounded(
-																					$elm$core$Basics$round(model.fontSize / 3)),
-																					$author$project$Ui$padding(
-																					$elm$core$Basics$round((model.fontSize / 2) - (model.fontSize / 6)))
-																				]),
-																			_List_fromArray(
-																				[
-																					$author$project$Ui$text('Event: This is Important!')
-																				])),
-																			A2(
-																			$author$project$Ui$paragraph,
-																			_List_fromArray(
-																				[
-																					$author$project$Ui$width($author$project$Ui$fill),
-																					$author$project$Ui$Background$color(
-																					A2(
-																						$author$project$Style$addAlpha,
-																						0.7,
-																						A3($author$project$Style$mix, 0.25, model.pal.bg, model.pal.extLink))),
-																					$author$project$Ui$Border$color(
-																					A3($author$project$Style$mix, 0.5, model.pal.bg, model.pal.extLink)),
-																					$author$project$Ui$Border$width(1),
-																					$author$project$Ui$Border$rounded(
-																					$elm$core$Basics$round(model.fontSize / 3)),
-																					$author$project$Ui$padding(
-																					$elm$core$Basics$round((model.fontSize / 2) - (model.fontSize / 6)))
-																				]),
-																			_List_fromArray(
-																				[
-																					$author$project$Ui$text('Event: This is Important!')
-																				]))
-																		])),
-																url: ''
-															}));
-												},
-												days));
-									},
-									weeks));
-						},
-						A2(
-							$elm$core$Maybe$map,
-							A2($abradley2$elm_calendar$Calendar$fromTime, $elm$core$Maybe$Nothing, $elm$time$Time$utc),
-							model.time))))
-			]));
-};
-var $mdgriffith$elm_ui$Element$BigDesktop = {$: 'BigDesktop'};
-var $mdgriffith$elm_ui$Element$Desktop = {$: 'Desktop'};
-var $mdgriffith$elm_ui$Element$Landscape = {$: 'Landscape'};
-var $mdgriffith$elm_ui$Element$Phone = {$: 'Phone'};
-var $mdgriffith$elm_ui$Element$Portrait = {$: 'Portrait'};
-var $mdgriffith$elm_ui$Element$Tablet = {$: 'Tablet'};
-var $mdgriffith$elm_ui$Element$classifyDevice = function (window) {
-	return {
-		_class: function () {
-			var shortSide = A2($elm$core$Basics$min, window.width, window.height);
-			var longSide = A2($elm$core$Basics$max, window.width, window.height);
-			return (shortSide < 600) ? $mdgriffith$elm_ui$Element$Phone : ((longSide <= 1200) ? $mdgriffith$elm_ui$Element$Tablet : (((longSide > 1200) && (longSide <= 1920)) ? $mdgriffith$elm_ui$Element$Desktop : $mdgriffith$elm_ui$Element$BigDesktop));
-		}(),
-		orientation: (_Utils_cmp(window.width, window.height) < 0) ? $mdgriffith$elm_ui$Element$Portrait : $mdgriffith$elm_ui$Element$Landscape
-	};
-};
-var $author$project$Ui$classifyDevice = $mdgriffith$elm_ui$Element$classifyDevice;
-var $author$project$Types$ToggleClockOrientation = {$: 'ToggleClockOrientation'};
-var $mdgriffith$elm_ui$Internal$Model$Behind = {$: 'Behind'};
-var $mdgriffith$elm_ui$Internal$Model$Nearby = F2(
-	function (a, b) {
-		return {$: 'Nearby', a: a, b: b};
-	});
-var $mdgriffith$elm_ui$Internal$Model$NoAttribute = {$: 'NoAttribute'};
-var $mdgriffith$elm_ui$Element$createNearby = F2(
-	function (loc, element) {
-		if (element.$ === 'Empty') {
-			return $mdgriffith$elm_ui$Internal$Model$NoAttribute;
-		} else {
-			return A2($mdgriffith$elm_ui$Internal$Model$Nearby, loc, element);
-		}
-	});
-var $mdgriffith$elm_ui$Element$behindContent = function (element) {
-	return A2($mdgriffith$elm_ui$Element$createNearby, $mdgriffith$elm_ui$Internal$Model$Behind, element);
-};
-var $author$project$Ui$behindContent = function (element) {
-	return _List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$behindContent(element)
-		]);
-};
-var $mdgriffith$elm_ui$Internal$Flag$overflow = $mdgriffith$elm_ui$Internal$Flag$flag(20);
-var $mdgriffith$elm_ui$Element$clip = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.clip);
-var $author$project$Ui$clip = _List_fromArray(
-	[$mdgriffith$elm_ui$Element$clip]);
 var $mdgriffith$elm_ui$Element$Font$underline = $mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.underline);
 var $author$project$Ui$Font$underline = _List_fromArray(
 	[$mdgriffith$elm_ui$Element$Font$underline]);
@@ -15316,19 +14196,16 @@ var $author$project$Markup$iconButton = F4(
 					return true;
 			}
 		}();
-		var color = function () {
-			if (isLink) {
-				if (msg.$ === 'GetDoc') {
-					var str = msg.a;
-					var testStr = A2($elm$core$String$left, 4, str);
-					return (testStr === 'http') ? model.pal.extLink : model.pal.link;
-				} else {
-					return model.pal.link;
-				}
+		var isExtLink = function () {
+			if (msg.$ === 'GetDoc') {
+				var str = msg.a;
+				var testStr = A2($elm$core$String$left, 4, str);
+				return (testStr === 'http') ? true : false;
 			} else {
-				return model.pal.fg;
+				return false;
 			}
 		}();
+		var color = isLink ? (isExtLink ? model.pal.extLink : model.pal.link) : model.pal.fg;
 		var linkStyle = $author$project$Ui$batch(
 			_List_fromArray(
 				[
@@ -15345,7 +14222,7 @@ var $author$project$Markup$iconButton = F4(
 					_List_Nil,
 					_List_fromArray(
 						[
-							A2(icon, color, model.fontSize),
+							A2(icon, color, model.fontSize * 1.6),
 							A2(
 							$author$project$Ui$el,
 							_List_fromArray(
@@ -15369,7 +14246,7 @@ var $author$project$Markup$iconButton = F4(
 			}
 		}();
 		return isLink ? A2(
-			$author$project$Ui$link,
+			isExtLink ? $author$project$Ui$newTabLink : $author$project$Ui$link,
 			_List_fromArray(
 				[
 					$author$project$Ui$Events$onClick(msg)
@@ -15379,314 +14256,51 @@ var $author$project$Markup$iconButton = F4(
 				url: function () {
 					if (msg.$ === 'GetDoc') {
 						var str = msg.a;
-						var testStr = A2($elm$core$String$left, 4, str);
-						return (testStr === 'http') ? str : '';
+						return isExtLink ? str : '';
 					} else {
 						return '';
 					}
 				}()
 			}) : linkContent;
 	});
-var $elm$html$Html$Attributes$alt = $elm$html$Html$Attributes$stringProperty('alt');
-var $elm$html$Html$Attributes$src = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'src',
-		_VirtualDom_noJavaScriptOrHtmlUri(url));
-};
-var $mdgriffith$elm_ui$Element$image = F2(
-	function (attrs, _v0) {
-		var src = _v0.src;
-		var description = _v0.description;
-		var imageAttributes = A2(
-			$elm$core$List$filter,
-			function (a) {
-				switch (a.$) {
-					case 'Width':
-						return true;
-					case 'Height':
-						return true;
-					default:
-						return false;
-				}
-			},
-			attrs);
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asEl,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.imageContainer),
-				attrs),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[
-						A4(
-						$mdgriffith$elm_ui$Internal$Model$element,
-						$mdgriffith$elm_ui$Internal$Model$asEl,
-						$mdgriffith$elm_ui$Internal$Model$NodeName('img'),
-						_Utils_ap(
-							_List_fromArray(
-								[
-									$mdgriffith$elm_ui$Internal$Model$Attr(
-									$elm$html$Html$Attributes$src(src)),
-									$mdgriffith$elm_ui$Internal$Model$Attr(
-									$elm$html$Html$Attributes$alt(description))
-								]),
-							imageAttributes),
-						$mdgriffith$elm_ui$Internal$Model$Unkeyed(_List_Nil))
-					])));
+var $mdgriffith$elm_ui$Internal$Model$paddingName = F4(
+	function (top, right, bottom, left) {
+		return 'pad-' + ($elm$core$String$fromInt(top) + ('-' + ($elm$core$String$fromInt(right) + ('-' + ($elm$core$String$fromInt(bottom) + ('-' + $elm$core$String$fromInt(left)))))));
 	});
-var $author$project$Ui$image = function (attrs) {
-	return $mdgriffith$elm_ui$Element$image(
-		$author$project$Ui$batch(attrs));
+var $mdgriffith$elm_ui$Element$paddingEach = function (_v0) {
+	var top = _v0.top;
+	var right = _v0.right;
+	var bottom = _v0.bottom;
+	var left = _v0.left;
+	if (_Utils_eq(top, right) && (_Utils_eq(top, bottom) && _Utils_eq(top, left))) {
+		var topFloat = top;
+		return A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$padding,
+			A5(
+				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+				'p-' + $elm$core$String$fromInt(top),
+				topFloat,
+				topFloat,
+				topFloat,
+				topFloat));
+	} else {
+		return A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$padding,
+			A5(
+				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+				A4($mdgriffith$elm_ui$Internal$Model$paddingName, top, right, bottom, left),
+				top,
+				right,
+				bottom,
+				left));
+	}
 };
-var $mdgriffith$elm_ui$Internal$Model$InFront = {$: 'InFront'};
-var $mdgriffith$elm_ui$Element$inFront = function (element) {
-	return A2($mdgriffith$elm_ui$Element$createNearby, $mdgriffith$elm_ui$Internal$Model$InFront, element);
-};
-var $author$project$Ui$inFront = function (element) {
+var $author$project$Ui$paddingEach = function (edges) {
 	return _List_fromArray(
 		[
-			$mdgriffith$elm_ui$Element$inFront(element)
-		]);
-};
-var $elm$core$Basics$pi = _Basics_pi;
-var $mdgriffith$elm_ui$Internal$Model$Rotate = F2(
-	function (a, b) {
-		return {$: 'Rotate', a: a, b: b};
-	});
-var $mdgriffith$elm_ui$Internal$Flag$rotate = $mdgriffith$elm_ui$Internal$Flag$flag(24);
-var $mdgriffith$elm_ui$Element$rotate = function (angle) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
-		$mdgriffith$elm_ui$Internal$Flag$rotate,
-		A2(
-			$mdgriffith$elm_ui$Internal$Model$Rotate,
-			_Utils_Tuple3(0, 0, 1),
-			angle));
-};
-var $author$project$Ui$rotate = function (angle) {
-	return _List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$rotate(angle)
-		]);
-};
-var $elm$time$Time$toHour = F2(
-	function (zone, time) {
-		return A2(
-			$elm$core$Basics$modBy,
-			24,
-			A2(
-				$elm$time$Time$flooredDiv,
-				A2($elm$time$Time$toAdjustedMinutes, zone, time),
-				60));
-	});
-var $elm$time$Time$toMillis = F2(
-	function (_v0, time) {
-		return A2(
-			$elm$core$Basics$modBy,
-			1000,
-			$elm$time$Time$posixToMillis(time));
-	});
-var $elm$time$Time$toMinute = F2(
-	function (zone, time) {
-		return A2(
-			$elm$core$Basics$modBy,
-			60,
-			A2($elm$time$Time$toAdjustedMinutes, zone, time));
-	});
-var $elm$time$Time$toSecond = F2(
-	function (_v0, time) {
-		return A2(
-			$elm$core$Basics$modBy,
-			60,
-			A2(
-				$elm$time$Time$flooredDiv,
-				$elm$time$Time$posixToMillis(time),
-				1000));
-	});
-var $author$project$Main$clock = function (model) {
-	var time = A2(
-		$elm$core$Maybe$withDefault,
-		{hours: 0, localHours: 0, millis: 0, minutes: 0, seconds: 0},
-		A2(
-			$elm$core$Maybe$map,
-			function (t) {
-				return {
-					hours: A2($elm$time$Time$toHour, $elm$time$Time$utc, t),
-					localHours: A2($elm$time$Time$toHour, model.zone, t),
-					millis: A2($elm$time$Time$toMillis, $elm$time$Time$utc, t),
-					minutes: A2($elm$time$Time$toMinute, $elm$time$Time$utc, t),
-					seconds: A2($elm$time$Time$toSecond, $elm$time$Time$utc, t)
-				};
-			},
-			model.time));
-	var c = function () {
-		var _v0 = model.clock;
-		if (_v0.$ === 'North') {
-			return {hourLines: 'assets/earth-hours-north.png', hourRotation: 0 - (((time.hours + (time.minutes / 60)) / 12) * $elm$core$Basics$pi), leftLabel: '06', localHourRotation: 0 - (((time.localHours + (time.minutes / 60)) / 12) * $elm$core$Basics$pi), minuteRotation: 0 - (((time.minutes + (time.seconds / 60)) / 30) * $elm$core$Basics$pi), op: 'Southern', picUrl: 'assets/earth-north.png', rightLabel: '18', secondRotation: 0 - (((time.seconds + (time.millis / 1000)) / 30) * $elm$core$Basics$pi)};
-		} else {
-			return {hourLines: 'assets/earth-hours-south.png', hourRotation: ((time.hours + (time.minutes / 60)) / 12) * $elm$core$Basics$pi, leftLabel: '18', localHourRotation: ((time.localHours + (time.minutes / 60)) / 12) * $elm$core$Basics$pi, minuteRotation: ((time.minutes + (time.seconds / 60)) / 30) * $elm$core$Basics$pi, op: 'Northern', picUrl: 'assets/earth-south.png', rightLabel: '06', secondRotation: ((time.seconds + (time.millis / 1000)) / 30) * $elm$core$Basics$pi};
-		}
-	}();
-	return A2(
-		$author$project$Ui$column,
-		_List_fromArray(
-			[$author$project$Ui$clip]),
-		_List_fromArray(
-			[
-				A2(
-				$author$project$Ui$image,
-				_List_fromArray(
-					[
-						$author$project$Style$centerXY,
-						$author$project$Ui$inFront(
-						A2(
-							$author$project$Ui$image,
-							_List_fromArray(
-								[
-									$author$project$Ui$rotate(c.localHourRotation)
-								]),
-							{description: 'local hour hand', src: 'assets/earth-local-hour.png'})),
-						$author$project$Ui$behindContent(
-						A2(
-							$author$project$Ui$image,
-							_List_fromArray(
-								[
-									$author$project$Ui$rotate(c.hourRotation),
-									$author$project$Ui$inFront(
-									A2(
-										$author$project$Ui$image,
-										_List_fromArray(
-											[
-												$author$project$Ui$rotate(c.secondRotation)
-											]),
-										{description: 'second hand', src: 'assets/earth-second.png'})),
-									$author$project$Ui$inFront(
-									A2(
-										$author$project$Ui$image,
-										_List_fromArray(
-											[
-												$author$project$Ui$rotate(c.minuteRotation)
-											]),
-										{description: 'minute hand', src: 'assets/earth-minute.png'}))
-								]),
-							{description: 'earth clock', src: c.picUrl}))
-					]),
-				{description: 'earth', src: c.hourLines}),
-				A2(
-				$author$project$Ui$el,
-				_List_fromArray(
-					[
-						$author$project$Ui$height(
-						$author$project$Ui$px(
-							$elm$core$Basics$round(model.fontSize * 2)))
-					]),
-				$author$project$Ui$none),
-				A2(
-				$author$project$Ui$el,
-				_List_fromArray(
-					[$author$project$Ui$centerX]),
-				A4(
-					$author$project$Markup$iconButton,
-					model,
-					$author$project$Types$ToggleClockOrientation,
-					$elm$core$Maybe$Nothing,
-					$author$project$Ui$text('Flip Clock to ' + (c.op + ' Hemisphere')))),
-				A2(
-				$author$project$Ui$el,
-				_List_fromArray(
-					[
-						$author$project$Ui$height(
-						$author$project$Ui$px(
-							$elm$core$Basics$round(model.fontSize * 2)))
-					]),
-				$author$project$Ui$none),
-				A2(
-				$author$project$Ui$el,
-				_List_fromArray(
-					[
-						$author$project$Ui$centerX,
-						$author$project$Ui$Font$size(
-						$elm$core$Basics$round(model.fontSize * 1.33)),
-						$author$project$Ui$Font$bold
-					]),
-				$author$project$Ui$text('Current Time:')),
-				A2(
-				$author$project$Ui$el,
-				_List_fromArray(
-					[
-						$author$project$Ui$height(
-						$author$project$Ui$px(
-							$elm$core$Basics$round(model.fontSize)))
-					]),
-				$author$project$Ui$none),
-				A2(
-				$author$project$Ui$el,
-				_List_fromArray(
-					[
-						$author$project$Ui$centerX,
-						$author$project$Ui$Font$size(
-						$elm$core$Basics$round(model.fontSize * 1.33))
-					]),
-				$author$project$Ui$text(
-					$elm$core$String$fromInt(time.hours) + (':' + (A3(
-						$elm$core$String$padLeft,
-						2,
-						_Utils_chr('0'),
-						$elm$core$String$fromInt(time.minutes)) + ' UTC')))),
-				A2(
-				$author$project$Ui$el,
-				_List_fromArray(
-					[
-						$author$project$Ui$height(
-						$author$project$Ui$px(
-							$elm$core$Basics$round(model.fontSize)))
-					]),
-				$author$project$Ui$none),
-				A2(
-				$author$project$Ui$el,
-				_List_fromArray(
-					[
-						$author$project$Ui$centerX,
-						$author$project$Ui$Font$size(
-						$elm$core$Basics$round(model.fontSize * 1.33))
-					]),
-				$author$project$Ui$text(
-					$elm$core$String$fromInt(time.localHours) + (':' + (A3(
-						$elm$core$String$padLeft,
-						2,
-						_Utils_chr('0'),
-						$elm$core$String$fromInt(time.minutes)) + ' Local'))))
-			]));
-};
-var $mdgriffith$elm_ui$Element$fillPortion = $mdgriffith$elm_ui$Internal$Model$Fill;
-var $author$project$Ui$fillPortion = $mdgriffith$elm_ui$Element$fillPortion;
-var $author$project$Markup$hBar = A2(
-	$author$project$Ui$el,
-	_List_fromArray(
-		[
-			$author$project$Ui$width($author$project$Ui$fill),
-			$author$project$Ui$height(
-			$author$project$Ui$px($author$project$Style$lineSize * 2)),
-			$author$project$Ui$Border$widthEach(
-			_Utils_update(
-				$author$project$Types$edges,
-				{bottom: ($author$project$Style$lineSize / 2) | 0, top: $author$project$Style$lineSize}))
-		]),
-	$author$project$Ui$none);
-var $mdgriffith$elm_ui$Element$moveDown = function (y) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
-		$mdgriffith$elm_ui$Internal$Flag$moveY,
-		$mdgriffith$elm_ui$Internal$Model$MoveY(y));
-};
-var $author$project$Ui$moveDown = function (y) {
-	return _List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$moveDown(y)
+			$mdgriffith$elm_ui$Element$paddingEach(edges)
 		]);
 };
 var $author$project$Markup$Heading = F3(
@@ -15773,6 +14387,80 @@ var $mdgriffith$elm_ui$Internal$Model$Left = {$: 'Left'};
 var $mdgriffith$elm_ui$Element$alignLeft = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Left);
 var $author$project$Ui$alignLeft = _List_fromArray(
 	[$mdgriffith$elm_ui$Element$alignLeft]);
+var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
+var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderColor,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Colored,
+			'bc-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
+			'border-color',
+			clr));
+};
+var $author$project$Ui$Border$color = function (clr) {
+	return _List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$Border$color(
+			$author$project$Ui$Util$cc(clr))
+		]);
+};
+var $author$project$Types$corners = {bottomLeft: 0, bottomRight: 0, topLeft: 0, topRight: 0};
+var $elm$html$Html$Attributes$alt = $elm$html$Html$Attributes$stringProperty('alt');
+var $elm$html$Html$Attributes$src = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'src',
+		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
+var $mdgriffith$elm_ui$Element$image = F2(
+	function (attrs, _v0) {
+		var src = _v0.src;
+		var description = _v0.description;
+		var imageAttributes = A2(
+			$elm$core$List$filter,
+			function (a) {
+				switch (a.$) {
+					case 'Width':
+						return true;
+					case 'Height':
+						return true;
+					default:
+						return false;
+				}
+			},
+			attrs);
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asEl,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.imageContainer),
+				attrs),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[
+						A4(
+						$mdgriffith$elm_ui$Internal$Model$element,
+						$mdgriffith$elm_ui$Internal$Model$asEl,
+						$mdgriffith$elm_ui$Internal$Model$NodeName('img'),
+						_Utils_ap(
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Internal$Model$Attr(
+									$elm$html$Html$Attributes$src(src)),
+									$mdgriffith$elm_ui$Internal$Model$Attr(
+									$elm$html$Html$Attributes$alt(description))
+								]),
+							imageAttributes),
+						$mdgriffith$elm_ui$Internal$Model$Unkeyed(_List_Nil))
+					])));
+	});
+var $author$project$Ui$image = function (attrs) {
+	return $mdgriffith$elm_ui$Element$image(
+		$author$project$Ui$batch(attrs));
+};
 var $elm$core$List$intersperse = F2(
 	function (sep, xs) {
 		if (!xs.b) {
@@ -15798,78 +14486,54 @@ var $mdgriffith$elm_ui$Internal$Flag$fontAlignment = $mdgriffith$elm_ui$Internal
 var $mdgriffith$elm_ui$Element$Font$justify = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontAlignment, $mdgriffith$elm_ui$Internal$Style$classes.textJustify);
 var $author$project$Ui$Font$justify = _List_fromArray(
 	[$mdgriffith$elm_ui$Element$Font$justify]);
+var $mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
+var $mdgriffith$elm_ui$Element$alignTop = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Top);
+var $author$project$Ui$alignTop = _List_fromArray(
+	[$mdgriffith$elm_ui$Element$alignTop]);
 var $author$project$Pic$bulletPath = 'm21.777 13.229a8.5476 8.5476 0 0 1-8.5476 8.5476 8.5476 8.5476 0 0 1-8.5476-8.5476 8.5476 8.5476 0 0 1 8.5476-8.5476 8.5476 8.5476 0 0 1 8.5476 8.5476z';
-var $author$project$Pic$bullet = F2(
-	function (color, fontSize) {
-		return A2(
-			$author$project$Pic$svg,
-			_List_fromArray(
-				[
-					A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, 26.458, 26.458),
-					$elm_community$typed_svg$TypedSvg$Attributes$height(
-					$elm_community$typed_svg$TypedSvg$Types$px(fontSize))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm_community$typed_svg$TypedSvg$path,
-					_List_fromArray(
-						[
-							$elm_community$typed_svg$TypedSvg$Attributes$d($author$project$Pic$bulletPath),
-							$elm_community$typed_svg$TypedSvg$Attributes$fill(
-							$elm_community$typed_svg$TypedSvg$Types$Paint(color))
-						]),
-					_List_Nil)
-				]));
-	});
+var $author$project$Pic$bullet = A3($author$project$Pic$svgIcon, $author$project$Pic$bulletPath, 26.458, 26.458);
 var $author$project$Pic$checkedPath = 'm10.266 20.601-7.3035-7.3724 2.0843-2.0843 5.2193 5.2537 11.145-11.179 2.0843 2.1532zm13.229-20.601h-20.533q-1.2402 0-2.1015 0.86126-0.86126 0.86126-0.86126 2.1015v20.533q0 1.2402 0.86126 2.1015 0.86126 0.86126 2.1015 0.86126h20.533q1.2402 0 2.1015-0.86126 0.86126-0.87849 0.86126-2.1015v-20.533q0-1.2402-0.86126-2.1015-0.86126-0.86126-2.1015-0.86126z';
-var $author$project$Pic$checked = F2(
-	function (color, fontSize) {
-		return A2(
-			$author$project$Pic$svg,
-			_List_fromArray(
-				[
-					A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, 26.458, 26.458),
-					$elm_community$typed_svg$TypedSvg$Attributes$height(
-					$elm_community$typed_svg$TypedSvg$Types$px(fontSize))
-				]),
-			_List_fromArray(
-				[
+var $author$project$Pic$checked = A3($author$project$Pic$svgIcon, $author$project$Pic$checkedPath, 26.458, 26.458);
+var $mdgriffith$elm_ui$Element$moveDown = function (y) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
+		$mdgriffith$elm_ui$Internal$Flag$moveY,
+		$mdgriffith$elm_ui$Internal$Model$MoveY(y));
+};
+var $author$project$Ui$moveDown = function (y) {
+	return _List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$moveDown(y)
+		]);
+};
+var $mdgriffith$elm_ui$Internal$Model$Describe = function (a) {
+	return {$: 'Describe', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
+var $mdgriffith$elm_ui$Element$paragraph = F2(
+	function (attrs, children) {
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asParagraph,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$Paragraph),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 					A2(
-					$elm_community$typed_svg$TypedSvg$path,
-					_List_fromArray(
-						[
-							$elm_community$typed_svg$TypedSvg$Attributes$d($author$project$Pic$checkedPath),
-							$elm_community$typed_svg$TypedSvg$Attributes$fill(
-							$elm_community$typed_svg$TypedSvg$Types$Paint(color))
-						]),
-					_List_Nil)
-				]));
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Element$spacing(5),
+						attrs))),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
+var $author$project$Ui$paragraph = function (attrs) {
+	return $mdgriffith$elm_ui$Element$paragraph(
+		$author$project$Ui$batch(attrs));
+};
 var $author$project$Pic$uncheckedPath = 'm23.495 0h-20.533q-1.2402 0-2.1015 0.86126-0.86126 0.86126-0.86126 2.1015v20.533q0 1.2402 0.86126 2.1015 0.86126 0.86126 2.1015 0.86126h20.533q1.2402 0 2.1015-0.86126 0.86126-0.87849 0.86126-2.1015v-20.533q0-1.2402-0.86126-2.1015-0.86126-0.86126-2.1015-0.86126z';
-var $author$project$Pic$unchecked = F2(
-	function (color, fontSize) {
-		return A2(
-			$author$project$Pic$svg,
-			_List_fromArray(
-				[
-					A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, 26.458, 26.458),
-					$elm_community$typed_svg$TypedSvg$Attributes$height(
-					$elm_community$typed_svg$TypedSvg$Types$px(fontSize))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm_community$typed_svg$TypedSvg$path,
-					_List_fromArray(
-						[
-							$elm_community$typed_svg$TypedSvg$Attributes$d($author$project$Pic$uncheckedPath),
-							$elm_community$typed_svg$TypedSvg$Attributes$fill(
-							$elm_community$typed_svg$TypedSvg$Types$Paint(color))
-						]),
-					_List_Nil)
-				]));
-	});
+var $author$project$Pic$unchecked = A3($author$project$Pic$svgIcon, $author$project$Pic$uncheckedPath, 26.458, 26.458);
 var $author$project$Markup$mdItem = F4(
 	function (model, task, content, children) {
 		return A2(
@@ -15932,49 +14596,22 @@ var $author$project$Markup$mdItem = F4(
 					_Utils_ap(content, children))
 				]));
 	});
+var $mdgriffith$elm_ui$Internal$Model$Min = F2(
+	function (a, b) {
+		return {$: 'Min', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Element$minimum = F2(
+	function (i, l) {
+		return A2($mdgriffith$elm_ui$Internal$Model$Min, i, l);
+	});
+var $author$project$Ui$minimum = $mdgriffith$elm_ui$Element$minimum;
 var $mdgriffith$elm_ui$Internal$Model$Monospace = {$: 'Monospace'};
 var $mdgriffith$elm_ui$Element$Font$monospace = $mdgriffith$elm_ui$Internal$Model$Monospace;
 var $author$project$Ui$Font$monospace = $mdgriffith$elm_ui$Element$Font$monospace;
-var $mdgriffith$elm_ui$Internal$Model$paddingName = F4(
-	function (top, right, bottom, left) {
-		return 'pad-' + ($elm$core$String$fromInt(top) + ('-' + ($elm$core$String$fromInt(right) + ('-' + ($elm$core$String$fromInt(bottom) + ('-' + $elm$core$String$fromInt(left)))))));
-	});
-var $mdgriffith$elm_ui$Element$paddingEach = function (_v0) {
-	var top = _v0.top;
-	var right = _v0.right;
-	var bottom = _v0.bottom;
-	var left = _v0.left;
-	if (_Utils_eq(top, right) && (_Utils_eq(top, bottom) && _Utils_eq(top, left))) {
-		var topFloat = top;
-		return A2(
-			$mdgriffith$elm_ui$Internal$Model$StyleClass,
-			$mdgriffith$elm_ui$Internal$Flag$padding,
-			A5(
-				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-				'p-' + $elm$core$String$fromInt(top),
-				topFloat,
-				topFloat,
-				topFloat,
-				topFloat));
-	} else {
-		return A2(
-			$mdgriffith$elm_ui$Internal$Model$StyleClass,
-			$mdgriffith$elm_ui$Internal$Flag$padding,
-			A5(
-				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-				A4($mdgriffith$elm_ui$Internal$Model$paddingName, top, right, bottom, left),
-				top,
-				right,
-				bottom,
-				left));
-	}
-};
-var $author$project$Ui$paddingEach = function (edges) {
-	return _List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$paddingEach(edges)
-		]);
-};
+var $mdgriffith$elm_ui$Internal$Flag$overflow = $mdgriffith$elm_ui$Internal$Flag$flag(20);
+var $mdgriffith$elm_ui$Element$clip = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.clip);
+var $author$project$Ui$clip = _List_fromArray(
+	[$mdgriffith$elm_ui$Element$clip]);
 var $mdgriffith$elm_ui$Element$htmlAttribute = $mdgriffith$elm_ui$Internal$Model$Attr;
 var $author$project$Ui$htmlAttribute = function (attr) {
 	return _List_fromArray(
@@ -15999,6 +14636,68 @@ var $author$project$Style$noSelect = $author$project$Ui$batch(
 			A2($author$project$Style$style, '-ms-user-select', 'none'),
 			A2($author$project$Style$style, 'user-select', 'none')
 		]));
+var $elm$core$String$cons = _String_cons;
+var $elm$core$String$fromChar = function (_char) {
+	return A2($elm$core$String$cons, _char, '');
+};
+var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
+var $elm$core$String$repeatHelp = F3(
+	function (n, chunk, result) {
+		return (n <= 0) ? result : A3(
+			$elm$core$String$repeatHelp,
+			n >> 1,
+			_Utils_ap(chunk, chunk),
+			(!(n & 1)) ? result : _Utils_ap(result, chunk));
+	});
+var $elm$core$String$repeat = F2(
+	function (n, chunk) {
+		return A3($elm$core$String$repeatHelp, n, chunk, '');
+	});
+var $elm$core$String$padLeft = F3(
+	function (n, _char, string) {
+		return _Utils_ap(
+			A2(
+				$elm$core$String$repeat,
+				n - $elm$core$String$length(string),
+				$elm$core$String$fromChar(_char)),
+			string);
+	});
+var $mdgriffith$elm_ui$Element$padding = function (x) {
+	var f = x;
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$padding,
+		A5(
+			$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+			'p-' + $elm$core$String$fromInt(x),
+			f,
+			f,
+			f,
+			f));
+};
+var $author$project$Ui$padding = function (x) {
+	return _List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$padding(x)
+		]);
+};
+var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
+var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderRound,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Single,
+			'br-' + $elm$core$String$fromInt(radius),
+			'border-radius',
+			$elm$core$String$fromInt(radius) + 'px'));
+};
+var $author$project$Ui$Border$rounded = function (radius) {
+	return _List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$Border$rounded(radius)
+		]);
+};
 var $mdgriffith$elm_ui$Element$scrollbars = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.scrollbars);
 var $author$project$Ui$scrollbars = _List_fromArray(
 	[$mdgriffith$elm_ui$Element$scrollbars]);
@@ -16027,14 +14726,6 @@ var $mdgriffith$elm_ui$Element$maximum = F2(
 	function (i, l) {
 		return A2($mdgriffith$elm_ui$Internal$Model$Max, i, l);
 	});
-var $mdgriffith$elm_ui$Internal$Model$Min = F2(
-	function (a, b) {
-		return {$: 'Min', a: a, b: b};
-	});
-var $mdgriffith$elm_ui$Element$minimum = F2(
-	function (i, l) {
-		return A2($mdgriffith$elm_ui$Internal$Model$Min, i, l);
-	});
 var $mdgriffith$elm_ui$Element$textColumn = F2(
 	function (attrs, children) {
 		return A4(
@@ -16060,139 +14751,164 @@ var $author$project$Markup$renderCodeBlock = F3(
 		var language = _v0.language;
 		var body = _v0.body;
 		return A2(
-			$author$project$Ui$textColumn,
+			$author$project$Ui$el,
 			_List_fromArray(
 				[
-					$author$project$Ui$Font$family(
-					_List_fromArray(
-						[$author$project$Ui$Font$monospace])),
-					$author$project$Ui$Background$color(
-					A3($author$project$Style$mix, 0.2, model.pal.bg, model.pal.fg)),
-					$author$project$Ui$width(
-					$author$project$Ui$px(
-						$elm$core$Basics$round(vp.viewport.width * 0.85))),
-					$author$project$Ui$Border$rounded(
-					$elm$core$Basics$round(model.fontSize / 2)),
-					$author$project$Ui$alignRight
+					$author$project$Ui$width($author$project$Ui$fill)
 				]),
-			_List_fromArray(
-				[
-					A2(
-					$author$project$Ui$el,
-					_List_fromArray(
-						[
-							$author$project$Ui$Font$size(
-							$elm$core$Basics$round(model.fontSize)),
-							$author$project$Ui$padding(
-							$elm$core$Basics$round(model.fontSize / 2)),
-							$author$project$Ui$Background$color(
-							A3($author$project$Style$mix, 0.2, model.pal.bg, model.pal.fg)),
-							$author$project$Ui$Border$rounded(
-							$elm$core$Basics$round(model.fontSize / 2)),
-							$author$project$Style$noSelect
-						]),
-					function () {
-						if (language.$ === 'Just') {
-							var l = language.a;
-							return $author$project$Ui$text(l);
-						} else {
-							return $author$project$Ui$none;
-						}
-					}()),
-					A2(
-					$author$project$Ui$el,
-					_List_fromArray(
-						[
-							$author$project$Ui$width($author$project$Ui$fill),
-							$author$project$Ui$Background$color(
-							A3($author$project$Style$mix, 0.05, model.pal.bg, model.pal.fg)),
-							$author$project$Ui$clip,
-							$author$project$Ui$scrollbars
-						]),
-					A2(
-						$author$project$Ui$column,
+			A2(
+				$author$project$Ui$textColumn,
+				_List_fromArray(
+					[
+						$author$project$Ui$Font$family(
+						_List_fromArray(
+							[$author$project$Ui$Font$monospace])),
+						$author$project$Ui$Background$color(
+						A3($author$project$Style$mix, 0.2, model.pal.bg, model.pal.fg)),
+						$author$project$Ui$width($author$project$Ui$fill),
+						$author$project$Ui$Border$rounded(
+						$elm$core$Basics$round(model.fontSize / 2)),
+						$author$project$Ui$alignRight
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$author$project$Ui$el,
 						_List_fromArray(
 							[
+								$author$project$Ui$Font$size(
+								$elm$core$Basics$round(model.fontSize)),
+								$author$project$Ui$padding(
+								$elm$core$Basics$round(model.fontSize / 2)),
+								$author$project$Ui$Background$color(
+								A3($author$project$Style$mix, 0.2, model.pal.bg, model.pal.fg)),
+								$author$project$Ui$Border$rounded(
+								$elm$core$Basics$round(model.fontSize / 2)),
+								$author$project$Style$noSelect
+							]),
+						function () {
+							if (language.$ === 'Just') {
+								var l = language.a;
+								return $author$project$Ui$text(l);
+							} else {
+								return $author$project$Ui$none;
+							}
+						}()),
+						A2(
+						$author$project$Ui$el,
+						_List_fromArray(
+							[
+								$author$project$Ui$width($author$project$Ui$fill),
 								$author$project$Ui$Background$color(
 								A3($author$project$Style$mix, 0.05, model.pal.bg, model.pal.fg)),
-								$author$project$Ui$width($author$project$Ui$fill)
+								$author$project$Ui$clip,
+								$author$project$Ui$scrollbars
 							]),
-						function (xs) {
-							return A2(
-								$elm$core$List$indexedMap,
-								F2(
-									function (i, str) {
-										var bg = (!A2($elm$core$Basics$modBy, 2, i)) ? {
-											num: A3($author$project$Style$mix, 0.1, model.pal.bg, model.pal.fg),
-											text: A3($author$project$Style$mix, 0.05, model.pal.bg, model.pal.fg)
-										} : {
-											num: A3($author$project$Style$mix, 0.15, model.pal.bg, model.pal.fg),
-											text: A3($author$project$Style$mix, 0.1, model.pal.bg, model.pal.fg)
-										};
-										return A2(
-											$author$project$Ui$row,
-											_List_fromArray(
-												[
-													$author$project$Ui$width($author$project$Ui$fill)
-												]),
-											_List_fromArray(
-												[
-													A2(
-													$author$project$Ui$el,
-													_List_fromArray(
-														[
-															$author$project$Ui$Background$color(bg.num),
-															$author$project$Ui$padding(
-															$elm$core$Basics$round(model.fontSize / 2)),
-															$author$project$Ui$height($author$project$Ui$fill)
-														]),
-													function (s) {
-														return A2(
-															$author$project$Ui$el,
-															_List_fromArray(
-																[$author$project$Ui$centerY, $author$project$Style$noSelect]),
-															$author$project$Ui$text(s));
-													}(
-														A3(
-															$elm$core$String$padLeft,
-															function (x) {
-																return $elm$core$Basics$floor(x) + 1;
-															}(
+						A2(
+							$author$project$Ui$column,
+							_List_fromArray(
+								[
+									$author$project$Ui$Background$color(
+									A3($author$project$Style$mix, 0.05, model.pal.bg, model.pal.fg)),
+									$author$project$Ui$width($author$project$Ui$fill)
+								]),
+							function (xs) {
+								return A2(
+									$elm$core$List$indexedMap,
+									F2(
+										function (i, str) {
+											var bg = (!A2($elm$core$Basics$modBy, 2, i)) ? {
+												num: A3($author$project$Style$mix, 0.1, model.pal.bg, model.pal.fg),
+												text: A3($author$project$Style$mix, 0.05, model.pal.bg, model.pal.fg)
+											} : {
+												num: A3($author$project$Style$mix, 0.15, model.pal.bg, model.pal.fg),
+												text: A3($author$project$Style$mix, 0.1, model.pal.bg, model.pal.fg)
+											};
+											return A2(
+												$author$project$Ui$row,
+												_List_fromArray(
+													[
+														$author$project$Ui$width($author$project$Ui$fill)
+													]),
+												_List_fromArray(
+													[
+														A2(
+														$author$project$Ui$el,
+														_List_fromArray(
+															[
+																$author$project$Ui$Background$color(bg.num),
+																$author$project$Ui$Font$bold,
+																$author$project$Ui$padding(
+																$elm$core$Basics$round(model.fontSize / 2)),
+																$author$project$Ui$height($author$project$Ui$fill)
+															]),
+														function (s) {
+															return A2(
+																$author$project$Ui$el,
+																_List_fromArray(
+																	[$author$project$Ui$centerY, $author$project$Style$noSelect]),
+																$author$project$Ui$text(s));
+														}(
+															A3(
+																$elm$core$String$padLeft,
+																function (x) {
+																	return $elm$core$Basics$floor(x) + 1;
+																}(
+																	A2(
+																		$elm$core$Basics$logBase,
+																		10,
+																		$elm$core$List$length(xs))),
+																_Utils_chr('0'),
+																$elm$core$String$fromInt(i + 1)))),
+														A2(
+														$author$project$Ui$paragraph,
+														_List_fromArray(
+															[
+																$author$project$Ui$Background$color(bg.text),
 																A2(
-																	$elm$core$Basics$logBase,
-																	10,
-																	$elm$core$List$length(xs))),
-															_Utils_chr('0'),
-															$elm$core$String$fromInt(i + 1)))),
-													A2(
-													$author$project$Ui$paragraph,
-													_List_fromArray(
-														[
-															$author$project$Ui$Background$color(bg.text),
-															A2(
-															$author$project$Ui$paddingXY,
-															$elm$core$Basics$round(model.fontSize / 2),
-															0),
-															$author$project$Ui$width($author$project$Ui$fill),
-															$author$project$Ui$height($author$project$Ui$fill)
-														]),
-													_List_fromArray(
-														[
-															(str !== '') ? $author$project$Markup$spaceText(str) : $author$project$Markup$spaceText('\n')
-														]))
-												]));
-									}),
-								$elm$core$List$reverse(
-									A2(
-										$author$project$Markup$splitWhile,
-										function (x) {
-											return x === '';
-										},
-										$elm$core$List$reverse(xs)).b));
-						}(
-							A2($elm$core$String$split, '\n', body))))
-				]));
+																$author$project$Ui$paddingXY,
+																$elm$core$Basics$round(model.fontSize / 2),
+																0),
+																$author$project$Ui$width($author$project$Ui$fill),
+																$author$project$Ui$height($author$project$Ui$fill)
+															]),
+														_List_fromArray(
+															[
+																(str !== '') ? $author$project$Markup$spaceText(str) : $author$project$Markup$spaceText('\n')
+															]))
+													]));
+										}),
+									$elm$core$List$reverse(
+										A2(
+											$author$project$Markup$splitWhile,
+											function (x) {
+												return x === '';
+											},
+											$elm$core$List$reverse(xs)).b));
+							}(
+								A2($elm$core$String$split, '\n', body))))
+					])));
 	});
+var $mdgriffith$elm_ui$Element$Border$roundEach = function (_v0) {
+	var topLeft = _v0.topLeft;
+	var topRight = _v0.topRight;
+	var bottomLeft = _v0.bottomLeft;
+	var bottomRight = _v0.bottomRight;
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderRound,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Single,
+			'br-' + ($elm$core$String$fromInt(topLeft) + ('-' + ($elm$core$String$fromInt(topRight) + ($elm$core$String$fromInt(bottomLeft) + ('-' + $elm$core$String$fromInt(bottomRight)))))),
+			'border-radius',
+			$elm$core$String$fromInt(topLeft) + ('px ' + ($elm$core$String$fromInt(topRight) + ('px ' + ($elm$core$String$fromInt(bottomRight) + ('px ' + ($elm$core$String$fromInt(bottomLeft) + 'px'))))))));
+};
+var $author$project$Ui$Border$roundEach = function (corners) {
+	return _List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$Border$roundEach(corners)
+		]);
+};
 var $mdgriffith$elm_ui$Element$Font$strike = $mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.strike);
 var $author$project$Ui$Font$strike = _List_fromArray(
 	[$mdgriffith$elm_ui$Element$Font$strike]);
@@ -16436,33 +15152,15 @@ var $author$project$Markup$renderToken = F3(
 											$author$project$Ui$Font$size(
 											$elm$core$Basics$round((model.fontSize * 2) * (1.0 - ((level - 1) * 0.1)))),
 											$author$project$Ui$spacing(
-											$elm$core$Basics$round(model.fontSize))
-										]),
-									render(title)),
-									A2(
-									$author$project$Ui$el,
-									_List_fromArray(
-										[
-											$author$project$Ui$width($author$project$Ui$fill),
-											$author$project$Ui$height(
-											$author$project$Ui$px(
-												$elm$core$Basics$round(model.fontSize / 2))),
+											$elm$core$Basics$round(model.fontSize)),
 											$author$project$Ui$Border$color(
 											A3($author$project$Style$mix, 0.5, model.pal.bg, model.pal.fg)),
 											$author$project$Ui$Border$widthEach(
 											_Utils_update(
 												$author$project$Types$edges,
-												{top: $author$project$Style$lineSize * 2})),
-											$author$project$Ui$Border$roundEach(
-											_Utils_update(
-												$author$project$Types$corners,
-												{
-													topLeft: $elm$core$Basics$round(model.fontSize / 2),
-													topRight: $elm$core$Basics$round(model.fontSize / 2)
-												})),
-											$author$project$Ui$Background$color(model.pal.bg)
+												{bottom: $author$project$Style$lineSize * 2}))
 										]),
-									$author$project$Ui$none)
+									render(title))
 								])),
 						render(subsections))) : A2(
 					$author$project$Ui$textColumn,
@@ -16555,6 +15253,7 @@ var $author$project$Markup$renderToken = F3(
 						[
 							$author$project$Ui$spacing(
 							$elm$core$Basics$round(model.fontSize / 2)),
+							A2($author$project$Ui$paddingXY, $author$project$Style$lineSize, 0),
 							$author$project$Ui$width($author$project$Ui$fill)
 						]),
 					A2(
@@ -16695,17 +15394,12 @@ var $author$project$Markup$renderToken = F3(
 						]));
 			case 'LineBreak':
 				return A2(
-					$author$project$Ui$paragraph,
+					$author$project$Ui$el,
 					_List_fromArray(
 						[
-							$author$project$Ui$spacing(
-							$elm$core$Basics$round(model.fontSize / 2)),
 							$author$project$Ui$width($author$project$Ui$fill)
 						]),
-					_List_fromArray(
-						[
-							$author$project$Ui$text('<br>')
-						]));
+					$author$project$Ui$none);
 			case 'Link':
 				var destination = tok.a.destination;
 				var toks = tok.b;
@@ -16727,8 +15421,11 @@ var $author$project$Markup$renderToken = F3(
 					_List_fromArray(
 						[
 							$author$project$Ui$width(
-							$author$project$Ui$px(
-								$elm$core$Basics$round(vp.viewport.width * 0.33))),
+							A2(
+								$author$project$Ui$minimum,
+								300,
+								$author$project$Ui$px(
+									$elm$core$Basics$round(vp.viewport.width * 0.33)))),
 							$author$project$Ui$paddingEach(
 							_Utils_update(
 								$author$project$Types$edges,
@@ -16835,9 +15532,7 @@ var $author$project$Markup$renderToken = F3(
 								A3($author$project$Style$mix, 0.15, model.pal.bg, model.pal.fg)),
 								$author$project$Ui$Border$rounded(
 								$elm$core$Basics$round(model.fontSize / 2)),
-								$author$project$Ui$width(
-								$author$project$Ui$px(
-									$elm$core$Basics$round(vp.viewport.width * 0.85))),
+								$author$project$Ui$width($author$project$Ui$fill),
 								$author$project$Ui$alignRight
 							]),
 						render(toks)));
@@ -20307,11 +19002,29 @@ var $dillonkearns$elm_markdown$Markdown$InlineParser$autolinkToMatch = function 
 		$dillonkearns$elm_markdown$Markdown$InlineParser$Match(match));
 };
 var $elm$regex$Regex$findAtMost = _Regex_findAtMost;
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
 var $dillonkearns$elm_markdown$Markdown$Helpers$insideSquareBracketRegex = '[^\\[\\]\\\\]*(?:\\\\.[^\\[\\]\\\\]*)*';
 var $dillonkearns$elm_markdown$Markdown$InlineParser$refLabelRegex = A2(
 	$elm$core$Maybe$withDefault,
 	$elm$regex$Regex$never,
 	$elm$regex$Regex$fromString('^\\[\\s*(' + ($dillonkearns$elm_markdown$Markdown$Helpers$insideSquareBracketRegex + ')\\s*\\]')));
+var $elm$core$Maybe$andThen = F2(
+	function (callback, maybeValue) {
+		if (maybeValue.$ === 'Just') {
+			var value = maybeValue.a;
+			return callback(value);
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
 var $dillonkearns$elm_markdown$Markdown$Helpers$cleanWhitespaces = function (original) {
 	return original;
 };
@@ -22588,6 +21301,132 @@ var $elm$core$List$all = F2(
 			$elm$core$List$any,
 			A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay),
 			list);
+	});
+var $elm$core$List$takeReverse = F3(
+	function (n, list, kept) {
+		takeReverse:
+		while (true) {
+			if (n <= 0) {
+				return kept;
+			} else {
+				if (!list.b) {
+					return kept;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs,
+						$temp$kept = A2($elm$core$List$cons, x, kept);
+					n = $temp$n;
+					list = $temp$list;
+					kept = $temp$kept;
+					continue takeReverse;
+				}
+			}
+		}
+	});
+var $elm$core$List$takeTailRec = F2(
+	function (n, list) {
+		return $elm$core$List$reverse(
+			A3($elm$core$List$takeReverse, n, list, _List_Nil));
+	});
+var $elm$core$List$takeFast = F3(
+	function (ctr, n, list) {
+		if (n <= 0) {
+			return _List_Nil;
+		} else {
+			var _v0 = _Utils_Tuple2(n, list);
+			_v0$1:
+			while (true) {
+				_v0$5:
+				while (true) {
+					if (!_v0.b.b) {
+						return list;
+					} else {
+						if (_v0.b.b.b) {
+							switch (_v0.a) {
+								case 1:
+									break _v0$1;
+								case 2:
+									var _v2 = _v0.b;
+									var x = _v2.a;
+									var _v3 = _v2.b;
+									var y = _v3.a;
+									return _List_fromArray(
+										[x, y]);
+								case 3:
+									if (_v0.b.b.b.b) {
+										var _v4 = _v0.b;
+										var x = _v4.a;
+										var _v5 = _v4.b;
+										var y = _v5.a;
+										var _v6 = _v5.b;
+										var z = _v6.a;
+										return _List_fromArray(
+											[x, y, z]);
+									} else {
+										break _v0$5;
+									}
+								default:
+									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
+										var _v7 = _v0.b;
+										var x = _v7.a;
+										var _v8 = _v7.b;
+										var y = _v8.a;
+										var _v9 = _v8.b;
+										var z = _v9.a;
+										var _v10 = _v9.b;
+										var w = _v10.a;
+										var tl = _v10.b;
+										return (ctr > 1000) ? A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
+									} else {
+										break _v0$5;
+									}
+							}
+						} else {
+							if (_v0.a === 1) {
+								break _v0$1;
+							} else {
+								break _v0$5;
+							}
+						}
+					}
+				}
+				return list;
+			}
+			var _v1 = _v0.b;
+			var x = _v1.a;
+			return _List_fromArray(
+				[x]);
+		}
+	});
+var $elm$core$List$take = F2(
+	function (n, list) {
+		return A3($elm$core$List$takeFast, 0, n, list);
 	});
 var $dillonkearns$elm_markdown$Markdown$TableParser$standardizeRowLength = F2(
 	function (expectedLength, row) {
@@ -25616,13 +24455,2128 @@ var $author$project$Markup$renderMd = F3(
 				$author$project$Markup$nestHeadings(
 					$author$project$Markup$tokenize(str))));
 	});
+var $author$project$Main$blogView = F2(
+	function (model, vp) {
+		return A2(
+			$author$project$Ui$column,
+			_List_fromArray(
+				[
+					$author$project$Style$fillSpace,
+					$author$project$Ui$spacing(
+					$elm$core$Basics$round(model.fontSize)),
+					$author$project$Ui$paddingEach(
+					_Utils_update(
+						$author$project$Types$edges,
+						{
+							bottom: $elm$core$Basics$round(model.fontSize),
+							left: $elm$core$Basics$round(model.fontSize),
+							right: $elm$core$Basics$round(model.fontSize)
+						}))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$author$project$Ui$row,
+					_List_fromArray(
+						[
+							$author$project$Ui$width($author$project$Ui$fill),
+							A2($author$project$Ui$paddingXY, $author$project$Style$lineSize, 0),
+							$author$project$Ui$spacing(
+							$elm$core$Basics$round(model.fontSize))
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$author$project$Ui$el,
+							_List_fromArray(
+								[$author$project$Ui$Font$bold]),
+							$author$project$Ui$text('File:')),
+							$author$project$Ui$text('/Notes/' + model.docName),
+							A2(
+							$author$project$Ui$el,
+							_List_fromArray(
+								[$author$project$Ui$alignRight]),
+							A4(
+								$author$project$Markup$iconButton,
+								model,
+								$author$project$Types$GetDoc('Main.md'),
+								$elm$core$Maybe$Nothing,
+								$author$project$Ui$text('Main.md')))
+						])),
+					$author$project$Markup$hBar,
+					A3($author$project$Markup$renderMd, model, vp, model.docText)
+				]));
+	});
+var $author$project$Style$blueNote = {
+	bg: A3($author$project$Ui$rgb255, 126, 179, 194),
+	error: A3($author$project$Ui$rgb255, 68, 137, 191),
+	extLink: A3($author$project$Ui$rgb255, 68, 137, 191),
+	fg: A3($author$project$Ui$rgb255, 40, 54, 64),
+	link: A3($author$project$Ui$rgb255, 68, 137, 191),
+	name: 'Blue-Note'
+};
+var $author$project$Types$ToggleClockOrientation = {$: 'ToggleClockOrientation'};
+var $mdgriffith$elm_ui$Internal$Model$Behind = {$: 'Behind'};
+var $mdgriffith$elm_ui$Internal$Model$Nearby = F2(
+	function (a, b) {
+		return {$: 'Nearby', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Internal$Model$NoAttribute = {$: 'NoAttribute'};
+var $mdgriffith$elm_ui$Element$createNearby = F2(
+	function (loc, element) {
+		if (element.$ === 'Empty') {
+			return $mdgriffith$elm_ui$Internal$Model$NoAttribute;
+		} else {
+			return A2($mdgriffith$elm_ui$Internal$Model$Nearby, loc, element);
+		}
+	});
+var $mdgriffith$elm_ui$Element$behindContent = function (element) {
+	return A2($mdgriffith$elm_ui$Element$createNearby, $mdgriffith$elm_ui$Internal$Model$Behind, element);
+};
+var $author$project$Ui$behindContent = function (element) {
+	return _List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$behindContent(element)
+		]);
+};
+var $justinmimbs$date$Date$monthToNumber = function (m) {
+	switch (m.$) {
+		case 'Jan':
+			return 1;
+		case 'Feb':
+			return 2;
+		case 'Mar':
+			return 3;
+		case 'Apr':
+			return 4;
+		case 'May':
+			return 5;
+		case 'Jun':
+			return 6;
+		case 'Jul':
+			return 7;
+		case 'Aug':
+			return 8;
+		case 'Sep':
+			return 9;
+		case 'Oct':
+			return 10;
+		case 'Nov':
+			return 11;
+		default:
+			return 12;
+	}
+};
+var $elm$time$Time$Apr = {$: 'Apr'};
+var $elm$time$Time$Jul = {$: 'Jul'};
+var $elm$time$Time$Nov = {$: 'Nov'};
+var $elm$time$Time$Oct = {$: 'Oct'};
+var $elm$time$Time$Sep = {$: 'Sep'};
+var $justinmimbs$date$Date$numberToMonth = function (mn) {
+	var _v0 = A2($elm$core$Basics$max, 1, mn);
+	switch (_v0) {
+		case 1:
+			return $elm$time$Time$Jan;
+		case 2:
+			return $elm$time$Time$Feb;
+		case 3:
+			return $elm$time$Time$Mar;
+		case 4:
+			return $elm$time$Time$Apr;
+		case 5:
+			return $elm$time$Time$May;
+		case 6:
+			return $elm$time$Time$Jun;
+		case 7:
+			return $elm$time$Time$Jul;
+		case 8:
+			return $elm$time$Time$Aug;
+		case 9:
+			return $elm$time$Time$Sep;
+		case 10:
+			return $elm$time$Time$Oct;
+		case 11:
+			return $elm$time$Time$Nov;
+		default:
+			return $elm$time$Time$Dec;
+	}
+};
+var $justinmimbs$date$Date$toCalendarDateHelp = F3(
+	function (y, m, d) {
+		toCalendarDateHelp:
+		while (true) {
+			var monthDays = A2($justinmimbs$date$Date$daysInMonth, y, m);
+			var mn = $justinmimbs$date$Date$monthToNumber(m);
+			if ((mn < 12) && (_Utils_cmp(d, monthDays) > 0)) {
+				var $temp$y = y,
+					$temp$m = $justinmimbs$date$Date$numberToMonth(mn + 1),
+					$temp$d = d - monthDays;
+				y = $temp$y;
+				m = $temp$m;
+				d = $temp$d;
+				continue toCalendarDateHelp;
+			} else {
+				return {day: d, month: m, year: y};
+			}
+		}
+	});
+var $justinmimbs$date$Date$divWithRemainder = F2(
+	function (a, b) {
+		return _Utils_Tuple2(
+			A2($justinmimbs$date$Date$floorDiv, a, b),
+			A2($elm$core$Basics$modBy, b, a));
+	});
+var $justinmimbs$date$Date$year = function (_v0) {
+	var rd = _v0.a;
+	var _v1 = A2($justinmimbs$date$Date$divWithRemainder, rd, 146097);
+	var n400 = _v1.a;
+	var r400 = _v1.b;
+	var _v2 = A2($justinmimbs$date$Date$divWithRemainder, r400, 36524);
+	var n100 = _v2.a;
+	var r100 = _v2.b;
+	var _v3 = A2($justinmimbs$date$Date$divWithRemainder, r100, 1461);
+	var n4 = _v3.a;
+	var r4 = _v3.b;
+	var _v4 = A2($justinmimbs$date$Date$divWithRemainder, r4, 365);
+	var n1 = _v4.a;
+	var r1 = _v4.b;
+	var n = (!r1) ? 0 : 1;
+	return ((((n400 * 400) + (n100 * 100)) + (n4 * 4)) + n1) + n;
+};
+var $justinmimbs$date$Date$toOrdinalDate = function (_v0) {
+	var rd = _v0.a;
+	var y = $justinmimbs$date$Date$year(
+		$justinmimbs$date$Date$RD(rd));
+	return {
+		ordinalDay: rd - $justinmimbs$date$Date$daysBeforeYear(y),
+		year: y
+	};
+};
+var $justinmimbs$date$Date$toCalendarDate = function (_v0) {
+	var rd = _v0.a;
+	var date = $justinmimbs$date$Date$toOrdinalDate(
+		$justinmimbs$date$Date$RD(rd));
+	return A3($justinmimbs$date$Date$toCalendarDateHelp, date.year, $elm$time$Time$Jan, date.ordinalDay);
+};
+var $justinmimbs$date$Date$day = A2(
+	$elm$core$Basics$composeR,
+	$justinmimbs$date$Date$toCalendarDate,
+	function ($) {
+		return $.day;
+	});
+var $justinmimbs$date$Date$month = A2(
+	$elm$core$Basics$composeR,
+	$justinmimbs$date$Date$toCalendarDate,
+	function ($) {
+		return $.month;
+	});
+var $justinmimbs$date$Date$monthNumber = A2($elm$core$Basics$composeR, $justinmimbs$date$Date$month, $justinmimbs$date$Date$monthToNumber);
+var $justinmimbs$date$Date$ordinalDay = A2(
+	$elm$core$Basics$composeR,
+	$justinmimbs$date$Date$toOrdinalDate,
+	function ($) {
+		return $.ordinalDay;
+	});
+var $elm$core$Basics$abs = function (n) {
+	return (n < 0) ? (-n) : n;
+};
+var $justinmimbs$date$Date$padSignedInt = F2(
+	function (length, _int) {
+		return _Utils_ap(
+			(_int < 0) ? '-' : '',
+			A3(
+				$elm$core$String$padLeft,
+				length,
+				_Utils_chr('0'),
+				$elm$core$String$fromInt(
+					$elm$core$Basics$abs(_int))));
+	});
+var $justinmimbs$date$Date$monthToQuarter = function (m) {
+	return (($justinmimbs$date$Date$monthToNumber(m) + 2) / 3) | 0;
+};
+var $justinmimbs$date$Date$quarter = A2($elm$core$Basics$composeR, $justinmimbs$date$Date$month, $justinmimbs$date$Date$monthToQuarter);
+var $elm$core$String$right = F2(
+	function (n, string) {
+		return (n < 1) ? '' : A3(
+			$elm$core$String$slice,
+			-n,
+			$elm$core$String$length(string),
+			string);
+	});
+var $justinmimbs$date$Date$weekdayNumber = function (_v0) {
+	var rd = _v0.a;
+	var _v1 = A2($elm$core$Basics$modBy, 7, rd);
+	if (!_v1) {
+		return 7;
+	} else {
+		var n = _v1;
+		return n;
+	}
+};
+var $justinmimbs$date$Date$daysBeforeWeekYear = function (y) {
+	var jan4 = $justinmimbs$date$Date$daysBeforeYear(y) + 4;
+	return jan4 - $justinmimbs$date$Date$weekdayNumber(
+		$justinmimbs$date$Date$RD(jan4));
+};
+var $elm$time$Time$Fri = {$: 'Fri'};
+var $elm$time$Time$Mon = {$: 'Mon'};
+var $elm$time$Time$Sat = {$: 'Sat'};
+var $elm$time$Time$Sun = {$: 'Sun'};
+var $elm$time$Time$Thu = {$: 'Thu'};
+var $elm$time$Time$Tue = {$: 'Tue'};
+var $elm$time$Time$Wed = {$: 'Wed'};
+var $justinmimbs$date$Date$numberToWeekday = function (wdn) {
+	var _v0 = A2($elm$core$Basics$max, 1, wdn);
+	switch (_v0) {
+		case 1:
+			return $elm$time$Time$Mon;
+		case 2:
+			return $elm$time$Time$Tue;
+		case 3:
+			return $elm$time$Time$Wed;
+		case 4:
+			return $elm$time$Time$Thu;
+		case 5:
+			return $elm$time$Time$Fri;
+		case 6:
+			return $elm$time$Time$Sat;
+		default:
+			return $elm$time$Time$Sun;
+	}
+};
+var $justinmimbs$date$Date$toWeekDate = function (_v0) {
+	var rd = _v0.a;
+	var wdn = $justinmimbs$date$Date$weekdayNumber(
+		$justinmimbs$date$Date$RD(rd));
+	var wy = $justinmimbs$date$Date$year(
+		$justinmimbs$date$Date$RD(rd + (4 - wdn)));
+	var week1Day1 = $justinmimbs$date$Date$daysBeforeWeekYear(wy) + 1;
+	return {
+		weekNumber: 1 + (((rd - week1Day1) / 7) | 0),
+		weekYear: wy,
+		weekday: $justinmimbs$date$Date$numberToWeekday(wdn)
+	};
+};
+var $justinmimbs$date$Date$weekNumber = A2(
+	$elm$core$Basics$composeR,
+	$justinmimbs$date$Date$toWeekDate,
+	function ($) {
+		return $.weekNumber;
+	});
+var $justinmimbs$date$Date$weekYear = A2(
+	$elm$core$Basics$composeR,
+	$justinmimbs$date$Date$toWeekDate,
+	function ($) {
+		return $.weekYear;
+	});
+var $justinmimbs$date$Date$weekday = A2($elm$core$Basics$composeR, $justinmimbs$date$Date$weekdayNumber, $justinmimbs$date$Date$numberToWeekday);
+var $justinmimbs$date$Date$ordinalSuffix = function (n) {
+	var nn = A2($elm$core$Basics$modBy, 100, n);
+	var _v0 = A2(
+		$elm$core$Basics$min,
+		(nn < 20) ? nn : A2($elm$core$Basics$modBy, 10, nn),
+		4);
+	switch (_v0) {
+		case 1:
+			return 'st';
+		case 2:
+			return 'nd';
+		case 3:
+			return 'rd';
+		default:
+			return 'th';
+	}
+};
+var $justinmimbs$date$Date$withOrdinalSuffix = function (n) {
+	return _Utils_ap(
+		$elm$core$String$fromInt(n),
+		$justinmimbs$date$Date$ordinalSuffix(n));
+};
+var $justinmimbs$date$Date$formatField = F4(
+	function (language, _char, length, date) {
+		switch (_char.valueOf()) {
+			case 'y':
+				if (length === 2) {
+					return A2(
+						$elm$core$String$right,
+						2,
+						A3(
+							$elm$core$String$padLeft,
+							2,
+							_Utils_chr('0'),
+							$elm$core$String$fromInt(
+								$justinmimbs$date$Date$year(date))));
+				} else {
+					return A2(
+						$justinmimbs$date$Date$padSignedInt,
+						length,
+						$justinmimbs$date$Date$year(date));
+				}
+			case 'Y':
+				if (length === 2) {
+					return A2(
+						$elm$core$String$right,
+						2,
+						A3(
+							$elm$core$String$padLeft,
+							2,
+							_Utils_chr('0'),
+							$elm$core$String$fromInt(
+								$justinmimbs$date$Date$weekYear(date))));
+				} else {
+					return A2(
+						$justinmimbs$date$Date$padSignedInt,
+						length,
+						$justinmimbs$date$Date$weekYear(date));
+				}
+			case 'Q':
+				switch (length) {
+					case 1:
+						return $elm$core$String$fromInt(
+							$justinmimbs$date$Date$quarter(date));
+					case 2:
+						return $elm$core$String$fromInt(
+							$justinmimbs$date$Date$quarter(date));
+					case 3:
+						return 'Q' + $elm$core$String$fromInt(
+							$justinmimbs$date$Date$quarter(date));
+					case 4:
+						return $justinmimbs$date$Date$withOrdinalSuffix(
+							$justinmimbs$date$Date$quarter(date));
+					case 5:
+						return $elm$core$String$fromInt(
+							$justinmimbs$date$Date$quarter(date));
+					default:
+						return '';
+				}
+			case 'M':
+				switch (length) {
+					case 1:
+						return $elm$core$String$fromInt(
+							$justinmimbs$date$Date$monthNumber(date));
+					case 2:
+						return A3(
+							$elm$core$String$padLeft,
+							2,
+							_Utils_chr('0'),
+							$elm$core$String$fromInt(
+								$justinmimbs$date$Date$monthNumber(date)));
+					case 3:
+						return language.monthNameShort(
+							$justinmimbs$date$Date$month(date));
+					case 4:
+						return language.monthName(
+							$justinmimbs$date$Date$month(date));
+					case 5:
+						return A2(
+							$elm$core$String$left,
+							1,
+							language.monthNameShort(
+								$justinmimbs$date$Date$month(date)));
+					default:
+						return '';
+				}
+			case 'w':
+				switch (length) {
+					case 1:
+						return $elm$core$String$fromInt(
+							$justinmimbs$date$Date$weekNumber(date));
+					case 2:
+						return A3(
+							$elm$core$String$padLeft,
+							2,
+							_Utils_chr('0'),
+							$elm$core$String$fromInt(
+								$justinmimbs$date$Date$weekNumber(date)));
+					default:
+						return '';
+				}
+			case 'd':
+				switch (length) {
+					case 1:
+						return $elm$core$String$fromInt(
+							$justinmimbs$date$Date$day(date));
+					case 2:
+						return A3(
+							$elm$core$String$padLeft,
+							2,
+							_Utils_chr('0'),
+							$elm$core$String$fromInt(
+								$justinmimbs$date$Date$day(date)));
+					case 3:
+						return language.dayWithSuffix(
+							$justinmimbs$date$Date$day(date));
+					default:
+						return '';
+				}
+			case 'D':
+				switch (length) {
+					case 1:
+						return $elm$core$String$fromInt(
+							$justinmimbs$date$Date$ordinalDay(date));
+					case 2:
+						return A3(
+							$elm$core$String$padLeft,
+							2,
+							_Utils_chr('0'),
+							$elm$core$String$fromInt(
+								$justinmimbs$date$Date$ordinalDay(date)));
+					case 3:
+						return A3(
+							$elm$core$String$padLeft,
+							3,
+							_Utils_chr('0'),
+							$elm$core$String$fromInt(
+								$justinmimbs$date$Date$ordinalDay(date)));
+					default:
+						return '';
+				}
+			case 'E':
+				switch (length) {
+					case 1:
+						return language.weekdayNameShort(
+							$justinmimbs$date$Date$weekday(date));
+					case 2:
+						return language.weekdayNameShort(
+							$justinmimbs$date$Date$weekday(date));
+					case 3:
+						return language.weekdayNameShort(
+							$justinmimbs$date$Date$weekday(date));
+					case 4:
+						return language.weekdayName(
+							$justinmimbs$date$Date$weekday(date));
+					case 5:
+						return A2(
+							$elm$core$String$left,
+							1,
+							language.weekdayNameShort(
+								$justinmimbs$date$Date$weekday(date)));
+					case 6:
+						return A2(
+							$elm$core$String$left,
+							2,
+							language.weekdayNameShort(
+								$justinmimbs$date$Date$weekday(date)));
+					default:
+						return '';
+				}
+			case 'e':
+				switch (length) {
+					case 1:
+						return $elm$core$String$fromInt(
+							$justinmimbs$date$Date$weekdayNumber(date));
+					case 2:
+						return $elm$core$String$fromInt(
+							$justinmimbs$date$Date$weekdayNumber(date));
+					default:
+						return A4(
+							$justinmimbs$date$Date$formatField,
+							language,
+							_Utils_chr('E'),
+							length,
+							date);
+				}
+			default:
+				return '';
+		}
+	});
+var $justinmimbs$date$Date$formatWithTokens = F3(
+	function (language, tokens, date) {
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (token, formatted) {
+					if (token.$ === 'Field') {
+						var _char = token.a;
+						var length = token.b;
+						return _Utils_ap(
+							A4($justinmimbs$date$Date$formatField, language, _char, length, date),
+							formatted);
+					} else {
+						var str = token.a;
+						return _Utils_ap(str, formatted);
+					}
+				}),
+			'',
+			tokens);
+	});
+var $justinmimbs$date$Pattern$Literal = function (a) {
+	return {$: 'Literal', a: a};
+};
+var $elm$parser$Parser$andThen = $elm$parser$Parser$Advanced$andThen;
+var $elm$parser$Parser$ignorer = $elm$parser$Parser$Advanced$ignorer;
+var $elm$parser$Parser$succeed = $elm$parser$Parser$Advanced$succeed;
+var $elm$parser$Parser$toToken = function (str) {
+	return A2(
+		$elm$parser$Parser$Advanced$Token,
+		str,
+		$elm$parser$Parser$Expecting(str));
+};
+var $elm$parser$Parser$token = function (str) {
+	return $elm$parser$Parser$Advanced$token(
+		$elm$parser$Parser$toToken(str));
+};
+var $justinmimbs$date$Pattern$escapedQuote = A2(
+	$elm$parser$Parser$ignorer,
+	$elm$parser$Parser$succeed(
+		$justinmimbs$date$Pattern$Literal('\'')),
+	$elm$parser$Parser$token('\'\''));
+var $elm$parser$Parser$UnexpectedChar = {$: 'UnexpectedChar'};
+var $elm$parser$Parser$chompIf = function (isGood) {
+	return A2($elm$parser$Parser$Advanced$chompIf, isGood, $elm$parser$Parser$UnexpectedChar);
+};
+var $justinmimbs$date$Pattern$Field = F2(
+	function (a, b) {
+		return {$: 'Field', a: a, b: b};
+	});
+var $elm$parser$Parser$chompWhile = $elm$parser$Parser$Advanced$chompWhile;
+var $elm$parser$Parser$getOffset = $elm$parser$Parser$Advanced$getOffset;
+var $elm$parser$Parser$keeper = $elm$parser$Parser$Advanced$keeper;
+var $elm$parser$Parser$problem = function (msg) {
+	return $elm$parser$Parser$Advanced$problem(
+		$elm$parser$Parser$Problem(msg));
+};
+var $justinmimbs$date$Pattern$fieldRepeats = function (str) {
+	var _v0 = $elm$core$String$toList(str);
+	if (_v0.b && (!_v0.b.b)) {
+		var _char = _v0.a;
+		return A2(
+			$elm$parser$Parser$keeper,
+			A2(
+				$elm$parser$Parser$keeper,
+				$elm$parser$Parser$succeed(
+					F2(
+						function (x, y) {
+							return A2($justinmimbs$date$Pattern$Field, _char, 1 + (y - x));
+						})),
+				A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$getOffset,
+					$elm$parser$Parser$chompWhile(
+						$elm$core$Basics$eq(_char)))),
+			$elm$parser$Parser$getOffset);
+	} else {
+		return $elm$parser$Parser$problem('expected exactly one char');
+	}
+};
+var $elm$parser$Parser$getChompedString = $elm$parser$Parser$Advanced$getChompedString;
+var $justinmimbs$date$Pattern$field = A2(
+	$elm$parser$Parser$andThen,
+	$justinmimbs$date$Pattern$fieldRepeats,
+	$elm$parser$Parser$getChompedString(
+		$elm$parser$Parser$chompIf($elm$core$Char$isAlpha)));
+var $justinmimbs$date$Pattern$finalize = A2(
+	$elm$core$List$foldl,
+	F2(
+		function (token, tokens) {
+			var _v0 = _Utils_Tuple2(token, tokens);
+			if (((_v0.a.$ === 'Literal') && _v0.b.b) && (_v0.b.a.$ === 'Literal')) {
+				var x = _v0.a.a;
+				var _v1 = _v0.b;
+				var y = _v1.a.a;
+				var rest = _v1.b;
+				return A2(
+					$elm$core$List$cons,
+					$justinmimbs$date$Pattern$Literal(
+						_Utils_ap(x, y)),
+					rest);
+			} else {
+				return A2($elm$core$List$cons, token, tokens);
+			}
+		}),
+	_List_Nil);
+var $elm$parser$Parser$Advanced$lazy = function (thunk) {
+	return $elm$parser$Parser$Advanced$Parser(
+		function (s) {
+			var _v0 = thunk(_Utils_Tuple0);
+			var parse = _v0.a;
+			return parse(s);
+		});
+};
+var $elm$parser$Parser$lazy = $elm$parser$Parser$Advanced$lazy;
+var $justinmimbs$date$Pattern$isLiteralChar = function (_char) {
+	return (!_Utils_eq(
+		_char,
+		_Utils_chr('\''))) && (!$elm$core$Char$isAlpha(_char));
+};
+var $elm$parser$Parser$map = $elm$parser$Parser$Advanced$map;
+var $justinmimbs$date$Pattern$literal = A2(
+	$elm$parser$Parser$map,
+	$justinmimbs$date$Pattern$Literal,
+	$elm$parser$Parser$getChompedString(
+		A2(
+			$elm$parser$Parser$ignorer,
+			A2(
+				$elm$parser$Parser$ignorer,
+				$elm$parser$Parser$succeed(_Utils_Tuple0),
+				$elm$parser$Parser$chompIf($justinmimbs$date$Pattern$isLiteralChar)),
+			$elm$parser$Parser$chompWhile($justinmimbs$date$Pattern$isLiteralChar))));
+var $elm$parser$Parser$oneOf = $elm$parser$Parser$Advanced$oneOf;
+var $elm$parser$Parser$end = $elm$parser$Parser$Advanced$end($elm$parser$Parser$ExpectingEnd);
+var $justinmimbs$date$Pattern$quotedHelp = function (result) {
+	return $elm$parser$Parser$oneOf(
+		_List_fromArray(
+			[
+				A2(
+				$elm$parser$Parser$andThen,
+				function (str) {
+					return $justinmimbs$date$Pattern$quotedHelp(
+						_Utils_ap(result, str));
+				},
+				$elm$parser$Parser$getChompedString(
+					A2(
+						$elm$parser$Parser$ignorer,
+						A2(
+							$elm$parser$Parser$ignorer,
+							$elm$parser$Parser$succeed(_Utils_Tuple0),
+							$elm$parser$Parser$chompIf(
+								$elm$core$Basics$neq(
+									_Utils_chr('\'')))),
+						$elm$parser$Parser$chompWhile(
+							$elm$core$Basics$neq(
+								_Utils_chr('\'')))))),
+				A2(
+				$elm$parser$Parser$andThen,
+				function (_v0) {
+					return $justinmimbs$date$Pattern$quotedHelp(result + '\'');
+				},
+				$elm$parser$Parser$token('\'\'')),
+				$elm$parser$Parser$succeed(result)
+			]));
+};
+var $justinmimbs$date$Pattern$quoted = A2(
+	$elm$parser$Parser$keeper,
+	A2(
+		$elm$parser$Parser$ignorer,
+		$elm$parser$Parser$succeed($justinmimbs$date$Pattern$Literal),
+		$elm$parser$Parser$chompIf(
+			$elm$core$Basics$eq(
+				_Utils_chr('\'')))),
+	A2(
+		$elm$parser$Parser$ignorer,
+		$justinmimbs$date$Pattern$quotedHelp(''),
+		$elm$parser$Parser$oneOf(
+			_List_fromArray(
+				[
+					$elm$parser$Parser$chompIf(
+					$elm$core$Basics$eq(
+						_Utils_chr('\''))),
+					$elm$parser$Parser$end
+				]))));
+var $justinmimbs$date$Pattern$patternHelp = function (tokens) {
+	return $elm$parser$Parser$oneOf(
+		_List_fromArray(
+			[
+				A2(
+				$elm$parser$Parser$andThen,
+				function (token) {
+					return $justinmimbs$date$Pattern$patternHelp(
+						A2($elm$core$List$cons, token, tokens));
+				},
+				$elm$parser$Parser$oneOf(
+					_List_fromArray(
+						[$justinmimbs$date$Pattern$field, $justinmimbs$date$Pattern$literal, $justinmimbs$date$Pattern$escapedQuote, $justinmimbs$date$Pattern$quoted]))),
+				$elm$parser$Parser$lazy(
+				function (_v0) {
+					return $elm$parser$Parser$succeed(
+						$justinmimbs$date$Pattern$finalize(tokens));
+				})
+			]));
+};
+var $elm$parser$Parser$DeadEnd = F3(
+	function (row, col, problem) {
+		return {col: col, problem: problem, row: row};
+	});
+var $elm$parser$Parser$problemToDeadEnd = function (p) {
+	return A3($elm$parser$Parser$DeadEnd, p.row, p.col, p.problem);
+};
+var $elm$parser$Parser$run = F2(
+	function (parser, source) {
+		var _v0 = A2($elm$parser$Parser$Advanced$run, parser, source);
+		if (_v0.$ === 'Ok') {
+			var a = _v0.a;
+			return $elm$core$Result$Ok(a);
+		} else {
+			var problems = _v0.a;
+			return $elm$core$Result$Err(
+				A2($elm$core$List$map, $elm$parser$Parser$problemToDeadEnd, problems));
+		}
+	});
+var $justinmimbs$date$Pattern$fromString = function (str) {
+	return A2(
+		$elm$core$Result$withDefault,
+		_List_fromArray(
+			[
+				$justinmimbs$date$Pattern$Literal(str)
+			]),
+		A2(
+			$elm$parser$Parser$run,
+			$justinmimbs$date$Pattern$patternHelp(_List_Nil),
+			str));
+};
+var $justinmimbs$date$Date$formatWithLanguage = F2(
+	function (language, pattern) {
+		var tokens = $elm$core$List$reverse(
+			$justinmimbs$date$Pattern$fromString(pattern));
+		return A2($justinmimbs$date$Date$formatWithTokens, language, tokens);
+	});
+var $justinmimbs$date$Date$monthToName = function (m) {
+	switch (m.$) {
+		case 'Jan':
+			return 'January';
+		case 'Feb':
+			return 'February';
+		case 'Mar':
+			return 'March';
+		case 'Apr':
+			return 'April';
+		case 'May':
+			return 'May';
+		case 'Jun':
+			return 'June';
+		case 'Jul':
+			return 'July';
+		case 'Aug':
+			return 'August';
+		case 'Sep':
+			return 'September';
+		case 'Oct':
+			return 'October';
+		case 'Nov':
+			return 'November';
+		default:
+			return 'December';
+	}
+};
+var $justinmimbs$date$Date$weekdayToName = function (wd) {
+	switch (wd.$) {
+		case 'Mon':
+			return 'Monday';
+		case 'Tue':
+			return 'Tuesday';
+		case 'Wed':
+			return 'Wednesday';
+		case 'Thu':
+			return 'Thursday';
+		case 'Fri':
+			return 'Friday';
+		case 'Sat':
+			return 'Saturday';
+		default:
+			return 'Sunday';
+	}
+};
+var $justinmimbs$date$Date$language_en = {
+	dayWithSuffix: $justinmimbs$date$Date$withOrdinalSuffix,
+	monthName: $justinmimbs$date$Date$monthToName,
+	monthNameShort: A2(
+		$elm$core$Basics$composeR,
+		$justinmimbs$date$Date$monthToName,
+		$elm$core$String$left(3)),
+	weekdayName: $justinmimbs$date$Date$weekdayToName,
+	weekdayNameShort: A2(
+		$elm$core$Basics$composeR,
+		$justinmimbs$date$Date$weekdayToName,
+		$elm$core$String$left(3))
+};
+var $justinmimbs$date$Date$format = function (pattern) {
+	return A2($justinmimbs$date$Date$formatWithLanguage, $justinmimbs$date$Date$language_en, pattern);
+};
+var $elm$time$Time$flooredDiv = F2(
+	function (numerator, denominator) {
+		return $elm$core$Basics$floor(numerator / denominator);
+	});
+var $elm$time$Time$posixToMillis = function (_v0) {
+	var millis = _v0.a;
+	return millis;
+};
+var $elm$time$Time$toAdjustedMinutesHelp = F3(
+	function (defaultOffset, posixMinutes, eras) {
+		toAdjustedMinutesHelp:
+		while (true) {
+			if (!eras.b) {
+				return posixMinutes + defaultOffset;
+			} else {
+				var era = eras.a;
+				var olderEras = eras.b;
+				if (_Utils_cmp(era.start, posixMinutes) < 0) {
+					return posixMinutes + era.offset;
+				} else {
+					var $temp$defaultOffset = defaultOffset,
+						$temp$posixMinutes = posixMinutes,
+						$temp$eras = olderEras;
+					defaultOffset = $temp$defaultOffset;
+					posixMinutes = $temp$posixMinutes;
+					eras = $temp$eras;
+					continue toAdjustedMinutesHelp;
+				}
+			}
+		}
+	});
+var $elm$time$Time$toAdjustedMinutes = F2(
+	function (_v0, time) {
+		var defaultOffset = _v0.a;
+		var eras = _v0.b;
+		return A3(
+			$elm$time$Time$toAdjustedMinutesHelp,
+			defaultOffset,
+			A2(
+				$elm$time$Time$flooredDiv,
+				$elm$time$Time$posixToMillis(time),
+				60000),
+			eras);
+	});
+var $elm$time$Time$toCivil = function (minutes) {
+	var rawDay = A2($elm$time$Time$flooredDiv, minutes, 60 * 24) + 719468;
+	var era = (((rawDay >= 0) ? rawDay : (rawDay - 146096)) / 146097) | 0;
+	var dayOfEra = rawDay - (era * 146097);
+	var yearOfEra = ((((dayOfEra - ((dayOfEra / 1460) | 0)) + ((dayOfEra / 36524) | 0)) - ((dayOfEra / 146096) | 0)) / 365) | 0;
+	var dayOfYear = dayOfEra - (((365 * yearOfEra) + ((yearOfEra / 4) | 0)) - ((yearOfEra / 100) | 0));
+	var mp = (((5 * dayOfYear) + 2) / 153) | 0;
+	var month = mp + ((mp < 10) ? 3 : (-9));
+	var year = yearOfEra + (era * 400);
+	return {
+		day: (dayOfYear - ((((153 * mp) + 2) / 5) | 0)) + 1,
+		month: month,
+		year: year + ((month <= 2) ? 1 : 0)
+	};
+};
+var $elm$time$Time$toDay = F2(
+	function (zone, time) {
+		return $elm$time$Time$toCivil(
+			A2($elm$time$Time$toAdjustedMinutes, zone, time)).day;
+	});
+var $elm$time$Time$toMonth = F2(
+	function (zone, time) {
+		var _v0 = $elm$time$Time$toCivil(
+			A2($elm$time$Time$toAdjustedMinutes, zone, time)).month;
+		switch (_v0) {
+			case 1:
+				return $elm$time$Time$Jan;
+			case 2:
+				return $elm$time$Time$Feb;
+			case 3:
+				return $elm$time$Time$Mar;
+			case 4:
+				return $elm$time$Time$Apr;
+			case 5:
+				return $elm$time$Time$May;
+			case 6:
+				return $elm$time$Time$Jun;
+			case 7:
+				return $elm$time$Time$Jul;
+			case 8:
+				return $elm$time$Time$Aug;
+			case 9:
+				return $elm$time$Time$Sep;
+			case 10:
+				return $elm$time$Time$Oct;
+			case 11:
+				return $elm$time$Time$Nov;
+			default:
+				return $elm$time$Time$Dec;
+		}
+	});
+var $elm$time$Time$toYear = F2(
+	function (zone, time) {
+		return $elm$time$Time$toCivil(
+			A2($elm$time$Time$toAdjustedMinutes, zone, time)).year;
+	});
+var $justinmimbs$date$Date$fromPosix = F2(
+	function (zone, posix) {
+		return A3(
+			$justinmimbs$date$Date$fromCalendarDate,
+			A2($elm$time$Time$toYear, zone, posix),
+			A2($elm$time$Time$toMonth, zone, posix),
+			A2($elm$time$Time$toDay, zone, posix));
+	});
+var $abradley2$elm_calendar$Calendar$CalendarDate = F3(
+	function (dayDisplay, weekdayNumber, date) {
+		return {date: date, dayDisplay: dayDisplay, weekdayNumber: weekdayNumber};
+	});
+var $abradley2$elm_calendar$Calendar$defaultConfig = {startWeekday: $elm$time$Time$Sun};
+var $justinmimbs$date$Date$Days = {$: 'Days'};
+var $justinmimbs$date$Date$Months = {$: 'Months'};
+var $justinmimbs$date$Date$add = F3(
+	function (unit, n, _v0) {
+		var rd = _v0.a;
+		switch (unit.$) {
+			case 'Years':
+				return A3(
+					$justinmimbs$date$Date$add,
+					$justinmimbs$date$Date$Months,
+					12 * n,
+					$justinmimbs$date$Date$RD(rd));
+			case 'Months':
+				var date = $justinmimbs$date$Date$toCalendarDate(
+					$justinmimbs$date$Date$RD(rd));
+				var wholeMonths = ((12 * (date.year - 1)) + ($justinmimbs$date$Date$monthToNumber(date.month) - 1)) + n;
+				var m = $justinmimbs$date$Date$numberToMonth(
+					A2($elm$core$Basics$modBy, 12, wholeMonths) + 1);
+				var y = A2($justinmimbs$date$Date$floorDiv, wholeMonths, 12) + 1;
+				return $justinmimbs$date$Date$RD(
+					($justinmimbs$date$Date$daysBeforeYear(y) + A2($justinmimbs$date$Date$daysBeforeMonth, y, m)) + A2(
+						$elm$core$Basics$min,
+						date.day,
+						A2($justinmimbs$date$Date$daysInMonth, y, m)));
+			case 'Weeks':
+				return $justinmimbs$date$Date$RD(rd + (7 * n));
+			default:
+				return $justinmimbs$date$Date$RD(rd + n);
+		}
+	});
+var $abradley2$elm_calendar$Calendar$fillMonth = function (_v0) {
+	fillMonth:
+	while (true) {
+		var currentDate = _v0.a;
+		var currentList = _v0.b;
+		var nextDate = A3($justinmimbs$date$Date$add, $justinmimbs$date$Date$Days, 1, currentDate);
+		if (_Utils_eq(
+			$justinmimbs$date$Date$month(nextDate),
+			$justinmimbs$date$Date$month(currentDate))) {
+			var $temp$_v0 = _Utils_Tuple2(
+				nextDate,
+				_Utils_ap(
+					currentList,
+					_List_fromArray(
+						[
+							{
+							date: nextDate,
+							dayDisplay: A3(
+								$elm$core$String$padLeft,
+								2,
+								_Utils_chr(' '),
+								$elm$core$String$fromInt(
+									$justinmimbs$date$Date$day(nextDate))),
+							weekdayNumber: $justinmimbs$date$Date$weekdayNumber(nextDate)
+						}
+						])));
+			_v0 = $temp$_v0;
+			continue fillMonth;
+		} else {
+			return currentList;
+		}
+	}
+};
+var $abradley2$elm_calendar$Calendar$endWeekdayNumber = function (startWeekdayNumber) {
+	return (!(startWeekdayNumber - 1)) ? 7 : (startWeekdayNumber - 1);
+};
+var $abradley2$elm_calendar$Calendar$enumerateWeekday = function (w) {
+	switch (w.$) {
+		case 'Mon':
+			return 1;
+		case 'Tue':
+			return 2;
+		case 'Wed':
+			return 3;
+		case 'Thu':
+			return 4;
+		case 'Fri':
+			return 5;
+		case 'Sat':
+			return 6;
+		default:
+			return 7;
+	}
+};
+var $abradley2$elm_calendar$Calendar$padMonthEnd = F2(
+	function (config, currentList) {
+		padMonthEnd:
+		while (true) {
+			var _v0 = A2(
+				$elm$core$Maybe$andThen,
+				function (date) {
+					return _Utils_eq(
+						$justinmimbs$date$Date$weekdayNumber(date),
+						$abradley2$elm_calendar$Calendar$endWeekdayNumber(
+							$abradley2$elm_calendar$Calendar$enumerateWeekday(config.startWeekday))) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+						A3($justinmimbs$date$Date$add, $justinmimbs$date$Date$Days, 1, date));
+				},
+				A2(
+					$elm$core$Maybe$map,
+					function ($) {
+						return $.date;
+					},
+					$elm$core$List$head(
+						$elm$core$List$reverse(currentList))));
+			if (_v0.$ === 'Just') {
+				var padDate = _v0.a;
+				var $temp$config = config,
+					$temp$currentList = A2(
+					$elm$core$List$append,
+					currentList,
+					_List_fromArray(
+						[
+							{
+							date: padDate,
+							dayDisplay: '  ',
+							weekdayNumber: $justinmimbs$date$Date$weekdayNumber(padDate)
+						}
+						]));
+				config = $temp$config;
+				currentList = $temp$currentList;
+				continue padMonthEnd;
+			} else {
+				return currentList;
+			}
+		}
+	});
+var $abradley2$elm_calendar$Calendar$padMonthStart = F2(
+	function (config, currentList) {
+		padMonthStart:
+		while (true) {
+			var _v0 = A2(
+				$elm$core$Maybe$andThen,
+				function (date) {
+					return _Utils_eq(
+						$justinmimbs$date$Date$weekdayNumber(date),
+						$abradley2$elm_calendar$Calendar$enumerateWeekday(config.startWeekday)) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+						A3($justinmimbs$date$Date$add, $justinmimbs$date$Date$Days, -1, date));
+				},
+				A2(
+					$elm$core$Maybe$map,
+					function ($) {
+						return $.date;
+					},
+					$elm$core$List$head(currentList)));
+			if (_v0.$ === 'Just') {
+				var padDate = _v0.a;
+				var $temp$config = config,
+					$temp$currentList = A2(
+					$elm$core$List$cons,
+					{
+						date: padDate,
+						dayDisplay: '  ',
+						weekdayNumber: $justinmimbs$date$Date$weekdayNumber(padDate)
+					},
+					currentList);
+				config = $temp$config;
+				currentList = $temp$currentList;
+				continue padMonthStart;
+			} else {
+				return currentList;
+			}
+		}
+	});
+var $abradley2$elm_calendar$Calendar$partitionWeeks = F2(
+	function (curDate, partitioned) {
+		var _v0 = $elm$core$List$head(
+			$elm$core$List$reverse(partitioned));
+		if (_v0.$ === 'Just') {
+			var curWeek = _v0.a;
+			var _v1 = $elm$core$List$length(curWeek);
+			if (_v1 === 7) {
+				return _Utils_ap(
+					partitioned,
+					_List_fromArray(
+						[
+							_List_fromArray(
+							[curDate])
+						]));
+			} else {
+				return function (month) {
+					return _Utils_ap(
+						month,
+						_List_fromArray(
+							[
+								_Utils_ap(
+								curWeek,
+								_List_fromArray(
+									[curDate]))
+							]));
+				}(
+					A2(
+						$elm$core$List$take,
+						$elm$core$List$length(partitioned) - 1,
+						partitioned));
+			}
+		} else {
+			return _Utils_ap(
+				partitioned,
+				_List_fromArray(
+					[
+						_List_fromArray(
+						[curDate])
+					]));
+		}
+	});
+var $abradley2$elm_calendar$Calendar$fromTime = F3(
+	function (mConfig, zone, posix) {
+		return A3(
+			$elm$core$List$foldl,
+			$abradley2$elm_calendar$Calendar$partitionWeeks,
+			_List_Nil,
+			A2(
+				$abradley2$elm_calendar$Calendar$padMonthEnd,
+				A2($elm$core$Maybe$withDefault, $abradley2$elm_calendar$Calendar$defaultConfig, mConfig),
+				A2(
+					$abradley2$elm_calendar$Calendar$padMonthStart,
+					A2($elm$core$Maybe$withDefault, $abradley2$elm_calendar$Calendar$defaultConfig, mConfig),
+					$abradley2$elm_calendar$Calendar$fillMonth(
+						function (date) {
+							return _Utils_Tuple2(
+								date,
+								_List_fromArray(
+									[
+										A3(
+										$abradley2$elm_calendar$Calendar$CalendarDate,
+										' 1',
+										$justinmimbs$date$Date$weekdayNumber(date),
+										date)
+									]));
+						}(
+							A3(
+								$justinmimbs$date$Date$fromCalendarDate,
+								A2($elm$time$Time$toYear, zone, posix),
+								A2($elm$time$Time$toMonth, zone, posix),
+								1))))));
+	});
+var $author$project$Style$black = A3($author$project$Ui$rgb, 0, 0, 0);
+var $mdgriffith$elm_ui$Internal$Model$boxShadowClass = function (shadow) {
+	return $elm$core$String$concat(
+		_List_fromArray(
+			[
+				shadow.inset ? 'box-inset' : 'box-',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.a) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.b) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.blur) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.size) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$formatColorClass(shadow.color)
+			]));
+};
+var $mdgriffith$elm_ui$Internal$Flag$shadows = $mdgriffith$elm_ui$Internal$Flag$flag(19);
+var $mdgriffith$elm_ui$Element$Border$shadow = function (almostShade) {
+	var shade = {blur: almostShade.blur, color: almostShade.color, inset: false, offset: almostShade.offset, size: almostShade.size};
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$shadows,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Single,
+			$mdgriffith$elm_ui$Internal$Model$boxShadowClass(shade),
+			'box-shadow',
+			$mdgriffith$elm_ui$Internal$Model$formatBoxShadow(shade)));
+};
+var $author$project$Ui$Border$shadow = function (sh) {
+	return _List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$Border$shadow(
+			{
+				blur: sh.blur,
+				color: $author$project$Ui$Util$cc(sh.color),
+				offset: sh.offset,
+				size: sh.size
+			})
+		]);
+};
+var $author$project$Style$shadow = $author$project$Ui$Border$shadow(
+	{
+		blur: 5.0,
+		color: A2($author$project$Style$addAlpha, 0.5, $author$project$Style$black),
+		offset: _Utils_Tuple2(1.0, 2.0),
+		size: 0
+	});
+var $author$project$Types$SelectDate = function (a) {
+	return {$: 'SelectDate', a: a};
+};
+var $author$project$Ui$Border$width = function (v) {
+	return _List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$Border$width(v)
+		]);
+};
+var $author$project$Main$calendarItem = F2(
+	function (model, event) {
+		return A2(
+			$author$project$Ui$paragraph,
+			_List_fromArray(
+				[
+					$author$project$Ui$width($author$project$Ui$fill),
+					$author$project$Ui$Background$color(
+					A2(
+						$author$project$Style$addAlpha,
+						0.7,
+						A3($author$project$Style$mix, 0.25, model.pal.bg, event.color))),
+					$author$project$Ui$Border$color(
+					A3($author$project$Style$mix, 0.5, model.pal.bg, event.color)),
+					$author$project$Ui$Border$width(1),
+					$author$project$Ui$Border$rounded(
+					$elm$core$Basics$round(model.fontSize / 3)),
+					$author$project$Ui$padding(
+					$elm$core$Basics$round((model.fontSize / 2) - (model.fontSize / 6)))
+				]),
+			_List_fromArray(
+				[
+					$author$project$Ui$text(event.title)
+				]));
+	});
+var $justinmimbs$date$Date$compare = F2(
+	function (_v0, _v1) {
+		var a = _v0.a;
+		var b = _v1.a;
+		return A2($elm$core$Basics$compare, a, b);
+	});
+var $elm$core$Array$filter = F2(
+	function (isGood, array) {
+		return $elm$core$Array$fromList(
+			A3(
+				$elm$core$Array$foldr,
+				F2(
+					function (x, xs) {
+						return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+					}),
+				_List_Nil,
+				array));
+	});
+var $justinmimbs$date$Date$isBetweenInt = F3(
+	function (a, b, x) {
+		return (_Utils_cmp(a, x) < 1) && (_Utils_cmp(x, b) < 1);
+	});
+var $justinmimbs$date$Date$isBetween = F3(
+	function (_v0, _v1, _v2) {
+		var a = _v0.a;
+		var b = _v1.a;
+		var x = _v2.a;
+		return A3($justinmimbs$date$Date$isBetweenInt, a, b, x);
+	});
+var $author$project$Types$eventsOfDay = F2(
+	function (date, allEvents) {
+		return $elm$core$Array$toList(
+			A2(
+				$elm$core$Array$filter,
+				function (ev) {
+					return _Utils_eq(
+						$justinmimbs$date$Date$weekdayNumber(ev.firstDate),
+						$justinmimbs$date$Date$weekdayNumber(date)) && (A3(
+						$justinmimbs$date$Date$isBetween,
+						ev.firstDate,
+						A3($justinmimbs$date$Date$add, $justinmimbs$date$Date$Days, 1, ev.lastDate),
+						date) && (!A2($elm$core$List$member, date, ev.exceptions)));
+				},
+				allEvents));
+	});
+var $author$project$Main$dayOnCalendar = F2(
+	function (model, day) {
+		var isSelected = function () {
+			var _v1 = model.selectDate;
+			if (_v1.$ === 'Just') {
+				var sd = _v1.a;
+				return _Utils_eq(
+					A2($justinmimbs$date$Date$compare, day.date, sd),
+					$elm$core$Basics$EQ);
+			} else {
+				return false;
+			}
+		}();
+		var date = A2(
+			$elm$core$Maybe$withDefault,
+			{
+				day: 0,
+				month: $elm$time$Time$Jan,
+				posix: $elm$time$Time$millisToPosix(0),
+				year: 0
+			},
+			A2(
+				$elm$core$Maybe$map,
+				function (t) {
+					return {
+						day: A2($elm$time$Time$toDay, $elm$time$Time$utc, t),
+						month: A2($elm$time$Time$toMonth, $elm$time$Time$utc, t),
+						posix: t,
+						year: A2($elm$time$Time$toYear, $elm$time$Time$utc, t)
+					};
+				},
+				model.time));
+		var isThisMonth = _Utils_eq(
+			$justinmimbs$date$Date$month(day.date),
+			date.month);
+		var isToday = _Utils_eq(
+			A2(
+				$justinmimbs$date$Date$compare,
+				day.date,
+				A2($justinmimbs$date$Date$fromPosix, $elm$time$Time$utc, date.posix)),
+			$elm$core$Basics$EQ);
+		var bg = function () {
+			var _v0 = _Utils_Tuple2(isSelected, isThisMonth);
+			if (_v0.a) {
+				if (_v0.b) {
+					return A3($author$project$Style$mix, 0.5, model.pal.link, model.pal.bg);
+				} else {
+					return A3(
+						$author$project$Style$mix,
+						0.5,
+						model.pal.link,
+						A3($author$project$Style$mix, 0.35, model.pal.bg, model.pal.fg));
+				}
+			} else {
+				if (_v0.b) {
+					return model.pal.bg;
+				} else {
+					return A3($author$project$Style$mix, 0.35, model.pal.bg, model.pal.fg);
+				}
+			}
+		}();
+		var internalBorder = isToday ? model.pal.fg : bg;
+		return A2(
+			$author$project$Ui$el,
+			_List_fromArray(
+				[
+					$author$project$Style$fillSpace,
+					$author$project$Ui$padding(
+					$elm$core$Basics$round(model.fontSize / 6)),
+					$author$project$Ui$Border$width(1),
+					$author$project$Ui$Background$color(internalBorder)
+				]),
+			A2(
+				$author$project$Ui$link,
+				_List_fromArray(
+					[
+						$author$project$Style$fillSpace,
+						$author$project$Ui$Events$onClick(
+						$author$project$Types$SelectDate(
+							isSelected ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(day.date)))
+					]),
+				{
+					label: A2(
+						$author$project$Ui$column,
+						_List_fromArray(
+							[
+								$author$project$Style$fillSpace,
+								$author$project$Ui$spacing(
+								$elm$core$Basics$round((model.fontSize / 2) - (model.fontSize / 6))),
+								$author$project$Ui$Font$size(10),
+								$author$project$Ui$Background$color(bg)
+							]),
+						A2(
+							$elm$core$List$cons,
+							A2(
+								$author$project$Ui$el,
+								_List_fromArray(
+									[
+										$author$project$Ui$Font$size(16),
+										$author$project$Ui$Font$bold,
+										$author$project$Ui$Font$color(model.pal.bg),
+										$author$project$Ui$Background$color(
+										A3($author$project$Style$mix, 0.75, model.pal.bg, model.pal.fg)),
+										$author$project$Ui$padding($author$project$Style$lineSize * 2),
+										$author$project$Ui$Border$roundEach(
+										_Utils_update(
+											$author$project$Types$corners,
+											{bottomLeft: $author$project$Style$lineSize * 4, bottomRight: $author$project$Style$lineSize * 4, topRight: $author$project$Style$lineSize * 4}))
+									]),
+								$author$project$Ui$text(
+									A3(
+										$elm$core$String$padLeft,
+										2,
+										_Utils_chr('0'),
+										$elm$core$String$fromInt(
+											$justinmimbs$date$Date$day(day.date))))),
+							A2(
+								$elm$core$List$map,
+								$author$project$Main$calendarItem(model),
+								A2($author$project$Types$eventsOfDay, day.date, model.events)))),
+					url: ''
+				}));
+	});
+var $author$project$Main$weekOnCalendar = function (model) {
+	return A2(
+		$elm$core$Basics$composeR,
+		$elm$core$List$map(
+			$author$project$Main$dayOnCalendar(model)),
+		$author$project$Ui$row(
+			_List_fromArray(
+				[$author$project$Style$fillSpace])));
+};
+var $author$project$Main$calendar = function (model) {
+	return A2(
+		$author$project$Ui$column,
+		_List_fromArray(
+			[
+				$author$project$Style$fillSpace,
+				$author$project$Ui$Border$width($author$project$Style$lineSize),
+				$author$project$Ui$Border$roundEach(
+				_Utils_update(
+					$author$project$Types$corners,
+					{
+						topLeft: $elm$core$Basics$round(model.fontSize / 2),
+						topRight: $elm$core$Basics$round(model.fontSize / 2)
+					})),
+				$author$project$Style$shadow
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$author$project$Ui$column,
+				_List_fromArray(
+					[
+						$author$project$Ui$width($author$project$Ui$fill),
+						$author$project$Ui$Border$widthEach(
+						_Utils_update(
+							$author$project$Types$edges,
+							{bottom: $author$project$Style$lineSize})),
+						$author$project$Ui$Border$roundEach(
+						_Utils_update(
+							$author$project$Types$corners,
+							{
+								topLeft: $elm$core$Basics$round(model.fontSize / 2),
+								topRight: $elm$core$Basics$round(model.fontSize / 2)
+							})),
+						$author$project$Ui$Background$color(
+						A3($author$project$Style$mix, 0.075, model.pal.bg, model.pal.fg))
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$author$project$Ui$el,
+						_List_fromArray(
+							[
+								$author$project$Ui$centerX,
+								$author$project$Ui$Font$size(
+								$elm$core$Basics$round(model.fontSize * 1.5)),
+								$author$project$Ui$Font$bold,
+								A2(
+								$author$project$Ui$paddingXY,
+								0,
+								$elm$core$Basics$round(model.fontSize))
+							]),
+						$author$project$Ui$text(
+							A2(
+								$elm$core$Maybe$withDefault,
+								'Calendar',
+								A2(
+									$elm$core$Maybe$map,
+									$justinmimbs$date$Date$format('MMMM y'),
+									A2(
+										$elm$core$Maybe$map,
+										$justinmimbs$date$Date$fromPosix(model.zone),
+										model.time))))),
+						A2(
+						$author$project$Ui$row,
+						_List_fromArray(
+							[
+								$author$project$Ui$width($author$project$Ui$fill),
+								A2(
+								$author$project$Ui$paddingXY,
+								0,
+								$elm$core$Basics$round(model.fontSize * 0.4))
+							]),
+						A2(
+							$elm$core$List$map,
+							A2(
+								$elm$core$Basics$composeR,
+								$author$project$Ui$text,
+								A2(
+									$elm$core$Basics$composeR,
+									$author$project$Ui$el(
+										_List_fromArray(
+											[$author$project$Ui$centerX])),
+									$author$project$Ui$el(
+										_List_fromArray(
+											[
+												$author$project$Ui$width($author$project$Ui$fill),
+												$author$project$Ui$Font$bold
+											])))),
+							_List_fromArray(
+								['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])))
+					])),
+				A2(
+				$author$project$Ui$el,
+				_List_fromArray(
+					[$author$project$Style$fillSpace]),
+				A2(
+					$elm$core$Maybe$withDefault,
+					$author$project$Ui$none,
+					A2(
+						$elm$core$Maybe$map,
+						A2(
+							$elm$core$Basics$composeR,
+							$elm$core$List$map(
+								$author$project$Main$weekOnCalendar(model)),
+							$author$project$Ui$column(
+								_List_fromArray(
+									[$author$project$Style$fillSpace]))),
+						A2(
+							$elm$core$Maybe$map,
+							A2($abradley2$elm_calendar$Calendar$fromTime, $elm$core$Maybe$Nothing, $elm$time$Time$utc),
+							model.time))))
+			]));
+};
+var $mdgriffith$elm_ui$Internal$Model$InFront = {$: 'InFront'};
+var $mdgriffith$elm_ui$Element$inFront = function (element) {
+	return A2($mdgriffith$elm_ui$Element$createNearby, $mdgriffith$elm_ui$Internal$Model$InFront, element);
+};
+var $author$project$Ui$inFront = function (element) {
+	return _List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$inFront(element)
+		]);
+};
+var $author$project$Types$eventTimeString = F2(
+	function (startTime, duration) {
+		var m2 = A3(
+			$elm$core$String$padLeft,
+			2,
+			_Utils_chr('0'),
+			$elm$core$String$fromInt(
+				A2($elm$core$Basics$modBy, 60, startTime + duration)));
+		var m1 = A3(
+			$elm$core$String$padLeft,
+			2,
+			_Utils_chr('0'),
+			$elm$core$String$fromInt(
+				A2($elm$core$Basics$modBy, 60, startTime)));
+		var h2 = A3(
+			$elm$core$String$padLeft,
+			2,
+			_Utils_chr('0'),
+			$elm$core$String$fromInt(((startTime + duration) / 60) | 0));
+		var h1 = A3(
+			$elm$core$String$padLeft,
+			2,
+			_Utils_chr('0'),
+			$elm$core$String$fromInt((startTime / 60) | 0));
+		return h1 + (':' + (m1 + ('–' + (h2 + (':' + (m2 + ' UTC'))))));
+	});
+var $author$project$Main$renderEvent = F3(
+	function (model, vp, event) {
+		return A2(
+			$author$project$Ui$textColumn,
+			_List_fromArray(
+				[
+					$author$project$Ui$width($author$project$Ui$fill),
+					$author$project$Ui$spacing(
+					$elm$core$Basics$round(model.fontSize)),
+					$author$project$Ui$paddingEach(
+					_Utils_update(
+						$author$project$Types$edges,
+						{
+							left: $elm$core$Basics$round(model.fontSize)
+						})),
+					$author$project$Ui$Border$widthEach(
+					_Utils_update(
+						$author$project$Types$edges,
+						{left: $author$project$Style$lineSize * 2})),
+					$author$project$Ui$Border$roundEach(
+					_Utils_update(
+						$author$project$Types$corners,
+						{
+							bottomLeft: $elm$core$Basics$round(model.fontSize / 2),
+							topLeft: $elm$core$Basics$round(model.fontSize / 2)
+						}))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$author$project$Ui$paragraph,
+					_List_fromArray(
+						[
+							$author$project$Ui$width($author$project$Ui$fill),
+							$author$project$Ui$Font$size(
+							$elm$core$Basics$round(model.fontSize * 1.75)),
+							$author$project$Ui$Font$bold
+						]),
+					_List_fromArray(
+						[
+							$author$project$Ui$text(event.title)
+						])),
+					A2(
+					$author$project$Ui$paragraph,
+					_List_fromArray(
+						[
+							$author$project$Ui$width($author$project$Ui$fill),
+							$author$project$Ui$Font$bold
+						]),
+					_List_fromArray(
+						[
+							$author$project$Ui$text(
+							A2($author$project$Types$eventTimeString, event.startTime, event.duration))
+						])),
+					A3($author$project$Markup$renderMd, model, vp, event.description)
+				]));
+	});
+var $mdgriffith$elm_ui$Element$scrollbarY = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.scrollbarsY);
+var $author$project$Ui$scrollbarY = _List_fromArray(
+	[$mdgriffith$elm_ui$Element$scrollbarY]);
+var $author$project$Main$dayView = F2(
+	function (model, vp) {
+		var _v0 = model.selectDate;
+		if (_v0.$ === 'Nothing') {
+			return $author$project$Ui$none;
+		} else {
+			var date = _v0.a;
+			return A2(
+				$author$project$Ui$column,
+				_List_fromArray(
+					[
+						$author$project$Ui$height($author$project$Ui$fill),
+						$author$project$Ui$width(
+						A2($author$project$Ui$minimum, 500, $author$project$Ui$fill)),
+						$author$project$Ui$padding(
+						$elm$core$Basics$round(model.fontSize)),
+						$author$project$Ui$spacing(
+						$elm$core$Basics$round(model.fontSize) * 2),
+						$author$project$Ui$Border$width($author$project$Style$lineSize),
+						$author$project$Ui$Border$roundEach(
+						_Utils_update(
+							$author$project$Types$corners,
+							{
+								topLeft: $elm$core$Basics$round(model.fontSize / 2),
+								topRight: $elm$core$Basics$round(model.fontSize / 2)
+							})),
+						$author$project$Ui$Background$color(
+						A2($author$project$Style$addAlpha, 0.9, model.pal.bg)),
+						$author$project$Ui$scrollbarY
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$author$project$Ui$column,
+						_List_fromArray(
+							[
+								$author$project$Ui$spacing(
+								$elm$core$Basics$round(model.fontSize * 0.65)),
+								$author$project$Ui$width($author$project$Ui$fill),
+								$author$project$Ui$inFront(
+								A2(
+									$author$project$Ui$el,
+									_List_fromArray(
+										[$author$project$Ui$alignTop, $author$project$Ui$alignRight]),
+									A4(
+										$author$project$Markup$iconButton,
+										model,
+										$author$project$Types$SelectDate($elm$core$Maybe$Nothing),
+										$elm$core$Maybe$Nothing,
+										$author$project$Ui$text('Close'))))
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$author$project$Ui$el,
+								_List_fromArray(
+									[
+										$author$project$Ui$centerX,
+										$author$project$Ui$Font$size(
+										$elm$core$Basics$round(model.fontSize * 1.5)),
+										$author$project$Ui$Font$bold
+									]),
+								$author$project$Ui$text(
+									A2($justinmimbs$date$Date$format, 'EEEE', date))),
+								A2(
+								$author$project$Ui$el,
+								_List_fromArray(
+									[
+										$author$project$Ui$centerX,
+										$author$project$Ui$Font$size(
+										$elm$core$Basics$round(model.fontSize * 1.5)),
+										$author$project$Ui$Font$bold
+									]),
+								$author$project$Ui$text(
+									A2($justinmimbs$date$Date$format, 'MMMM ddd, y', date))),
+								$author$project$Markup$hBar
+							])),
+						A2(
+						$author$project$Ui$column,
+						_List_fromArray(
+							[
+								$author$project$Ui$spacing(
+								$elm$core$Basics$round(model.fontSize * 2)),
+								A2(
+								$author$project$Ui$paddingXY,
+								$elm$core$Basics$round(model.fontSize / 2),
+								0),
+								$author$project$Ui$width($author$project$Ui$fill)
+							]),
+						A2(
+							$elm$core$List$map,
+							A2($author$project$Main$renderEvent, model, vp),
+							A2($author$project$Types$eventsOfDay, date, model.events)))
+					]));
+		}
+	});
+var $elm$core$Basics$pi = _Basics_pi;
+var $mdgriffith$elm_ui$Internal$Model$Rotate = F2(
+	function (a, b) {
+		return {$: 'Rotate', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Internal$Flag$rotate = $mdgriffith$elm_ui$Internal$Flag$flag(24);
+var $mdgriffith$elm_ui$Element$rotate = function (angle) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
+		$mdgriffith$elm_ui$Internal$Flag$rotate,
+		A2(
+			$mdgriffith$elm_ui$Internal$Model$Rotate,
+			_Utils_Tuple3(0, 0, 1),
+			angle));
+};
+var $author$project$Ui$rotate = function (angle) {
+	return _List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$rotate(angle)
+		]);
+};
+var $elm$time$Time$toHour = F2(
+	function (zone, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			24,
+			A2(
+				$elm$time$Time$flooredDiv,
+				A2($elm$time$Time$toAdjustedMinutes, zone, time),
+				60));
+	});
+var $elm$time$Time$toMillis = F2(
+	function (_v0, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			1000,
+			$elm$time$Time$posixToMillis(time));
+	});
+var $elm$time$Time$toMinute = F2(
+	function (zone, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			60,
+			A2($elm$time$Time$toAdjustedMinutes, zone, time));
+	});
+var $elm$time$Time$toSecond = F2(
+	function (_v0, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			60,
+			A2(
+				$elm$time$Time$flooredDiv,
+				$elm$time$Time$posixToMillis(time),
+				1000));
+	});
+var $author$project$Main$calendarView = F2(
+	function (model, vp) {
+		var time = A2(
+			$elm$core$Maybe$withDefault,
+			{hours: 0, localHours: 0, millis: 0, minutes: 0, seconds: 0},
+			A2(
+				$elm$core$Maybe$map,
+				function (t) {
+					return {
+						hours: A2($elm$time$Time$toHour, $elm$time$Time$utc, t),
+						localHours: A2($elm$time$Time$toHour, model.zone, t),
+						millis: A2($elm$time$Time$toMillis, $elm$time$Time$utc, t),
+						minutes: A2($elm$time$Time$toMinute, $elm$time$Time$utc, t),
+						seconds: A2($elm$time$Time$toSecond, $elm$time$Time$utc, t)
+					};
+				},
+				model.time));
+		var c = function () {
+			var _v0 = model.hemisphere;
+			if (_v0.$ === 'North') {
+				return {hourLines: 'assets/earth-hours-north.png', hourRotation: 0 - (((time.hours + (time.minutes / 60)) / 12) * $elm$core$Basics$pi), leftLabel: '06', localHourRotation: 0 - (((time.localHours + (time.minutes / 60)) / 12) * $elm$core$Basics$pi), minuteRotation: 0 - (((time.minutes + (time.seconds / 60)) / 30) * $elm$core$Basics$pi), op: 'Southern', picUrl: 'assets/earth-north.png', rightLabel: '18', secondRotation: 0 - (((time.seconds + (time.millis / 1000)) / 30) * $elm$core$Basics$pi)};
+			} else {
+				return {hourLines: 'assets/earth-hours-south.png', hourRotation: ((time.hours + (time.minutes / 60)) / 12) * $elm$core$Basics$pi, leftLabel: '18', localHourRotation: ((time.localHours + (time.minutes / 60)) / 12) * $elm$core$Basics$pi, minuteRotation: ((time.minutes + (time.seconds / 60)) / 30) * $elm$core$Basics$pi, op: 'Northern', picUrl: 'assets/earth-south.png', rightLabel: '06', secondRotation: ((time.seconds + (time.millis / 1000)) / 30) * $elm$core$Basics$pi};
+			}
+		}();
+		return A2(
+			$author$project$Ui$column,
+			_List_fromArray(
+				[
+					$author$project$Style$fillSpace,
+					$author$project$Ui$spacing(
+					$elm$core$Basics$round(model.fontSize)),
+					$author$project$Ui$paddingEach(
+					_Utils_update(
+						$author$project$Types$edges,
+						{
+							bottom: $elm$core$Basics$round(model.fontSize)
+						}))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$author$project$Ui$el,
+					_List_fromArray(
+						[
+							$author$project$Style$fillSpace,
+							$author$project$Ui$inFront(
+							A2($author$project$Main$dayView, model, vp))
+						]),
+					$author$project$Main$calendar(model)),
+					$author$project$Markup$hBar,
+					A2(
+					$author$project$Ui$el,
+					_List_fromArray(
+						[$author$project$Ui$centerX]),
+					A2(
+						$author$project$Ui$image,
+						_List_fromArray(
+							[
+								$author$project$Style$centerXY,
+								$author$project$Ui$clip,
+								$author$project$Ui$inFront(
+								A2(
+									$author$project$Ui$image,
+									_List_fromArray(
+										[
+											$author$project$Ui$rotate(c.localHourRotation)
+										]),
+									{description: 'local hour hand', src: 'assets/earth-local-hour.png'})),
+								$author$project$Ui$behindContent(
+								A2(
+									$author$project$Ui$image,
+									_List_fromArray(
+										[
+											$author$project$Ui$rotate(c.hourRotation),
+											$author$project$Ui$inFront(
+											A2(
+												$author$project$Ui$image,
+												_List_fromArray(
+													[
+														$author$project$Ui$rotate(c.secondRotation)
+													]),
+												{description: 'second hand', src: 'assets/earth-second.png'})),
+											$author$project$Ui$inFront(
+											A2(
+												$author$project$Ui$image,
+												_List_fromArray(
+													[
+														$author$project$Ui$rotate(c.minuteRotation)
+													]),
+												{description: 'minute hand', src: 'assets/earth-minute.png'}))
+										]),
+									{description: 'earth clock', src: c.picUrl}))
+							]),
+						{description: 'earth', src: c.hourLines})),
+					A2(
+					$author$project$Ui$el,
+					_List_fromArray(
+						[$author$project$Ui$centerX]),
+					A4(
+						$author$project$Markup$iconButton,
+						model,
+						$author$project$Types$ToggleClockOrientation,
+						$elm$core$Maybe$Nothing,
+						$author$project$Ui$text('Flip Clock to ' + (c.op + ' Hemisphere')))),
+					A2(
+					$author$project$Ui$el,
+					_List_fromArray(
+						[$author$project$Ui$centerX, $author$project$Ui$Font$bold]),
+					$author$project$Ui$text('Current Time:')),
+					A2(
+					$author$project$Ui$el,
+					_List_fromArray(
+						[$author$project$Ui$centerX]),
+					$author$project$Ui$text(
+						$elm$core$String$fromInt(time.hours) + (':' + (A3(
+							$elm$core$String$padLeft,
+							2,
+							_Utils_chr('0'),
+							$elm$core$String$fromInt(time.minutes)) + ' UTC')))),
+					A2(
+					$author$project$Ui$el,
+					_List_fromArray(
+						[$author$project$Ui$centerX]),
+					$author$project$Ui$text(
+						$elm$core$String$fromInt(time.localHours) + (':' + (A3(
+							$elm$core$String$padLeft,
+							2,
+							_Utils_chr('0'),
+							$elm$core$String$fromInt(time.minutes)) + ' Local'))))
+				]));
+	});
+var $mdgriffith$elm_ui$Element$fillPortion = $mdgriffith$elm_ui$Internal$Model$Fill;
+var $author$project$Ui$fillPortion = $mdgriffith$elm_ui$Element$fillPortion;
+var $author$project$Main$graphView = F2(
+	function (model, vp) {
+		return A2(
+			$author$project$Ui$el,
+			_List_fromArray(
+				[$author$project$Style$centerXY]),
+			$author$project$Ui$text('Graph View'));
+	});
+var $author$project$Style$greenNote = {
+	bg: A3($author$project$Ui$rgb255, 134, 185, 97),
+	error: A3($author$project$Ui$rgb255, 79, 147, 67),
+	extLink: A3($author$project$Ui$rgb255, 79, 147, 67),
+	fg: A3($author$project$Ui$rgb255, 44, 58, 22),
+	link: A3($author$project$Ui$rgb255, 79, 147, 67),
+	name: 'Green-Note'
+};
+var $mdgriffith$elm_ui$Element$Font$center = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontAlignment, $mdgriffith$elm_ui$Internal$Style$classes.textCenter);
+var $author$project$Ui$Font$center = _List_fromArray(
+	[$mdgriffith$elm_ui$Element$Font$center]);
+var $author$project$Docs$heading = F2(
+	function (m, txt) {
+		return A2(
+			$author$project$Ui$el,
+			_List_fromArray(
+				[
+					$author$project$Ui$Border$widthEach(
+					_Utils_update(
+						$author$project$Types$edges,
+						{bottom: $author$project$Style$lineSize})),
+					$author$project$Ui$paddingEach(
+					_Utils_update(
+						$author$project$Types$edges,
+						{
+							bottom: $elm$core$Basics$round(m.fontSize)
+						})),
+					$author$project$Ui$Font$size(
+					$elm$core$Basics$round(m.fontSize * 2)),
+					$author$project$Ui$width($author$project$Ui$fill)
+				]),
+			A2(
+				$author$project$Ui$paragraph,
+				_List_fromArray(
+					[
+						$author$project$Ui$spacing(
+						$elm$core$Basics$round(m.fontSize)),
+						$author$project$Ui$centerX,
+						$author$project$Ui$Font$center
+					]),
+				_List_fromArray(
+					[
+						$author$project$Ui$text(txt)
+					])));
+	});
+var $author$project$Docs$item = F2(
+	function (m, txt) {
+		return A2(
+			$author$project$Ui$row,
+			_List_fromArray(
+				[
+					$author$project$Ui$spacing(
+					$elm$core$Basics$round(m.fontSize))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$author$project$Ui$el,
+					_List_fromArray(
+						[
+							$author$project$Ui$alignTop,
+							$author$project$Ui$width(
+							$author$project$Ui$px(
+								$elm$core$Basics$round(m.fontSize)))
+						]),
+					A2($author$project$Pic$bullet, m.pal.fg, m.fontSize)),
+					A2(
+					$author$project$Ui$paragraph,
+					_List_fromArray(
+						[
+							$author$project$Ui$spacing(
+							$elm$core$Basics$round((m.fontSize * 2) / 3))
+						]),
+					_List_fromArray(
+						[
+							$author$project$Ui$text(txt)
+						]))
+				]));
+	});
+var $author$project$Style$orangeNote = {
+	bg: A3($author$project$Ui$rgb255, 219, 159, 97),
+	error: A3($author$project$Ui$rgb255, 198, 108, 44),
+	extLink: A3($author$project$Ui$rgb255, 198, 108, 44),
+	fg: A3($author$project$Ui$rgb255, 83, 45, 15),
+	link: A3($author$project$Ui$rgb255, 198, 108, 44),
+	name: 'Orange-Note'
+};
+var $mdgriffith$elm_ui$Element$BigDesktop = {$: 'BigDesktop'};
+var $mdgriffith$elm_ui$Element$Desktop = {$: 'Desktop'};
+var $mdgriffith$elm_ui$Element$Landscape = {$: 'Landscape'};
+var $mdgriffith$elm_ui$Element$Phone = {$: 'Phone'};
+var $mdgriffith$elm_ui$Element$Portrait = {$: 'Portrait'};
+var $mdgriffith$elm_ui$Element$Tablet = {$: 'Tablet'};
+var $mdgriffith$elm_ui$Element$classifyDevice = function (window) {
+	return {
+		_class: function () {
+			var shortSide = A2($elm$core$Basics$min, window.width, window.height);
+			var longSide = A2($elm$core$Basics$max, window.width, window.height);
+			return (shortSide < 600) ? $mdgriffith$elm_ui$Element$Phone : ((longSide <= 1200) ? $mdgriffith$elm_ui$Element$Tablet : (((longSide > 1200) && (longSide <= 1920)) ? $mdgriffith$elm_ui$Element$Desktop : $mdgriffith$elm_ui$Element$BigDesktop));
+		}(),
+		orientation: (_Utils_cmp(window.width, window.height) < 0) ? $mdgriffith$elm_ui$Element$Portrait : $mdgriffith$elm_ui$Element$Landscape
+	};
+};
+var $author$project$Ui$classifyDevice = $mdgriffith$elm_ui$Element$classifyDevice;
+var $elm$core$Debug$toString = _Debug_toString;
+var $author$project$Main$settingsView = F2(
+	function (model, vp) {
+		return A2(
+			$author$project$Ui$column,
+			_List_fromArray(
+				[
+					$author$project$Style$centerXY,
+					$author$project$Ui$spacing(
+					$elm$core$Basics$round(model.fontSize))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$author$project$Ui$el,
+					_List_fromArray(
+						[
+							$author$project$Ui$centerX,
+							$author$project$Ui$Font$bold,
+							$author$project$Ui$Font$size(
+							$elm$core$Basics$round(model.fontSize * 2))
+						]),
+					$author$project$Ui$text('Under Construction!')),
+					A2(
+					$author$project$Ui$el,
+					_List_fromArray(
+						[$author$project$Style$centerXY]),
+					$author$project$Ui$text('( Settings )')),
+					A2(
+					$author$project$Ui$el,
+					_List_fromArray(
+						[$author$project$Ui$centerX]),
+					$author$project$Ui$text(
+						$elm$core$Debug$toString(
+							$author$project$Ui$classifyDevice(
+								function (_v0) {
+									var width = _v0.width;
+									var height = _v0.height;
+									return {
+										height: $elm$core$Basics$round(height / model.dpi),
+										width: $elm$core$Basics$round(width / model.dpi)
+									};
+								}(vp.viewport))))),
+					A2(
+					$author$project$Ui$el,
+					_List_fromArray(
+						[$author$project$Ui$centerX]),
+					$author$project$Ui$text(
+						function (_v1) {
+							var width = _v1.width;
+							var height = _v1.height;
+							return '{ width = ' + ($elm$core$String$fromFloat(width / model.dpi) + (', height = ' + ($elm$core$String$fromFloat(height / model.dpi) + ' }')));
+						}(vp.viewport))),
+					A2(
+					$author$project$Ui$el,
+					_List_fromArray(
+						[$author$project$Ui$centerX]),
+					$author$project$Ui$text(
+						$elm$core$String$fromFloat(model.fontSize))),
+					A2(
+					$author$project$Ui$el,
+					_List_fromArray(
+						[$author$project$Ui$centerX]),
+					$author$project$Ui$text(
+						$elm$core$String$fromFloat(model.dpi)))
+				]));
+	});
 var $author$project$Types$ChangeMenu = function (a) {
 	return {$: 'ChangeMenu', a: a};
 };
 var $author$project$Types$GotoPage = function (a) {
 	return {$: 'GotoPage', a: a};
 };
-var $author$project$Types$MainMenu = {$: 'MainMenu'};
+var $author$project$Types$MenuOpen = {$: 'MenuOpen'};
+var $mdgriffith$elm_ui$Internal$Model$Below = {$: 'Below'};
+var $mdgriffith$elm_ui$Element$below = function (element) {
+	return A2($mdgriffith$elm_ui$Element$createNearby, $mdgriffith$elm_ui$Internal$Model$Below, element);
+};
+var $author$project$Ui$below = function (element) {
+	return _List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$below(element)
+		]);
+};
 var $mdgriffith$elm_ui$Element$Font$heavy = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontWeight, $mdgriffith$elm_ui$Internal$Style$classes.textHeavy);
 var $author$project$Ui$Font$heavy = _List_fromArray(
 	[$mdgriffith$elm_ui$Element$Font$heavy]);
@@ -25631,211 +26585,36 @@ var $author$project$Types$Calendar = {$: 'Calendar'};
 var $author$project$Types$ChangeColor = function (a) {
 	return {$: 'ChangeColor', a: a};
 };
+var $author$project$Types$Graph = {$: 'Graph'};
 var $author$project$Types$Settings = {$: 'Settings'};
 var $author$project$Types$Solutions = {$: 'Solutions'};
 var $author$project$Pic$blogPath = 'm22.042 26.458c1.1524 0 1.6157-1.7703 1.6157-3.1285v-22.639c-0.49399 0.64093-0.98859 1.2811-1.482 1.9229-0.70743-0.86788-1.411-1.7407-2.1168-2.6107-0.67272 0.87194-1.3466 1.7425-2.0183 2.6156-0.69437-0.86978-1.3853-1.7439-2.0781-2.6156-0.68494 0.87033-1.3708 1.7396-2.055 2.6107-0.69144-0.87106-1.3829-1.7421-2.0744-2.6131-0.56794 0.71548-1.1359 1.431-1.7039 2.1465l-6.16e-4 1.4e-4c-0.4128 0.98165-0.81853-0.27184-1.2283-0.62058-0.42376-0.40916-0.84672-1.3243-1.271-1.4355-0.6694 0.84258-1.3392 1.6847-2.0083 2.5277-0.67148-0.87268-1.3443-1.7437-2.0164-2.6156-0.70572 0.87009-1.4093 1.7428-2.1168 2.6107-0.4935-0.64231-0.98921-1.2819-1.4838-1.9229 0.016199 7.8939-0.03251 15.791 0.024403 23.684 0.13698 1.427 1.3248 2.0839 2.4069 2.0839m-0.021337-20.232h19.549v5.992h-20.209v-5.992zm0 7.7423h9.392v10.667h-10.051v-10.667zm11.801 0h7.7483v4.4583h-8.4072v-4.4583zm0 6.2813h7.7483v4.3853c-4.0912 0-4.316 1.3e-5 -8.4072 0v-4.3853z';
-var $author$project$Pic$blog = F2(
-	function (color, fontSize) {
-		return A2(
-			$author$project$Pic$svg,
-			_List_fromArray(
-				[
-					A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, 23.657, 26.458),
-					$elm_community$typed_svg$TypedSvg$Attributes$height(
-					$elm_community$typed_svg$TypedSvg$Types$px(fontSize * 1.6))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm_community$typed_svg$TypedSvg$path,
-					_List_fromArray(
-						[
-							$elm_community$typed_svg$TypedSvg$Attributes$d($author$project$Pic$blogPath),
-							$elm_community$typed_svg$TypedSvg$Attributes$fill(
-							$elm_community$typed_svg$TypedSvg$Types$Paint(color))
-						]),
-					_List_Nil)
-				]));
-	});
+var $author$project$Pic$blog = A3($author$project$Pic$svgIcon, $author$project$Pic$blogPath, 23.657, 26.458);
 var $author$project$Pic$calendarPath = 'm3.8891 9.785e-5v2.6646h-1.3012c-0.74354 0-1.3737 0.25818-1.89 0.77451-0.51636 0.51634-0.69794 1.1458-0.69793 1.8893v18.465c0 0.74354 0.18159 1.3737 0.69793 1.89 0.51634 0.51637 1.2231 0.77452 1.9666 0.77451h18.311c0.74354 0 1.3737-0.26373 1.89-0.7904 0.51633-0.51634 0.77451-1.1409 0.77451-1.8742v-18.465c0-0.74354-0.1816-1.373-0.69793-1.8893-0.51634-0.51634-1.1465-0.77451-1.89-0.77451h-1.3012v-2.6646h-2.3936v2.6646h-11.076v-2.6646h-2.3929zm-2.192 6.2583h20.246v16.415c0 1.2175-0.08533 1.9248-1.1842 1.9247h-17.878c-1.0988 2.5e-5 -1.1849-0.70722-1.1849-1.9247v-16.415zm9.9315 7.4699v8.6373h8.068v-8.6373z';
-var $author$project$Pic$calendar = F2(
-	function (color, fontSize) {
-		return A2(
-			$author$project$Pic$svg,
-			_List_fromArray(
-				[
-					A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, 23.64, 26.458),
-					$elm_community$typed_svg$TypedSvg$Attributes$height(
-					$elm_community$typed_svg$TypedSvg$Types$px(fontSize * 1.6))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm_community$typed_svg$TypedSvg$path,
-					_List_fromArray(
-						[
-							$elm_community$typed_svg$TypedSvg$Attributes$d($author$project$Pic$calendarPath),
-							$elm_community$typed_svg$TypedSvg$Attributes$fill(
-							$elm_community$typed_svg$TypedSvg$Types$Paint(color))
-						]),
-					_List_Nil)
-				]));
-	});
+var $author$project$Pic$calendar = A3($author$project$Pic$svgIcon, $author$project$Pic$calendarPath, 23.64, 26.458);
 var $author$project$Pic$darkPath = 'm21.44 0-1.2263 2.4148-2.7109-0.27905 1.9063 1.9435-0.32091 0.73328c0.37359 0.25098 0.72564 0.51682 1.0532 0.79942l0.5953-0.3085 2.0221 1.8386-0.41186-2.6722 2.3487-1.3808-2.682-0.43563zm3.3362 7.3297-0.80304 1.5849-1.4201-0.15658c0.07718 0.16199 0.14968 0.32739 0.21859 0.49505l0.71261 0.68367-0.27853 0.60719c0.05175 0.19365 0.10028 0.38952 0.14262 0.58962 0.0082 0.03858 0.01396 0.07673 0.0217 0.11524l0.95084-0.47697 1.3022 1.1803-0.29869-1.7709 1.5322-0.84438-1.7368-0.27078zm-16.787-2.7765c-0.67735 0.43872-1.3153 0.96944-1.9125 1.5942-1.9405 2.03-2.8828 4.4526-2.8267 7.2682 0.044887 2.2514 0.72367 4.2275 2.0334 5.9288 0.013063 0.01731 0.02557 0.03497 0.038757 0.05219 0.012988 0.01665 0.02668 0.03301 0.03979 0.04961 0.29299 0.37737 0.61552 0.73477 0.9684 1.0712 0.011421 0.01112 0.022105 0.0225 0.033589 0.03359 1.3422 1.283 2.8548 2.1266 4.5361 2.5368 1.0455 0.27127 2.1246 0.36045 3.237 0.26768 1e-3 -8.5e-5 0.0021 8.6e-5 0.0031 0 1.8466-0.11965 3.4963-0.68096 4.9516-1.6789 0.04087-0.02733 0.08205-0.0542 0.12247-0.08216 0.55444-0.3835 1.0665-0.82769 1.5379-1.3307 0.09492-0.10129 0.18905-0.20392 0.2806-0.31006 0.04278-0.04812 0.08832-0.09518 0.13022-0.14366-0.0035-2.98e-4 -0.0069-7.34e-4 -0.01034-1e-3 0.27061-0.32539 0.52772-0.67007 0.7679-1.0392h-5.17e-4c0.11228-0.1726 0.2174-0.34631 0.31833-0.52093-10.333 1.0732-15.461-7.1832-14.249-13.696z';
-var $author$project$Pic$dark = F2(
-	function (color, fontSize) {
-		return A2(
-			$author$project$Pic$svg,
-			_List_fromArray(
-				[
-					A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, 26.856, 26.459),
-					$elm_community$typed_svg$TypedSvg$Attributes$height(
-					$elm_community$typed_svg$TypedSvg$Types$px(fontSize * 1.6))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm_community$typed_svg$TypedSvg$path,
-					_List_fromArray(
-						[
-							$elm_community$typed_svg$TypedSvg$Attributes$d($author$project$Pic$darkPath),
-							$elm_community$typed_svg$TypedSvg$Attributes$fill(
-							$elm_community$typed_svg$TypedSvg$Types$Paint(color))
-						]),
-					_List_Nil)
-				]));
-	});
+var $author$project$Pic$dark = A3($author$project$Pic$svgIcon, $author$project$Pic$darkPath, 26.856, 26.458);
 var $author$project$Style$dark = {
 	bg: A3($author$project$Ui$rgb255, 26, 28, 31),
-	error: A3($author$project$Ui$rgb255, 230, 99, 99),
-	extLink: A3($author$project$Ui$rgb255, 32, 176, 128),
+	error: A3($author$project$Ui$rgb255, 231, 101, 91),
+	extLink: A3($author$project$Ui$rgb255, 32, 177, 107),
 	fg: A3($author$project$Ui$rgb255, 177, 176, 175),
 	link: A3($author$project$Ui$rgb255, 201, 153, 35),
 	name: 'Dark'
 };
 var $author$project$Pic$dimsPath = 'm11.93 0.0030312c-0.52526-4.55e-4 -1.0334 0.2656-1.3662 0.64829-0.4048 0.43971-0.53851 1.089-0.37763 1.6597 0.15144 0.57703 0.61299 1.0845 1.2089 1.2069 0.22646 0.05799 0.42727 0.18259 0.59648 0.34068 0.7081 0.51591 1.5696 0.73912 2.3854 1.0226 0.07506 0.21154-0.05351 0.42124-0.02028 0.63575 0.01296 0.51011 0.24918 0.99743 0.60436 1.3441 0.36407 0.3677 0.88357 0.55493 1.3977 0.53434 0.10851 0.0093 0.23027-0.033528 0.33022-0.00788 0.69158 0.62547 1.4931 1.147 2.0564 1.9018 0.44601 0.60452 0.70189 1.3233 0.87179 2.0489-0.68894 0.6283-0.89224 1.7694-0.35502 2.555 0.45877 0.751 1.4626 1.1149 2.2926 0.81029 0.61459-0.19051 1.1402-0.6958 1.3369-1.3224 0.10035-0.33138 0.10657-0.65792 0.02971-1.0007-0.18362-0.80047-0.86988-1.4706-1.6904-1.5869-0.13962-0.02586-0.28202-0.03171-0.42375-0.02765-0.37851-1.1868-0.9836-2.3607-1.944-3.1921-0.32866-0.28046-0.68338-0.56849-1.0077-0.86804 0.08945-0.12697 0.24432-0.2165 0.40037-0.1571 0.56848 0.1514 1.1484 0.25907 1.71 0.44067-0.05255 0.9894 0.855 1.9145 1.8484 1.8578 0.88261-0.00275 1.7315-0.74372 1.758-1.6445 0.06867-0.89529-0.60933-1.8183-1.5212-1.9213-0.53747-0.07904-1.0934 0.12691-1.4861 0.49429-0.31541 0.01294-0.6033-0.14432-0.91326-0.17609-0.43195-0.09064-0.86374-0.18201-1.2955-0.27337-0.02529-0.52575-0.26298-1.0336-0.62839-1.3939-0.46544-0.48498-1.1952-0.69864-1.8449-0.51276-0.27432 0.07291-0.52754 0.21281-0.74557 0.39339-0.64648-0.23783-1.3044-0.44524-1.9353-0.72348 0.39005-0.48247 0.56731-1.1397 0.43086-1.749-0.12014-0.58351-0.58875-1.1183-1.1806-1.2806-0.16964-0.04768-0.34631-0.068115-0.52232-0.056845zm-0.04935 0.91739c0.41952-0.042616 0.7914 0.30046 0.87166 0.69725 0.10347 0.41442-0.14546 0.87683-0.55979 0.99878-0.41681 0.16713-0.93433-0.082263-1.0497-0.51871-0.15557-0.50102 0.17941-1.1533 0.73782-1.1773zm-4.8163 2.1293c-1.0626 0.01247-1.9745 1.0248-1.9151 2.0787 0.0015 0.39398 0.12867 0.78021 0.33435 1.1142-0.64477 0.72589-1.185 1.5338-1.5123 2.454-0.26431 0.6852-0.28508 1.4225-0.45011 2.1305-0.03767 0.04857-0.1705-0.012015-0.23074-0.048964-0.14629-0.13207-0.13366-0.35122-0.21239-0.52077-0.14103-0.45142-0.29148-0.90028-0.4014-1.3607 0.86312-0.45454 1.1986-1.6812 0.66586-2.5028-0.34811-0.58542-1.0432-0.95381-1.7124-0.88884-0.7711 0.07433-1.4257 0.70235-1.5867 1.4515-0.18519 0.74999 0.23824 1.5694 0.92217 1.9064 0.11419 0.069949 0.25749 0.092309 0.36871 0.15451 0.15982 0.22128 0.15714 0.50915 0.27389 0.75035 0.15317 0.45687 0.32151 0.9085 0.46367 1.369-0.7922 0.52773-1.175 1.6442-0.76546 2.5234 0.21132 0.47182 0.6283 0.83823 1.1135 1.0102 0.08541 0.22181 0.082674 0.46419 0.15025 0.69105 0.08976 0.44437 0.18518 0.8882 0.23552 1.3392-0.8167-0.11875-1.7128 0.27951-2.0923 1.0282-0.38464 0.73983-0.07929 1.7171 0.60036 2.1875 0.20618 0.13777 0.48049 0.26095 0.74479 0.3014 0.66289 0.1271 1.3866-0.14323 1.7816-0.69544 0.34084-0.45564 0.43934-1.0988 0.23035-1.6159-0.05658-0.35758 0.07348-0.71281 0.03204-1.0718-0.02784-0.69915-0.22213-1.3627-0.362-2.0498 0.12159-0.16686 0.34846-0.16061 0.50204-0.28422 0.68356-0.40699 1.1094-1.3058 0.89969-2.1047-0.08027-0.3198-0.24201-0.61338-0.44339-0.87256 0.1671-0.84744 0.21617-1.7333 0.50191-2.5606 0.27063-0.75622 0.77001-1.4057 1.3449-1.9574 0.06839-0.084027 0.18698 0.016687 0.28138 0.01137 0.68225 0.10834 1.4087-0.12707 1.8675-0.65358 0.33833-0.40329 0.51997-0.93874 0.46974-1.4656-0.03131-0.41647-0.22223-0.88292-0.55023-1.1878-0.39697-0.41807-0.96687-0.68744-1.5495-0.66004zm-0.013307 0.92398c0.2835-0.019417 0.56528 0.088026 0.7789 0.27195 0.47976 0.36796 0.50648 1.1751 0.02713 1.5543-0.45732 0.41624-1.2901 0.36553-1.619-0.1872-0.41698-0.62027 0.049366-1.6192 0.81301-1.6391zm9.3179 0.33732c0.6463-0.026645 1.1425 0.65514 1.045 1.2666-0.05639 0.44721-0.43822 0.81065-0.88329 0.86275-0.49479 0.101-1.0351-0.22223-1.1485-0.72038-0.16966-0.6313 0.30172-1.4027 0.98677-1.409zm-4.498 1.4529c-0.07444-0.00322-0.14957-0.00178-0.22492 0.00478-1.13 0.0825-2.0742 1.2188-1.9018 2.3483 0.14133 1.1183 1.2229 2.0299 2.3521 1.9624 0.04829 0.03439 0.01781 0.15602 0.02868 0.22479-0.0018 0.15565-0.04268 0.30767-0.10413 0.44985-0.91262-0.0469-1.8224 0.49151-2.2207 1.314-0.22462-0.03207-0.44223-0.1229-0.60242-0.28732 0.32481-0.50101 0.42584-1.1375 0.31045-1.7066-0.13862-0.78012-0.70989-1.5003-1.4953-1.6972-0.87063-0.23352-1.8285 0.22503-2.2854 0.98212-0.17424 0.27693-0.28769 0.63278-0.29908 0.9745-0.06625 0.68751 0.18231 1.4252 0.74273 1.8529 0.49865 0.4109 1.1875 0.58616 1.8197 0.44068 0.44919 0.34818 0.90093 0.73039 1.4835 0.81533 0.14742 0.0093 0.24971 0.03342 0.085008 0.14495-0.13156 0.1497-0.32188 0.22652-0.48977 0.32595-0.16342 0.07947-0.3662 0.05386-0.49984-0.07015-0.92061-0.5743-2.2607-0.24117-2.82 0.68446-0.51288 0.79739-0.38794 1.9504 0.31949 2.5924 0.60287 0.57952 1.5655 0.75882 2.3221 0.38564 0.73491-0.34379 1.2343-1.1408 1.1846-1.9483 0.01006-0.12713-0.04546-0.26954-0.02558-0.38383 0.22701-0.20223 0.49943-0.34194 0.7528-0.50695-0.03272 0.44814-0.15244 0.89007-0.11007 1.342 0.01148 0.28748 0.0742 0.57061 0.06421 0.85939-0.08354 0.41144-0.38779 0.75803-0.38138 1.1912-0.09411 0.94617 0.56614 1.9131 1.4954 2.1407 0.92373 0.26643 2.0257-0.16595 2.4478-1.0471 0.45534-0.9128 0.16328-2.1676-0.72903-2.7027-0.40363-0.2461-0.88176-0.31069-1.342-0.36419-0.22777-0.07977-0.20623-0.36532-0.18087-0.55785 0.034-0.17199 0.22867-0.22658 0.3797-0.18694 0.61711-0.0081 1.2196-0.30304 1.6353-0.75448 0.16443-0.17727 0.29166-0.38532 0.39106-0.60501 0.27463 0.0037 0.57393 0.24579 0.5094 0.54067-0.17584 0.46031-0.40436 0.95145-0.28836 1.4561 0.12333 0.90847 0.9255 1.7124 1.8619 1.7274 1.0794 0.07037 2.1725-0.76874 2.2866-1.8633 0.05146-0.42568-0.05181-0.86814-0.24534-1.221-0.30241-0.58193-0.8961-1.0051-1.5531-1.0667-0.21812-0.03296-0.44607-0.0066-0.65991-0.0478-0.43706-0.18035-0.69915-0.60098-1.1459-0.76017-0.25128-0.10555-0.50172-0.15291-0.76443-0.22273 0.26245-0.18329 0.52063-0.38833 0.83406-0.47685 0.45748 0.47139 1.1453 0.67302 1.7974 0.57038 0.90226-0.13944 1.6463-0.94142 1.7285-1.8494 0.08141-0.78389-0.36713-1.5577-1.0065-1.9887-0.42307-0.28809-0.95502-0.44702-1.4656-0.3483-0.47468 0.086035-0.94316 0.36915-1.2382 0.76844-0.33117 0.43332-0.45292 0.9893-0.45088 1.5261-0.1247 0.32595-0.4988 0.41065-0.75888 0.59428-0.11465 0.08264-0.0015-0.17137-0.01188-0.24275 0.08743-0.53049 0.14352-1.0936 0.02015-1.6294 0.82801-0.81815 0.74449-2.3298-0.14792-3.0684-0.38909-0.34107-0.88222-0.59308-1.4033-0.6156zm9.9501 0.45734c0.64087-0.035796 1.0335 0.7721 0.71262 1.2921-0.29131 0.53844-1.1636 0.49697-1.4484-0.025968-0.34825-0.51813 0.13072-1.2831 0.73575-1.2661zm-19.945 0.2058c0.55473 0.040616 0.92017 0.72364 0.67671 1.2247-0.24382 0.5633-1.1227 0.594-1.4537 0.098315-0.4013-0.49446 0.042644-1.3246 0.66366-1.3224 0.03854-0.00325 0.07632-0.00335 0.1133-6.5e-4zm10.06 0.339c0.47061-0.00784 0.882 0.35709 1.0089 0.79699 0.21142 0.59144-0.20222 1.304-0.82153 1.4094-0.65077 0.15193-1.2851-0.45668-1.2772-1.0981-0.04918-0.59693 0.5038-1.1235 1.0899-1.1082zm4.2734 2.5669c0.59397-0.063998 1.1156 0.44012 1.1972 1.0072 0.13657 0.63323-0.40242 1.2701-1.0331 1.3112-0.57063 0.07061-1.1038-0.39878-1.1744-0.95538-0.11329-0.62703 0.35392-1.3245 1.0103-1.363zm-8.6889 0.053227c0.048958 0.00317 0.097642 0.00994 0.14547 0.020542 0.79329 0.14619 1.1712 1.2547 0.6302 1.8537-0.46444 0.58033-1.5108 0.40584-1.7874-0.27557-0.32009-0.63898 0.13214-1.5466 0.86481-1.5976 0.048809-0.0037 0.097933-0.0042 0.14689-0.00103zm13.401 2.3423c0.4895-0.03731 0.93066 0.33172 1.0727 0.78471 0.1782 0.49271-0.10622 1.0804-0.59881 1.2545-0.45534 0.19894-1.0559 0.0542-1.3048-0.39442-0.39898-0.62985 0.06703-1.6183 0.83096-1.6447zm-17.785 0.0093c0.30476-0.01699 0.60649 0.12377 0.80603 0.35153 0.40008 0.40633 0.36278 1.1492-0.10193 1.4913-0.49284 0.39606-1.3472 0.30051-1.6476-0.28668-0.36855-0.65404 0.20532-1.5605 0.94349-1.5561zm8.6983 0.13139c0.47656-0.02825 0.91422 0.30068 1.1012 0.72528 0.29363 0.56612 0.02343 1.3435-0.57155 1.5848-0.61994 0.28087-1.4202-0.12193-1.5738-0.78161-0.21299-0.67985 0.3082-1.5197 1.0441-1.5285zm4.4301 2.6108c0.56218-0.01427 1.0296 0.48372 1.0888 1.0229 0.10649 0.58902-0.386 1.1835-0.97941 1.207-0.5763 0.056-1.107-0.43358-1.149-1.0005-0.09472-0.60737 0.41242-1.2424 1.0396-1.2295zm-8.7652 0.02144c0.11826-0.0057 0.23913 0.0026 0.35295 0.03682 0.79509 0.22055 1.0616 1.389 0.45514 1.9421-0.51364 0.54597-1.5241 0.30909-1.8149-0.35876-0.34344-0.69319 0.25822-1.5827 1.0068-1.6202zm4.3921 2.5757c0.27748-0.02122 0.55924 0.08333 0.76236 0.27195 0.50065 0.41999 0.56038 1.3139 0.0115 1.7202-0.53446 0.43565-1.4852 0.21213-1.694-0.46742-0.23724-0.63918 0.21065-1.4824 0.92011-1.5247zm9.8941 0.15516c-0.05699-0.0011-0.11428 0.0011-0.1717 7e-3 -0.4627 0.0538-0.89155 0.30219-1.1908 0.65591-0.96397 0.25909-1.7188 0.94845-2.4641 1.5743-0.11041 0.08379-0.24308 0.01401-0.31174-0.08591-0.76621-0.68732-2.1055-0.60412-2.7422 0.2204-0.14078 0.16981-0.25694 0.35914-0.34946 0.55914-0.82698 0.24438-1.6275 0.59814-2.4848 0.72645-0.6583 0.09369-1.3296 0.01476-1.9648-0.17208-0.15539-0.04146-0.30996-0.08694-0.46496-0.13011-0.16748-0.87828-0.95551-1.64-1.8697-1.6539-0.903-0.06634-1.8001 0.58493-2.0061 1.469-0.23817 0.83484 0.099447 1.8341 0.87411 2.2659 0.77604 0.46634 1.8789 0.33321 2.5165-0.33151 0.13607-0.13096 0.2433-0.2877 0.34094-0.44843 1.2992 0.3354 2.7091 0.41409 3.9878-0.05 0.3406-0.10568 0.67441-0.23551 1.0246-0.30748 0.0531 0.14477 0.04083 0.32086-0.09173 0.41923-0.41821 0.39171-0.82304 0.83802-1.2703 1.2153-0.78604-0.54355-1.996-0.30659-2.5 0.51057-0.51826 0.74407-0.36692 1.9008 0.39533 2.4247 0.57522 0.42449 1.4052 0.4798 2.0129 0.1195 0.63143-0.36 0.94663-1.1389 0.82321-1.8434-0.01492-0.22314 0.22651-0.3335 0.3598-0.4722 0.39667-0.40046 0.75579-0.83926 1.182-1.2103 0.22352 0.06704 0.42845 0.18896 0.66469 0.21175 0.57945 0.10338 1.2646-0.06857 1.7272-0.49132 0.46634-0.41327 0.66971-1.0696 0.57891-1.6794 0.54486-0.4188 1.0614-0.87503 1.6323-1.2591 0.21309 0.60404 0.72207 1.1239 1.3521 1.3108 0.60478 0.19726 1.3052 9.25e-4 1.7254-0.47491 0.70855-0.73206 0.60262-2.0608-0.20839-2.6747-0.32309-0.22789-0.70824-0.39782-1.1072-0.40528zm-19.46 0.381c0.018977-0.0017 0.038094 0.0011 0.057103 5.25e-4 0.57413-0.04371 1.0017 0.64093 0.76908 1.1508-0.23163 0.6218-1.2319 0.71921-1.5618 0.13539-0.33422-0.52564 0.13193-1.2795 0.73562-1.2868zm19.356 0.601c0.63426-0.04326 1.1817 0.66819 0.89013 1.2603-0.27075 0.57693-1.1987 0.58677-1.507 0.03824-0.32346-0.48465 0.01045-1.2779 0.61689-1.2985zm-5.3579 1.6778c0.8258-0.03366 1.4313 1.0141 0.94633 1.7002-0.43016 0.63268-1.5245 0.50161-1.8352-0.18294-0.33917-0.62849 0.17048-1.5116 0.88884-1.5172zm-8.7265 0.02532c0.57739-0.05895 1.0807 0.45136 1.122 1.0083 0.072548 0.53022-0.36823 1.022-0.88355 1.0856-0.51155 0.091382-1.0543-0.24492-1.1853-0.75061-0.18873-0.61154 0.29375-1.338 0.94685-1.3433zm4.6065 3.9375c0.58928 0.0467 0.92731 0.81456 0.6103 1.3116-0.30072 0.53188-1.1763 0.46396-1.4428-0.06615-0.32594-0.50871 0.11996-1.2495 0.71133-1.2449 0.0414-0.0036 0.0819-0.0036 0.12118-5.25e-4z';
-var $author$project$Pic$dims = F2(
-	function (bg, fontSize) {
-		return A2(
-			$author$project$Pic$svg,
-			_List_fromArray(
-				[
-					A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, 25.034, 26.458),
-					$elm_community$typed_svg$TypedSvg$Attributes$height(
-					$elm_community$typed_svg$TypedSvg$Types$px(fontSize * 1.6))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm_community$typed_svg$TypedSvg$path,
-					_List_fromArray(
-						[
-							$elm_community$typed_svg$TypedSvg$Attributes$d($author$project$Pic$dimsPath),
-							$elm_community$typed_svg$TypedSvg$Attributes$fill(
-							$elm_community$typed_svg$TypedSvg$Types$Paint(bg))
-						]),
-					_List_Nil)
-				]));
-	});
+var $author$project$Pic$dims = A3($author$project$Pic$svgIcon, $author$project$Pic$dimsPath, 25.034, 26.458);
 var $author$project$Pic$homePath = 'm13.123 3.8715e-7 -0.0021 0.0022-0.0021-0.0022-13.119 11.992v1.319h2.2502l0.00257 13.147h9.0395v-9.4503h3.6572v9.4503h9.0395l0.0029-13.147h2.2211v-1.319l-3.9856-3.696v-3.8915h-2.0845v1.9659zm-0.0021 2.8345 8.8665 8.0728v13.632h-4.9329v-9.7701h-7.9062v9.7701h-4.894v-13.632z';
-var $author$project$Pic$home = F2(
-	function (color, fontSize) {
-		return A2(
-			$author$project$Pic$svg,
-			_List_fromArray(
-				[
-					A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, 26.213, 26.458),
-					$elm_community$typed_svg$TypedSvg$Attributes$height(
-					$elm_community$typed_svg$TypedSvg$Types$px(fontSize * 1.6))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm_community$typed_svg$TypedSvg$path,
-					_List_fromArray(
-						[
-							$elm_community$typed_svg$TypedSvg$Attributes$d($author$project$Pic$homePath),
-							$elm_community$typed_svg$TypedSvg$Attributes$fill(
-							$elm_community$typed_svg$TypedSvg$Types$Paint(color))
-						]),
-					_List_Nil)
-				]));
-	});
+var $author$project$Pic$home = A3($author$project$Pic$svgIcon, $author$project$Pic$homePath, 26.213, 26.458);
 var $author$project$Pic$lightPath = 'm21.92 18.77q2.297-3.5301 1.4279-7.6364-0.87224-4.1212-4.4024-6.4182-3.5183-2.3152-7.6395-1.4429-4.1062 0.86903-6.3999 4.4143-2.2818 3.527-1.4097 7.6482 0.86903 4.1062 4.3842 6.4063 3.527 2.2818 7.6332 1.4128 4.1212-0.87225 6.4063-4.3842zm-11.053-18.759c-0.07522-0.015534-0.15823-0.013734-0.24858 0.00532-0.17212 0.036427-0.2878 0.12362-0.34834 0.26229l-0.86888 1.9728c0.50947-0.1802 1.0388-0.3313 1.591-0.4482 0.56224-0.11899 1.1178-0.19857 1.6654-0.24005l-1.5882-1.4529c-0.06011-0.05023-0.12726-0.083603-0.20247-0.099164zm7.9453 0.83338c-0.11631-0.01612-0.22132 0.00655-0.31641 0.067128l-1.8537 1.071c1.0341 0.30993 2.0372 0.78184 3.0112 1.4095l-0.4557-2.1561c-0.038255-0.18068-0.12681-0.30168-0.26551-0.36225-0.04112-0.013734-0.08104-0.024181-0.11977-0.029568zm-15.006 3.1768c-0.15721-0.020908-0.29463 0.025981-0.41413 0.14118-0.10905 0.12198-0.14596 0.26993-0.10953 0.44203l0.45287 2.1377c0.63789-0.96166 1.3628-1.7947 2.1793-2.4927zm18.796 1.9954c0.69602 0.87709 1.2489 1.8519 1.6587 2.9254l0.89758-2.0366c0.056883-0.1559 0.041241-0.29558-0.048256-0.42052-0.082625-0.13532-0.19827-0.21424-0.34689-0.23676zm-20.505 4.3457-1.8588 1.0766c-0.13541 0.08257-0.21278 0.20206-0.23342 0.3593-0.022394 0.14864 0.024181 0.28238 0.13926 0.40184l1.6277 1.4825c-0.058849-1.1383 0.049562-2.2449 0.3254-3.3201zm22.974 2.386c0.06176 1.1509-0.04885 2.2706-0.33202 3.3588l1.8819-1.082c0.13532-0.0826 0.21281-0.20723 0.23166-0.37308 0.01702-0.17441-0.031-0.31717-0.1444-0.42804zm-22.488 4.7783-0.88885 1.992c-0.058768 0.14744-0.04532 0.29759 0.040942 0.45009 0.092959 0.14279 0.21386 0.2255 0.36253 0.24728l2.1345 0.22431c-0.69135-0.8746-1.2417-1.8457-1.6491-2.914zm20.524 2.1697c-0.64377 0.96906-1.3792 1.8069-2.2094 2.5079l2.154 0.22616c0.13637 0.0068 0.27236-0.04852 0.40901-0.16737 0.10045-0.12013 0.13503-0.25754 0.10224-0.41245zm-15.91 3.3868 0.45166 2.1345c0.043179 0.16152 0.13411 0.27203 0.27283 0.33269 0.18173 0.05124 0.32953 0.04891 0.44279-0.01159l1.8629-1.0716c-1.0395-0.3021-2.049-0.76512-3.0302-1.3842zm10.276 1.0763c-0.52602 0.18758-1.0748 0.343-1.6471 0.46411-0.56163 0.11884-1.1164 0.19836-1.6639 0.2402l1.6268 1.4763c0.11352 0.11204 0.2599 0.14498 0.43863 0.09726 0.18068-0.03822 0.30018-0.12688 0.36076-0.26576z';
-var $author$project$Pic$light = F2(
-	function (color, fontSize) {
-		return A2(
-			$author$project$Pic$svg,
-			_List_fromArray(
-				[
-					A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, 26.856, 26.458),
-					$elm_community$typed_svg$TypedSvg$Attributes$height(
-					$elm_community$typed_svg$TypedSvg$Types$px(fontSize * 1.6))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm_community$typed_svg$TypedSvg$path,
-					_List_fromArray(
-						[
-							$elm_community$typed_svg$TypedSvg$Attributes$d($author$project$Pic$lightPath),
-							$elm_community$typed_svg$TypedSvg$Attributes$fill(
-							$elm_community$typed_svg$TypedSvg$Types$Paint(color))
-						]),
-					_List_Nil)
-				]));
-	});
+var $author$project$Pic$light = A3($author$project$Pic$svgIcon, $author$project$Pic$lightPath, 26.856, 26.458);
 var $author$project$Pic$settingsPath = 'm3.8787 16.017c1.3875-0.0041 3.8165-0.21631 3.8137-1.5986-0.0027881-1.3823-2.4285-1.5764-3.8137-1.5805-1.3852-0.0041-3.8759 0.17804-3.8787 1.5804-0.0027881 1.4024 2.4912 1.6028 3.8787 1.5987zm0.9168-16.017h-1.8986v10.547h1.8986zm9.3313 0h-1.7956v2.8911h1.7956zm-1.7956 10.652h1.7956v15.806h-1.7956zm-7.5357 7.6556h-1.8986v8.1503h1.8986zm8.466-9.9466c1.3875-0.0041 3.8165-0.21631 3.8137-1.5986-0.0028-1.3823-2.4285-1.5764-3.8137-1.5805-1.3852-0.0041-3.8759 0.17804-3.8787 1.5804-0.00279 1.4024 2.4912 1.6028 3.8787 1.5987zm10.3-8.3611h-1.8986v14.885h1.8986zm-1.8986 22.646h1.8986v3.8116h-1.8986zm-16.867-22.646h-1.8986v10.547h1.8986zm9.3313 0h-1.7956v2.8911h1.7956zm-1.7956 10.652h1.7956v15.806h-1.7956zm-7.5357 7.6556h-1.8986v8.1503h1.8986zm17.849 2.0477c1.3875-0.0041 3.8165-0.21631 3.8137-1.5986-0.0028-1.3823-2.4285-1.5764-3.8137-1.5805-1.3852-0.0041-3.8759 0.17804-3.8787 1.5804-0.0028 1.4024 2.4912 1.6028 3.8787 1.5987zm0.9168-20.355h-1.8986v14.885h1.8986zm-1.8986 22.646h1.8986v3.8116h-1.8986z';
-var $author$project$Pic$settings = F2(
-	function (color, fontSize) {
-		return A2(
-			$author$project$Pic$svg,
-			_List_fromArray(
-				[
-					A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, 26.458, 26.458),
-					$elm_community$typed_svg$TypedSvg$Attributes$height(
-					$elm_community$typed_svg$TypedSvg$Types$px(fontSize * 1.6))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm_community$typed_svg$TypedSvg$path,
-					_List_fromArray(
-						[
-							$elm_community$typed_svg$TypedSvg$Attributes$d($author$project$Pic$settingsPath),
-							$elm_community$typed_svg$TypedSvg$Attributes$fill(
-							$elm_community$typed_svg$TypedSvg$Types$Paint(color))
-						]),
-					_List_Nil)
-				]));
-	});
+var $author$project$Pic$settings = A3($author$project$Pic$svgIcon, $author$project$Pic$settingsPath, 26.458, 26.458);
 var $author$project$Pic$solutionsPath = 'm9.8581 1.8845c4.2437-0.053247 8.0943 3.8087 7.8697 8.0823 0.0077 2.6696-1.5024 5.1269-3.6132 6.6799-1.4561 0.76112-1.4486 3.1146-2.783 3.5365-1.5545-0.18354-2.079 0.17442-3.6258-0.14291-0.23694-2.2657-2.5672-3.6644-4.0521-5.1761-2.7918-3.201-2.2281-8.6378 1.174-11.197 1.4065-1.1525 3.2074-1.8124 5.0304-1.7829zm-0.38564-1.8607c-5.3155-0.067914-9.972 5.0579-9.4293 10.344 0.12472 3.0824 1.9241 5.9031 4.3886 7.6791 1.622 1.5204 0.86975 3.879 1.2233 5.8003 0.63864 1.1201 2.3221 0.92469 2.9241 2.2799 1.2116 0.77183 2.9467 0.11757 3.5021-1.1714 1.7546-0.14172 2.3661-1.4707 1.9908-3.0465-0.4007-2.1117 0.95018-3.8085 2.469-5.0803 2.2752-2.0179 3.3433-5.1314 2.9793-8.1244-0.32898-4.9207-5.1307-9.0588-10.048-8.6807zm-1.4227 5.0268c-0.97743 0.48855-0.29402 2.6587-2.1078 2.246-2.0944 0.47823 1.098 1.9028-0.246 3.1912-1.421 1.1406 0.43187 1.5576 1.4053 1.7432 0.43369 1.0487 0.52218 2.9053 1.9543 1.4087 1.1689-1.1994 2.6519 1.8481 3.1084-0.20359-0.75694-1.9652 3.8488-1.0826 1.7085-3.0801-0.97455-1.1205 1.9187-3.3182-0.78562-3.0521-1.4285-0.28787-0.53286-3.3928-2.3383-1.8852-1.0392 1.3614-1.8127-0.51766-2.6987-0.36809zm1.6647 2.7825c1.8153-0.20883 2.6255 2.5443 0.99169 3.3774-1.6058 0.99594-3.5475-1.228-2.3468-2.6864 0.3094-0.42572 0.82541-0.7058 1.3551-0.69108z';
-var $author$project$Pic$solutions = F2(
-	function (color, fontSize) {
-		return A2(
-			$author$project$Pic$svg,
-			_List_fromArray(
-				[
-					A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, 19.59, 26.458),
-					$elm_community$typed_svg$TypedSvg$Attributes$height(
-					$elm_community$typed_svg$TypedSvg$Types$px(fontSize * 1.6))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm_community$typed_svg$TypedSvg$path,
-					_List_fromArray(
-						[
-							$elm_community$typed_svg$TypedSvg$Attributes$d($author$project$Pic$solutionsPath),
-							$elm_community$typed_svg$TypedSvg$Attributes$fill(
-							$elm_community$typed_svg$TypedSvg$Types$Paint(color))
-						]),
-					_List_Nil)
-				]));
-	});
+var $author$project$Pic$solutions = A3($author$project$Pic$svgIcon, $author$project$Pic$solutionsPath, 19.59, 26.458);
 var $author$project$Main$mainMenu = function (model) {
 	return A2(
-		$author$project$Ui$row,
+		$author$project$Ui$column,
 		_List_fromArray(
 			[
 				$author$project$Ui$spacing(
@@ -25871,331 +26650,254 @@ var $author$project$Main$mainMenu = function (model) {
 				A4(
 				$author$project$Markup$iconButton,
 				model,
+				$author$project$Types$GotoPage($author$project$Types$Graph),
+				$elm$core$Maybe$Just($author$project$Pic$dims),
+				$author$project$Ui$text('Graph')),
+				$author$project$Markup$hBar,
+				(model.pal.name === 'Newspaper') ? A4(
+				$author$project$Markup$iconButton,
+				model,
+				$author$project$Types$ChangeColor($author$project$Style$dark),
+				$elm$core$Maybe$Just($author$project$Pic$dark),
+				$author$project$Ui$text('Mode')) : A4(
+				$author$project$Markup$iconButton,
+				model,
+				$author$project$Types$ChangeColor($author$project$Style$newspaper),
+				$elm$core$Maybe$Just($author$project$Pic$light),
+				$author$project$Ui$text('Mode')),
+				A4(
+				$author$project$Markup$iconButton,
+				model,
 				$author$project$Types$GotoPage($author$project$Types$Settings),
 				$elm$core$Maybe$Just($author$project$Pic$settings),
-				$author$project$Ui$text('Settings')),
-				A2(
-				$author$project$Ui$row,
-				_List_fromArray(
-					[
-						$author$project$Ui$Border$widthEach(
-						_Utils_update(
-							$author$project$Types$edges,
-							{left: $author$project$Style$lineSize, right: $author$project$Style$lineSize})),
-						A2(
-						$author$project$Ui$paddingXY,
-						$elm$core$Basics$round(model.fontSize / 2),
-						0),
-						$author$project$Ui$spacing(
-						$elm$core$Basics$round(model.fontSize / 2))
-					]),
-				(model.pal.name === 'Newspaper') ? _List_fromArray(
-					[
-						A4(
-						$author$project$Markup$iconButton,
-						model,
-						$author$project$Types$ChangeColor($author$project$Style$dark),
-						$elm$core$Maybe$Just($author$project$Pic$dark),
-						$author$project$Ui$none),
-						A4(
-						$author$project$Markup$iconButton,
-						model,
-						$author$project$Types$GotoPage($author$project$Types$Settings),
-						$elm$core$Maybe$Just($author$project$Pic$dims),
-						$author$project$Ui$none)
-					]) : _List_fromArray(
-					[
-						A4(
-						$author$project$Markup$iconButton,
-						model,
-						$author$project$Types$ChangeColor($author$project$Style$newspaper),
-						$elm$core$Maybe$Just($author$project$Pic$light),
-						$author$project$Ui$none),
-						A4(
-						$author$project$Markup$iconButton,
-						model,
-						$author$project$Types$GotoPage($author$project$Types$Settings),
-						$elm$core$Maybe$Just($author$project$Pic$dims),
-						$author$project$Ui$none)
-					]))
+				$author$project$Ui$text('Settings'))
 			]));
 };
-var $author$project$Pic$menuClosedPath = 'm-1.2495e-4 0v3.3329h26.458v-3.3329zm2.499e-4 11.601h26.457v3.2559h-26.457zm0 11.524h26.457v3.3334h-26.457z';
-var $author$project$Pic$menuClosed = F3(
-	function (color, fontSize, msg) {
-		return A2(
-			$author$project$Ui$link,
-			_List_fromArray(
-				[
-					$author$project$Ui$Events$onClick(msg),
-					$author$project$Ui$alignRight
-				]),
-			{
-				label: A2(
-					$author$project$Pic$svg,
-					_List_fromArray(
-						[
-							A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, 26.458, 26.458),
-							$elm_community$typed_svg$TypedSvg$Attributes$height(
-							$elm_community$typed_svg$TypedSvg$Types$px(fontSize * 1.5))
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm_community$typed_svg$TypedSvg$path,
-							_List_fromArray(
-								[
-									$elm_community$typed_svg$TypedSvg$Attributes$d($author$project$Pic$menuClosedPath),
-									$elm_community$typed_svg$TypedSvg$Attributes$fill(
-									$elm_community$typed_svg$TypedSvg$Types$Paint(color))
-								]),
-							_List_Nil)
-						])),
-				url: ''
-			});
-	});
-var $author$project$Pic$menuOpenPath = 'm26.458-1.67e-4 -12.314 13.229 12.314 13.23v-6.141l-6.5973-7.0882 6.5973-7.0882v-6.14zm-26.458 1.67e-4v3.3326h17.667l3.1434-3.3326zm0 11.601v3.2561h9.8693l-1.5353-1.6278 1.5358-1.6283zm0 11.524v3.3331h20.81l-3.1434-3.3331z';
-var $author$project$Pic$menuOpen = F3(
-	function (color, fontSize, msg) {
-		return A2(
-			$author$project$Ui$link,
-			_List_fromArray(
-				[
-					$author$project$Ui$Events$onClick(msg),
-					$author$project$Ui$alignRight
-				]),
-			{
-				label: A2(
-					$author$project$Pic$svg,
-					_List_fromArray(
-						[
-							A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, 26.458, 26.458),
-							$elm_community$typed_svg$TypedSvg$Attributes$height(
-							$elm_community$typed_svg$TypedSvg$Types$px(fontSize * 1.6))
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm_community$typed_svg$TypedSvg$path,
-							_List_fromArray(
-								[
-									$elm_community$typed_svg$TypedSvg$Attributes$d($author$project$Pic$menuOpenPath),
-									$elm_community$typed_svg$TypedSvg$Attributes$fill(
-									$elm_community$typed_svg$TypedSvg$Types$Paint(color))
-								]),
-							_List_Nil)
-						])),
-				url: ''
-			});
-	});
-var $elm$time$Time$Fri = {$: 'Fri'};
-var $elm$time$Time$Mon = {$: 'Mon'};
-var $elm$time$Time$Sat = {$: 'Sat'};
-var $elm$time$Time$Thu = {$: 'Thu'};
-var $elm$time$Time$Tue = {$: 'Tue'};
-var $elm$time$Time$Wed = {$: 'Wed'};
-var $justinmimbs$date$Date$numberToWeekday = function (wdn) {
-	var _v0 = A2($elm$core$Basics$max, 1, wdn);
-	switch (_v0) {
-		case 1:
-			return $elm$time$Time$Mon;
-		case 2:
-			return $elm$time$Time$Tue;
-		case 3:
-			return $elm$time$Time$Wed;
-		case 4:
-			return $elm$time$Time$Thu;
-		case 5:
-			return $elm$time$Time$Fri;
-		case 6:
-			return $elm$time$Time$Sat;
-		default:
-			return $elm$time$Time$Sun;
-	}
-};
-var $justinmimbs$date$Date$weekday = A2($elm$core$Basics$composeR, $justinmimbs$date$Date$weekdayNumber, $justinmimbs$date$Date$numberToWeekday);
-var $author$project$Main$weekdayToString = function (weekday) {
-	switch (weekday.$) {
-		case 'Mon':
-			return 'Monday';
-		case 'Tue':
-			return 'Tuesday';
-		case 'Wed':
-			return 'Wednesday';
-		case 'Thu':
-			return 'Thursday';
-		case 'Fri':
-			return 'Friday';
-		case 'Sat':
-			return 'Saturday';
-		default:
-			return 'Sunday';
-	}
-};
+var $author$project$Pic$menuClosedPath = 'm0 0v4.9614h29.104v-4.9614zm0 10.747v4.9619h29.104v-4.9619zm0 10.749v4.9614h29.104v-4.9614z';
+var $author$project$Pic$menuClosed = A3($author$project$Pic$svgIcon, $author$project$Pic$menuClosedPath, 29.104, 26.458);
+var $author$project$Pic$menuOpenPath = 'm0 0v4.9614h18.155l4.6183-4.9614zm0 10.747v4.9619h12.769l-2.3089-2.4804 2.3099-2.4815zm0 10.749v4.9614h22.772l-4.6177-4.9614zm29.104-21.496-12.314 13.228 12.314 13.23v-6.8217l-5.9639-6.4078 5.9639-6.4073v-6.8197z';
+var $author$project$Pic$menuOpen = A3($author$project$Pic$svgIcon, $author$project$Pic$menuOpenPath, 29.104, 26.458);
 var $author$project$Main$viewTimeDate = F2(
 	function (zone, maybeTime) {
-		if (maybeTime.$ === 'Just') {
-			var time = maybeTime.a;
-			var date = A2($justinmimbs$date$Date$fromPosix, zone, time);
-			return $author$project$Main$weekdayToString(
-				$justinmimbs$date$Date$weekday(date)) + (', ' + ($author$project$Main$monthToString(
-				$justinmimbs$date$Date$month(date)) + (' ' + ($elm$core$String$fromInt(
-				$justinmimbs$date$Date$day(date)) + (', ' + $elm$core$String$fromInt(
-				$justinmimbs$date$Date$year(date)))))));
-		} else {
-			return '';
-		}
-	});
-var $author$project$Main$titleBar = function (model) {
-	return A2(
-		$author$project$Ui$row,
-		_List_fromArray(
-			[
-				$author$project$Ui$width($author$project$Ui$fill),
-				$author$project$Ui$spacing(
-				$elm$core$Basics$round(model.fontSize / 2))
-			]),
-		_List_fromArray(
-			[
+		return A2(
+			$elm$core$Maybe$withDefault,
+			'',
+			A2(
+				$elm$core$Maybe$map,
+				$justinmimbs$date$Date$format('EEEE, MMMM ddd, y'),
 				A2(
-				$author$project$Ui$link,
-				_List_fromArray(
-					[
-						$author$project$Ui$Events$onClick(
-						$author$project$Types$GotoPage($author$project$Types$Home))
-					]),
-				{
-					label: A2(
-						$author$project$Ui$el,
-						_List_fromArray(
-							[
-								$author$project$Ui$Background$color(model.pal.link),
-								$author$project$Ui$height(
-								$author$project$Ui$px(
-									$elm$core$Basics$round(model.fontSize * 3))),
-								$author$project$Ui$width(
-								$author$project$Ui$px(
-									$elm$core$Basics$round(model.fontSize * 3))),
-								A2($author$project$Ui$paddingXY, 0, 5)
-							]),
-						A2(
+					$elm$core$Maybe$map,
+					$justinmimbs$date$Date$fromPosix(zone),
+					maybeTime)));
+	});
+var $author$project$Main$titleBar = F2(
+	function (model, vp) {
+		return A2(
+			$author$project$Ui$row,
+			_List_fromArray(
+				[
+					$author$project$Ui$width($author$project$Ui$fill),
+					$author$project$Ui$spacing(
+					$elm$core$Basics$round(model.fontSize / 2)),
+					function () {
+					var _v0 = model.menu;
+					if (_v0.$ === 'MenuClosed') {
+						return $author$project$Ui$batch(_List_Nil);
+					} else {
+						return $author$project$Ui$below(
+							A2(
+								$author$project$Ui$column,
+								_List_fromArray(
+									[
+										$author$project$Ui$alignTop,
+										$author$project$Ui$alignRight,
+										$author$project$Ui$width(
+										$author$project$Ui$px(
+											$elm$core$Basics$round(vp.viewport.width * 0.9))),
+										$author$project$Ui$height(
+										$author$project$Ui$px(
+											$elm$core$Basics$round(vp.viewport.height * 0.9)))
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$author$project$Ui$row,
+										_List_fromArray(
+											[$author$project$Style$fillSpace]),
+										_List_fromArray(
+											[
+												A2(
+												$author$project$Ui$el,
+												_List_fromArray(
+													[
+														$author$project$Style$fillSpace,
+														$author$project$Ui$Events$onClick(
+														$author$project$Types$ChangeMenu($author$project$Types$MenuClosed))
+													]),
+												$author$project$Ui$none),
+												A2(
+												$author$project$Ui$el,
+												_List_fromArray(
+													[
+														$author$project$Ui$alignTop,
+														$author$project$Ui$alignRight,
+														$author$project$Ui$Background$color(
+														A2($author$project$Style$addAlpha, 0.95, model.pal.bg)),
+														$author$project$Ui$Font$size(
+														$elm$core$Basics$round(model.fontSize)),
+														$author$project$Ui$padding(
+														$elm$core$Basics$round(model.fontSize)),
+														$author$project$Style$shadow
+													]),
+												$author$project$Main$mainMenu(model))
+											])),
+										A2(
+										$author$project$Ui$el,
+										_List_fromArray(
+											[
+												$author$project$Style$fillSpace,
+												$author$project$Ui$Events$onClick(
+												$author$project$Types$ChangeMenu($author$project$Types$MenuClosed))
+											]),
+										$author$project$Ui$none)
+									])));
+					}
+				}()
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$author$project$Ui$link,
+					_List_fromArray(
+						[
+							$author$project$Ui$Events$onClick(
+							$author$project$Types$GotoPage($author$project$Types$Home))
+						]),
+					{
+						label: A2(
 							$author$project$Ui$el,
 							_List_fromArray(
 								[
-									$author$project$Style$centerXY,
-									$author$project$Ui$scale(1.4)
+									$author$project$Ui$Background$color(model.pal.link),
+									$author$project$Ui$height(
+									$author$project$Ui$px(
+										$elm$core$Basics$round(model.fontSize * 3))),
+									$author$project$Ui$width(
+									$author$project$Ui$px(
+										$elm$core$Basics$round(model.fontSize * 3))),
+									A2($author$project$Ui$paddingXY, 0, 5)
 								]),
-							A2($author$project$Pic$gimbalogo, model.pal.bg, model.fontSize))),
-					url: ''
-				}),
-				A2(
-				$author$project$Ui$el,
-				_List_fromArray(
-					[
-						$author$project$Style$fillSpace,
-						A2($author$project$Ui$paddingXY, 0, $author$project$Style$lineSize)
-					]),
-				A2(
-					$author$project$Ui$row,
+							A2(
+								$author$project$Ui$el,
+								_List_fromArray(
+									[
+										$author$project$Style$centerXY,
+										$author$project$Ui$scale(1.4)
+									]),
+								A2($author$project$Pic$gimbalogo, model.pal.bg, model.fontSize * 1.6))),
+						url: ''
+					}),
+					A2(
+					$author$project$Ui$el,
 					_List_fromArray(
 						[
 							$author$project$Style$fillSpace,
-							$author$project$Ui$Border$widthEach(
-							_Utils_update(
-								$author$project$Types$edges,
-								{bottom: $author$project$Style$lineSize, top: $author$project$Style$lineSize})),
-							$author$project$Ui$spacing(
-							$elm$core$Basics$round(model.fontSize)),
-							A2(
-							$author$project$Ui$paddingXY,
-							0,
-							$elm$core$Basics$round(model.fontSize / 2))
+							A2($author$project$Ui$paddingXY, 0, $author$project$Style$lineSize)
 						]),
-					_List_fromArray(
-						[
-							A2(
-							$author$project$Ui$row,
-							_List_fromArray(
-								[
-									$author$project$Ui$spacing(
-									$elm$core$Basics$round(model.fontSize)),
-									$author$project$Ui$width($author$project$Ui$fill),
-									$author$project$Ui$centerY
-								]),
-							function () {
-								var _v0 = model.menu;
-								if (_v0.$ === 'MenuClosed') {
-									return _List_fromArray(
-										[
-											A2(
-											$author$project$Ui$link,
-											_List_fromArray(
-												[
-													$author$project$Ui$Events$onClick(
-													$author$project$Types$GotoPage($author$project$Types$Home))
-												]),
-											{
-												label: A2(
-													$author$project$Ui$row,
-													_List_fromArray(
-														[
-															$author$project$Ui$Font$size(
-															$elm$core$Basics$round(model.fontSize * 1.5)),
-															$author$project$Ui$Font$color(model.pal.link),
-															$author$project$Ui$Font$letterSpacing(1.25)
-														]),
-													_List_fromArray(
-														[
-															$author$project$Ui$text('GIMBA'),
-															A2(
-															$author$project$Ui$el,
-															_List_fromArray(
-																[$author$project$Ui$Font$heavy, $author$project$Ui$Font$bold]),
-															$author$project$Ui$text('LABS'))
-														])),
-												url: ''
-											}),
-											A2(
-											$author$project$Ui$el,
-											_List_fromArray(
-												[$author$project$Ui$alignRight]),
-											$author$project$Ui$text(
-												A2($author$project$Main$viewTimeDate, model.zone, model.time))),
-											A3(
-											$author$project$Pic$menuClosed,
-											model.pal.link,
-											model.fontSize,
-											$author$project$Types$ChangeMenu($author$project$Types$MainMenu))
-										]);
-								} else {
-									return _List_fromArray(
-										[
-											A2(
-											$author$project$Ui$el,
-											_List_fromArray(
-												[
-													$author$project$Ui$Font$size(
-													$elm$core$Basics$round(model.fontSize * 1.5)),
-													$author$project$Ui$Font$bold
-												]),
-											$author$project$Ui$text('Menu:')),
-											A2(
-											$author$project$Ui$el,
-											_List_fromArray(
-												[$author$project$Ui$alignRight]),
-											$author$project$Main$mainMenu(model)),
-											A3(
-											$author$project$Pic$menuOpen,
-											model.pal.link,
-											model.fontSize,
-											$author$project$Types$ChangeMenu($author$project$Types$MenuClosed))
-										]);
-								}
-							}())
-						])))
+					A2(
+						$author$project$Ui$row,
+						_List_fromArray(
+							[
+								$author$project$Style$fillSpace,
+								$author$project$Ui$Border$widthEach(
+								_Utils_update(
+									$author$project$Types$edges,
+									{bottom: $author$project$Style$lineSize, top: $author$project$Style$lineSize})),
+								$author$project$Ui$spacing(
+								$elm$core$Basics$round(model.fontSize)),
+								A2(
+								$author$project$Ui$paddingXY,
+								0,
+								$elm$core$Basics$round(model.fontSize / 2))
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$author$project$Ui$row,
+								_List_fromArray(
+									[
+										$author$project$Ui$spacing(
+										$elm$core$Basics$round(model.fontSize)),
+										$author$project$Ui$width($author$project$Ui$fill),
+										$author$project$Ui$centerY
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$author$project$Ui$link,
+										_List_fromArray(
+											[
+												$author$project$Ui$Events$onClick(
+												$author$project$Types$GotoPage($author$project$Types$Home))
+											]),
+										{
+											label: A2(
+												$author$project$Ui$row,
+												_List_fromArray(
+													[
+														$author$project$Ui$Font$size(
+														$elm$core$Basics$round(model.fontSize * 1.5)),
+														$author$project$Ui$Font$color(model.pal.link),
+														$author$project$Ui$Font$letterSpacing(1.25)
+													]),
+												_List_fromArray(
+													[
+														$author$project$Ui$text('GIMBA'),
+														A2(
+														$author$project$Ui$el,
+														_List_fromArray(
+															[$author$project$Ui$Font$heavy, $author$project$Ui$Font$bold]),
+														$author$project$Ui$text('LABS'))
+													])),
+											url: ''
+										}),
+										A2(
+										$author$project$Ui$el,
+										_List_fromArray(
+											[$author$project$Ui$alignRight]),
+										$author$project$Ui$text(
+											A2($author$project$Main$viewTimeDate, model.zone, model.time))),
+										function () {
+										var _v1 = model.menu;
+										if (_v1.$ === 'MenuClosed') {
+											return A4(
+												$author$project$Markup$iconButton,
+												model,
+												$author$project$Types$ChangeMenu($author$project$Types$MenuOpen),
+												$elm$core$Maybe$Just($author$project$Pic$menuClosed),
+												$author$project$Ui$none);
+										} else {
+											return A4(
+												$author$project$Markup$iconButton,
+												model,
+												$author$project$Types$ChangeMenu($author$project$Types$MenuClosed),
+												$elm$core$Maybe$Just($author$project$Pic$menuOpen),
+												$author$project$Ui$none);
+										}
+									}()
+									]))
+							])))
+				]));
+	});
+var $author$project$Docs$topGroup = function (m) {
+	return $author$project$Ui$column(
+		_List_fromArray(
+			[
+				$author$project$Ui$spacing(
+				$elm$core$Basics$round(m.fontSize * 2)),
+				$author$project$Style$fillSpace
 			]));
 };
-var $elm$core$Debug$toString = _Debug_toString;
 var $mdgriffith$elm_ui$Internal$Model$Transparency = F2(
 	function (a, b) {
 		return {$: 'Transparency', a: a, b: b};
@@ -26236,12 +26938,7 @@ var $author$project$Style$otherSide = function (content) {
 					A2($author$project$Style$style, '-ms-transform', 'scale(1, -1)'),
 					A2($author$project$Style$style, 'transform', 'scale(1, -1)'),
 					A2($author$project$Style$style, 'pointer-events', 'none'),
-					$author$project$Ui$inFront(
-					A2(
-						$author$project$Ui$el,
-						_List_fromArray(
-							[$author$project$Style$fillSpace]),
-						$author$project$Ui$none))
+					$author$project$Style$noSelect
 				]),
 			content));
 };
@@ -26293,7 +26990,7 @@ var $elm_community$typed_svg$TypedSvg$Attributes$y2 = function (position) {
 		$elm_community$typed_svg$TypedSvg$TypesToStrings$lengthToString(position));
 };
 var $author$project$Pic$pageCurl = F2(
-	function (c, fontSize) {
+	function (c, size) {
 		var gid = c.name + '-grad';
 		var fg = c.fg;
 		var bg = c.bg;
@@ -26303,9 +27000,9 @@ var $author$project$Pic$pageCurl = F2(
 				[
 					A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, 26.458, 26.458),
 					$elm_community$typed_svg$TypedSvg$Attributes$width(
-					$elm_community$typed_svg$TypedSvg$Types$px(fontSize * 2)),
+					$elm_community$typed_svg$TypedSvg$Types$px(size)),
 					$elm_community$typed_svg$TypedSvg$Attributes$height(
-					$elm_community$typed_svg$TypedSvg$Types$px(fontSize * 2))
+					$elm_community$typed_svg$TypedSvg$Types$px(size))
 				]),
 			_List_fromArray(
 				[
@@ -26389,6 +27086,7 @@ var $author$project$Main$turningPage = F3(
 			_List_fromArray(
 				[
 					$author$project$Ui$Font$color(model.pal.fg),
+					$author$project$Ui$Background$color(model.pal.bg),
 					$author$project$Ui$Border$roundEach(
 					_Utils_update(
 						$author$project$Types$corners,
@@ -26471,12 +27169,33 @@ var $author$project$Main$turningPage = F3(
 											bottomRight: $elm$core$Basics$round(model.fontSize * 2)
 										}))
 								]),
-							A2($author$project$Pic$pageCurl, model.pal, model.fontSize))
+							A2($author$project$Pic$pageCurl, model.pal, model.fontSize * 2))
 						]))
 				]));
 	});
+var $author$project$Style$yellowNote = {
+	bg: A3($author$project$Ui$rgb255, 190, 170, 82),
+	error: A3($author$project$Ui$rgb255, 163, 126, 36),
+	extLink: A3($author$project$Ui$rgb255, 163, 126, 36),
+	fg: A3($author$project$Ui$rgb255, 72, 51, 12),
+	link: A3($author$project$Ui$rgb255, 163, 126, 36),
+	name: 'Yellow-Note'
+};
 var $author$project$Main$view = F2(
 	function (model, vp) {
+		var m = F2(
+			function (oldPal, newPal) {
+				return _Utils_update(
+					model,
+					{
+						pal: _Utils_update(
+							newPal,
+							{
+								bg: A3($author$project$Style$mix, 0.6, oldPal.bg, newPal.bg),
+								fg: A3($author$project$Style$mix, 0.85, oldPal.bg, newPal.fg)
+							})
+					});
+			});
 		return A2(
 			$author$project$Ui$layout,
 			_List_fromArray(
@@ -26488,301 +27207,261 @@ var $author$project$Main$view = F2(
 						[$author$project$Ui$Font$serif])),
 					$author$project$Ui$Font$color(model.pal.fg),
 					$author$project$Ui$Font$letterSpacing(0.2),
-					$author$project$Ui$Background$color(
-					A3($author$project$Style$mix, 0.5, model.pal.bg, model.pal.fg))
+					$author$project$Ui$Background$color(model.pal.bg),
+					$author$project$Ui$inFront(
+					A2(
+						$author$project$Ui$el,
+						_List_fromArray(
+							[
+								$author$project$Ui$padding(
+								$elm$core$Basics$round(model.fontSize / 2)),
+								$author$project$Ui$width($author$project$Ui$fill),
+								$author$project$Ui$Background$color(
+								A2($author$project$Style$addAlpha, 0.9, model.pal.bg)),
+								$author$project$Style$shadow
+							]),
+						A2($author$project$Main$titleBar, model, vp)))
 				]),
 			A2(
-				$author$project$Ui$el,
+				$author$project$Ui$column,
 				_List_fromArray(
 					[
-						$author$project$Ui$Background$color(
-						A3($author$project$Style$mix, 0.5, model.pal.bg, model.pal.fg)),
-						$author$project$Style$fillSpace
+						$author$project$Style$fillSpace,
+						$author$project$Ui$Background$color(model.pal.bg),
+						$author$project$Ui$spacing(
+						$elm$core$Basics$round(model.fontSize)),
+						$author$project$Ui$padding(
+						$elm$core$Basics$round(model.fontSize / 2))
 					]),
-				A2(
-					$author$project$Ui$column,
-					_List_fromArray(
-						[
-							$author$project$Style$fillSpace,
-							$author$project$Ui$spacing(
-							$elm$core$Basics$round(model.fontSize * 0.4))
-						]),
-					_List_fromArray(
-						[
-							A3(
-							$author$project$Main$turningPage,
-							model,
-							0,
-							A2(
-								$author$project$Ui$column,
+				_List_fromArray(
+					[
+						A2(
+						$author$project$Ui$el,
+						_List_fromArray(
+							[
+								$author$project$Ui$height(
+								$author$project$Ui$px(
+									$elm$core$Basics$round(model.fontSize * 3.5)))
+							]),
+						$author$project$Ui$none),
+						function () {
+						var _v0 = model.page;
+						switch (_v0.$) {
+							case 'Home':
+								return A2(
+									$author$project$Ui$column,
+									_List_fromArray(
+										[
+											$author$project$Style$fillSpace,
+											$author$project$Ui$spacing(
+											$elm$core$Basics$round(model.fontSize * 2)),
+											$author$project$Ui$padding(
+											$elm$core$Basics$round(model.fontSize / 2))
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$author$project$Ui$el,
+											_List_fromArray(
+												[
+													$author$project$Ui$width(
+													$author$project$Ui$fillPortion(3)),
+													$author$project$Ui$height($author$project$Ui$fill)
+												]),
+											A2(
+												$author$project$Docs$topGroup,
+												model,
+												_List_fromArray(
+													[
+														A2($author$project$Docs$heading, model, 'Welcome to Gimbalabs!'),
+														A2($author$project$Docs$item, model, 'Right now, we are building Plutus PBL 2024, ' + ('running weekly live coding sessions, ' + 'and hosting Gimbalabs Open Spaces.'))
+													]))),
+											A2($author$project$Docs$heading, model, 'Today\'s Events'),
+											A2(
+											$author$project$Ui$column,
+											_List_fromArray(
+												[
+													$author$project$Ui$spacing(
+													$elm$core$Basics$round(model.fontSize * 2)),
+													A2(
+													$author$project$Ui$paddingXY,
+													$elm$core$Basics$round(model.fontSize / 2),
+													0),
+													$author$project$Ui$width($author$project$Ui$fill)
+												]),
+											function () {
+												var _v1 = model.time;
+												if (_v1.$ === 'Nothing') {
+													return _List_fromArray(
+														[
+															$author$project$Ui$text('(Nothing Today)')
+														]);
+												} else {
+													var time = _v1.a;
+													return A2(
+														$elm$core$List$map,
+														A2($author$project$Main$renderEvent, model, vp),
+														A2(
+															$author$project$Types$eventsOfDay,
+															A2($justinmimbs$date$Date$fromPosix, model.zone, time),
+															model.events));
+												}
+											}())
+										]));
+							case 'Calendar':
+								return A2($author$project$Main$calendarView, model, vp);
+							case 'Blog':
+								return A2($author$project$Main$blogView, model, vp);
+							case 'Solutions':
+								return A2(
+									$author$project$Ui$el,
+									_List_fromArray(
+										[$author$project$Style$centerXY]),
+									$author$project$Ui$text('Solutions'));
+							case 'Settings':
+								return A2($author$project$Main$settingsView, model, vp);
+							default:
+								return A2($author$project$Main$graphView, model, vp);
+						}
+					}(),
+						$author$project$Markup$hBar,
+						A2(
+						$author$project$Ui$textColumn,
+						_List_fromArray(
+							[$author$project$Style$fillSpace]),
+						_List_fromArray(
+							[
+								A2(
+								$author$project$Ui$wrappedRow,
 								_List_fromArray(
 									[
 										$author$project$Style$fillSpace,
 										$author$project$Ui$spacing(
-										$elm$core$Basics$round(model.fontSize * 2))
+										$elm$core$Basics$round(model.fontSize * 2)),
+										$author$project$Ui$padding(
+										$elm$core$Basics$round(model.fontSize))
 									]),
 								_List_fromArray(
 									[
-										$author$project$Main$titleBar(model),
-										function () {
-										var _v0 = model.page;
-										switch (_v0.$) {
-											case 'Home':
-												return A2(
-													$author$project$Ui$column,
-													_List_fromArray(
-														[
-															$author$project$Style$fillSpace,
-															$author$project$Ui$spacing(
-															$elm$core$Basics$round(model.fontSize))
-														]),
-													_List_fromArray(
-														[
-															A2(
-															$author$project$Ui$el,
-															_List_fromArray(
-																[
-																	$author$project$Ui$centerX,
-																	$author$project$Ui$Font$bold,
-																	$author$project$Ui$Font$size(
-																	$elm$core$Basics$round(model.fontSize * 2))
-																]),
-															$author$project$Ui$text('Under Construction!')),
-															A2(
-															$author$project$Ui$el,
-															_List_fromArray(
-																[$author$project$Ui$centerX]),
-															$author$project$Ui$text(
-																$elm$core$Debug$toString(
-																	$author$project$Ui$classifyDevice(
-																		function (_v1) {
-																			var width = _v1.width;
-																			var height = _v1.height;
-																			return {
-																				height: $elm$core$Basics$round(height / model.dpi),
-																				width: $elm$core$Basics$round(width / model.dpi)
-																			};
-																		}(vp.viewport))))),
-															A2(
-															$author$project$Ui$el,
-															_List_fromArray(
-																[$author$project$Ui$centerX]),
-															$author$project$Ui$text(
-																$elm$core$Debug$toString(
-																	function (_v2) {
-																		var width = _v2.width;
-																		var height = _v2.height;
-																		return {
-																			height: $elm$core$Basics$round(height / model.dpi),
-																			width: $elm$core$Basics$round(width / model.dpi)
-																		};
-																	}(vp.viewport)))),
-															A2(
-															$author$project$Ui$el,
-															_List_fromArray(
-																[$author$project$Ui$centerX]),
-															$author$project$Ui$text(
-																$elm$core$String$fromFloat(model.fontSize)))
-														]));
-											case 'Calendar':
-												return A2(
-													$author$project$Ui$row,
-													_List_fromArray(
-														[
-															$author$project$Style$fillSpace,
-															$author$project$Ui$spacing(
-															$elm$core$Basics$round(model.fontSize * 2))
-														]),
-													_List_fromArray(
-														[
-															A2(
-															$author$project$Ui$el,
-															_List_fromArray(
-																[
-																	$author$project$Ui$width(
-																	$author$project$Ui$fillPortion(5)),
-																	$author$project$Ui$height($author$project$Ui$fill)
-																]),
-															$author$project$Main$calendar(model)),
-															A2(
-															$author$project$Ui$el,
-															_List_fromArray(
-																[
-																	$author$project$Ui$width(
-																	$author$project$Ui$fillPortion(2)),
-																	$author$project$Ui$inFront(
-																	function () {
-																		var _v3 = model.selectDate;
-																		if (_v3.$ === 'Nothing') {
-																			return $author$project$Ui$none;
-																		} else {
-																			var date = _v3.a;
-																			return A2(
-																				$author$project$Ui$column,
-																				_List_fromArray(
-																					[
-																						$author$project$Style$fillSpace,
-																						$author$project$Ui$padding(
-																						$elm$core$Basics$round(model.fontSize)),
-																						$author$project$Ui$spacing(
-																						$elm$core$Basics$round(model.fontSize) * 2),
-																						$author$project$Ui$Border$width($author$project$Style$lineSize),
-																						$author$project$Ui$Border$rounded(
-																						$elm$core$Basics$round(model.fontSize / 2)),
-																						$author$project$Ui$Background$color(
-																						A2($author$project$Style$addAlpha, 0.9, model.pal.bg))
-																					]),
-																				_List_fromArray(
-																					[
-																						A2(
-																						$author$project$Ui$column,
-																						_List_fromArray(
-																							[
-																								$author$project$Ui$spacing(
-																								$elm$core$Basics$round(model.fontSize * 0.65)),
-																								$author$project$Ui$width($author$project$Ui$fill)
-																							]),
-																						_List_fromArray(
-																							[
-																								A2(
-																								$author$project$Ui$el,
-																								_List_fromArray(
-																									[
-																										$author$project$Ui$centerX,
-																										$author$project$Ui$Font$size(
-																										$elm$core$Basics$round(model.fontSize * 1.5)),
-																										$author$project$Ui$Font$bold
-																									]),
-																								$author$project$Ui$text(
-																									$author$project$Main$weekdayToString(
-																										$justinmimbs$date$Date$weekday(date)))),
-																								A2(
-																								$author$project$Ui$el,
-																								_List_fromArray(
-																									[
-																										$author$project$Ui$centerX,
-																										$author$project$Ui$Font$size(
-																										$elm$core$Basics$round(model.fontSize * 1.5)),
-																										$author$project$Ui$Font$bold
-																									]),
-																								$author$project$Ui$text(
-																									$author$project$Main$monthToString(
-																										$justinmimbs$date$Date$month(date)) + (' ' + ($elm$core$String$fromInt(
-																										$justinmimbs$date$Date$day(date)) + (', ' + $elm$core$String$fromInt(
-																										$justinmimbs$date$Date$year(date))))))),
-																								$author$project$Markup$hBar
-																							])),
-																						A2(
-																						$author$project$Ui$column,
-																						_List_fromArray(
-																							[
-																								$author$project$Ui$spacing(
-																								$elm$core$Basics$round(model.fontSize * 2)),
-																								A2(
-																								$author$project$Ui$paddingXY,
-																								$elm$core$Basics$round(model.fontSize / 2),
-																								0),
-																								$author$project$Ui$width($author$project$Ui$fill)
-																							]),
-																						_List_fromArray(
-																							[
-																								A2(
-																								$author$project$Ui$el,
-																								_List_fromArray(
-																									[
-																										$author$project$Ui$width($author$project$Ui$fill)
-																									]),
-																								$author$project$Ui$text('This is the first event!')),
-																								A2(
-																								$author$project$Ui$el,
-																								_List_fromArray(
-																									[
-																										$author$project$Ui$width($author$project$Ui$fill)
-																									]),
-																								$author$project$Ui$text('This is the second event!')),
-																								A2(
-																								$author$project$Ui$el,
-																								_List_fromArray(
-																									[
-																										$author$project$Ui$width($author$project$Ui$fill)
-																									]),
-																								$author$project$Ui$text('This is the third event!'))
-																							]))
-																					]));
-																		}
-																	}()),
-																	$author$project$Ui$height($author$project$Ui$fill)
-																]),
-															A2(
-																$author$project$Ui$el,
-																_List_fromArray(
-																	[
-																		$author$project$Ui$alignTop,
-																		$author$project$Ui$centerX,
-																		$author$project$Ui$moveDown(20.0)
-																	]),
-																$author$project$Main$clock(model)))
-														]));
-											case 'Blog':
-												return A2(
-													$author$project$Ui$column,
-													_List_fromArray(
-														[
-															$author$project$Style$fillSpace,
-															$author$project$Ui$spacing(
-															$elm$core$Basics$round(model.fontSize * 2))
-														]),
-													_List_fromArray(
-														[
-															A2(
-															$author$project$Ui$row,
-															_List_fromArray(
-																[
-																	$author$project$Ui$width($author$project$Ui$fill),
-																	$author$project$Ui$spacing(
-																	$elm$core$Basics$round(model.fontSize))
-																]),
-															_List_fromArray(
-																[
-																	A2(
-																	$author$project$Ui$el,
-																	_List_fromArray(
-																		[$author$project$Ui$Font$bold]),
-																	$author$project$Ui$text('File:')),
-																	$author$project$Ui$text('/notes/' + model.docName),
-																	A2(
-																	$author$project$Ui$el,
-																	_List_fromArray(
-																		[$author$project$Ui$alignRight]),
-																	A4(
-																		$author$project$Markup$iconButton,
-																		model,
-																		$author$project$Types$GetDoc('Main.md'),
-																		$elm$core$Maybe$Nothing,
-																		$author$project$Ui$text('Go back to the Main Page')))
-																])),
-															A3($author$project$Markup$renderMd, model, vp, model.docText)
-														]));
-											case 'Solutions':
-												return A2(
-													$author$project$Ui$el,
-													_List_fromArray(
-														[$author$project$Style$centerXY]),
-													$author$project$Ui$text('Solutions'));
-											default:
-												return A2(
-													$author$project$Ui$el,
-													_List_fromArray(
-														[$author$project$Style$fillSpace]),
-													A2(
+										A3(
+										$author$project$Main$turningPage,
+										A2(m, model.pal, $author$project$Style$orangeNote),
+										0.02,
+										A2(
+											$author$project$Ui$el,
+											_List_fromArray(
+												[$author$project$Style$fillSpace]),
+											A2(
+												$author$project$Ui$column,
+												_List_fromArray(
+													[
+														$author$project$Ui$centerX,
+														$author$project$Ui$spacing(
+														$elm$core$Basics$round(model.fontSize))
+													]),
+												_List_fromArray(
+													[
+														A2($author$project$Docs$heading, model, 'Learn'),
+														A2(
 														$author$project$Ui$el,
-														_List_fromArray(
-															[$author$project$Style$centerXY]),
-														$author$project$Ui$text('Settings!')));
-										}
-									}()
-									])))
-						]))));
+														_List_Nil,
+														$author$project$Ui$text('⯀ Starter Kits')),
+														A2(
+														$author$project$Ui$el,
+														_List_Nil,
+														$author$project$Ui$text('⯀ Plutus')),
+														A2(
+														$author$project$Ui$el,
+														_List_Nil,
+														$author$project$Ui$text('⯀ Playground'))
+													])))),
+										A3(
+										$author$project$Main$turningPage,
+										A2(m, model.pal, $author$project$Style$yellowNote),
+										0,
+										A2(
+											$author$project$Ui$el,
+											_List_fromArray(
+												[$author$project$Style$fillSpace]),
+											A2(
+												$author$project$Ui$column,
+												_List_fromArray(
+													[
+														$author$project$Ui$centerX,
+														$author$project$Ui$spacing(
+														$elm$core$Basics$round(model.fontSize))
+													]),
+												_List_fromArray(
+													[
+														A2($author$project$Docs$heading, model, 'APIs'),
+														A2(
+														$author$project$Ui$el,
+														_List_Nil,
+														$author$project$Ui$text('⯀ Dandelion')),
+														A2(
+														$author$project$Ui$el,
+														_List_Nil,
+														$author$project$Ui$text('⯀ Endpoints'))
+													])))),
+										A3(
+										$author$project$Main$turningPage,
+										A2(m, model.pal, $author$project$Style$greenNote),
+										-0.02,
+										A2(
+											$author$project$Ui$el,
+											_List_fromArray(
+												[$author$project$Style$fillSpace]),
+											A2(
+												$author$project$Ui$column,
+												_List_fromArray(
+													[
+														$author$project$Ui$centerX,
+														$author$project$Ui$spacing(
+														$elm$core$Basics$round(model.fontSize))
+													]),
+												_List_fromArray(
+													[
+														A2($author$project$Docs$heading, model, 'Updates'),
+														A2(
+														$author$project$Ui$el,
+														_List_Nil,
+														$author$project$Ui$text('⯀ Updates'))
+													])))),
+										A3(
+										$author$project$Main$turningPage,
+										A2(m, model.pal, $author$project$Style$blueNote),
+										0.01,
+										A2(
+											$author$project$Ui$el,
+											_List_fromArray(
+												[$author$project$Style$fillSpace]),
+											A2(
+												$author$project$Ui$column,
+												_List_fromArray(
+													[
+														$author$project$Ui$centerX,
+														$author$project$Ui$spacing(
+														$elm$core$Basics$round(model.fontSize))
+													]),
+												_List_fromArray(
+													[
+														A2($author$project$Docs$heading, model, 'About Us'),
+														A2(
+														$author$project$Ui$el,
+														_List_Nil,
+														$author$project$Ui$text('⯀ Team')),
+														A2(
+														$author$project$Ui$el,
+														_List_Nil,
+														$author$project$Ui$text('⯀ Calendar')),
+														A2(
+														$author$project$Ui$el,
+														_List_Nil,
+														$author$project$Ui$text('⯀ Stake Pool'))
+													]))))
+									]))
+							]))
+					])));
 	});
 var $author$project$Main$main = $elm$browser$Browser$application(
 	{
