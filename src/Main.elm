@@ -653,16 +653,18 @@ settingsView model vp =
     column [ centerXY, spacing <| round model.fontSize ]
         [ el [ centerX, Font.bold, Font.size <| round <| model.fontSize * 2 ] <| text "Under Construction!"
         , el [ centerXY ] <| text "( Settings )"
-        , vp.viewport
-            |> (\{ height, width } ->
-                    { height = height |> round
-                    , width = width |> round
-                    }
-               )
-            |> classifyDevice
-            |> Debug.toString
-            |> text
-            |> el [ centerX ]
+
+        {- , vp.viewport
+           |> (\{ height, width } ->
+                   { height = height |> round
+                   , width = width |> round
+                   }
+              )
+           |> classifyDevice
+           |> Debug.toString
+           |> text
+           |> el [ centerX ]
+        -}
         , vp.viewport
             |> (\{ height, width } ->
                     "{ width = "
