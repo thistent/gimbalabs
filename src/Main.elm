@@ -195,7 +195,7 @@ init flags url key =
                   , color = rgb255 0xDD 0x77 0x99 -- #dd7799
                   }
                 ]
-        , fontSize = 20 -- 12 * flags.dpi
+        , fontSize = 16 -- 12 * logBase 2 (1 + flags.dpi)
         , dpi = flags.dpi
         }
     <|
@@ -529,7 +529,7 @@ calendarView model vp =
                     , op = "Northern"
                     }
     in
-    column
+    rowOrColumn (vp.viewport.width > 1200)
         [ fillSpace
         , spacing <| round <| model.fontSize
         , paddingEach { edges | bottom = round <| model.fontSize }
@@ -541,69 +541,85 @@ calendarView model vp =
             ]
           <|
             calendar model
-        , hBar
-        , el [ centerX ] <|
-            image
-                [ centerXY
-                , clip
-                , inFront <|
-                    image
-                        [ rotate c.localHourRotation
-                        ]
-                        { src = "assets/earth-local-hour.png"
-                        , description = "local hour hand"
-                        }
-                , behindContent <|
-                    image
-                        [ rotate c.hourRotation
-                        , inFront <|
-                            image
-                                [ rotate c.secondRotation
-                                ]
-                                { src = "assets/earth-second.png"
-                                , description = "second hand"
-                                }
-                        , inFront <|
-                            image
-                                [ rotate c.minuteRotation
-                                ]
-                                { src = "assets/earth-minute.png"
-                                , description = "minute hand"
-                                }
-                        ]
-                        { src = c.picUrl
-                        , description = "earth clock"
-                        }
+        , column
+            [ spacing <| round model.fontSize
+            , padding <| round model.fontSize
+            , centerXY
+            ]
+            [ el [ centerX ] <|
+                image
+                    [ centerXY
+                    , clip
+                    , inFront <|
+                        image
+                            [ rotate c.localHourRotation
+                            ]
+                            { src = "assets/earth-local-hour.png"
+                            , description = "local hour hand"
+                            }
+                    , behindContent <|
+                        image
+                            [ rotate c.hourRotation
+                            , inFront <|
+                                image
+                                    [ rotate c.secondRotation
+                                    ]
+                                    { src = "assets/earth-second.png"
+                                    , description = "second hand"
+                                    }
+                            , inFront <|
+                                image
+                                    [ rotate c.minuteRotation
+                                    ]
+                                    { src = "assets/earth-minute.png"
+                                    , description = "minute hand"
+                                    }
+                            ]
+                            { src = c.picUrl
+                            , description = "earth clock"
+                            }
+                    ]
+                    { src = c.hourLines, description = "earth" }
+            , el [ centerX ] <|
+                iconButton model ToggleClockOrientation Nothing <|
+                    text ("Flip Clock to " ++ c.op ++ " Hemisphere")
+            , el
+                [ centerX
+                , Font.bold
                 ]
-                { src = c.hourLines, description = "earth" }
-        , el [ centerX ] <|
-            iconButton model ToggleClockOrientation Nothing <|
-                text ("Flip Clock to " ++ c.op ++ " Hemisphere")
-        , el
-            [ centerX
-            , Font.bold
+              <|
+                text "Current Time:"
+            , el
+                [ centerX
+                ]
+              <|
+                text <|
+                    String.fromInt time.hours
+                        ++ ":"
+                        ++ (String.padLeft 2 '0' <| String.fromInt time.minutes)
+                        ++ " UTC"
+            , el
+                [ centerX
+                ]
+              <|
+                text <|
+                    String.fromInt time.localHours
+                        ++ ":"
+                        ++ (String.padLeft 2 '0' <| String.fromInt time.minutes)
+                        ++ " Local"
             ]
-          <|
-            text "Current Time:"
-        , el
-            [ centerX
-            ]
-          <|
-            text <|
-                String.fromInt time.hours
-                    ++ ":"
-                    ++ (String.padLeft 2 '0' <| String.fromInt time.minutes)
-                    ++ " UTC"
-        , el
-            [ centerX
-            ]
-          <|
-            text <|
-                String.fromInt time.localHours
-                    ++ ":"
-                    ++ (String.padLeft 2 '0' <| String.fromInt time.minutes)
-                    ++ " Local"
         ]
+
+
+rowOrColumn : Bool -> List (Attribute Msg) -> List (Element Msg) -> Element Msg
+rowOrColumn pred attrs els =
+    if pred then
+        row attrs els
+        -- row attrs <| List.intersperse vBar els
+
+    else
+        -- column attrs <| List.intersperse hBar els
+        column attrs els
 
 
 blogView : Model -> Viewport -> Element Msg
@@ -639,8 +655,8 @@ settingsView model vp =
         , el [ centerXY ] <| text "( Settings )"
         , vp.viewport
             |> (\{ height, width } ->
-                    { height = height / model.dpi |> round
-                    , width = width / model.dpi |> round
+                    { height = height |> round
+                    , width = width |> round
                     }
                )
             |> classifyDevice
@@ -650,9 +666,9 @@ settingsView model vp =
         , vp.viewport
             |> (\{ height, width } ->
                     "{ width = "
-                        ++ String.fromFloat (width / model.dpi)
+                        ++ String.fromFloat width
                         ++ ", height = "
-                        ++ String.fromFloat (height / model.dpi)
+                        ++ String.fromFloat height
                         ++ " }"
                )
             |> text
@@ -739,7 +755,8 @@ renderEvent model vp event =
     textColumn
         [ width fill
         , spacing <| round model.fontSize
-        , paddingEach { edges | left = round model.fontSize }
+
+        --, paddingEach { edges | left = round model.fontSize }
         , Border.widthEach { edges | left = lineSize * 2 }
         , Border.roundEach
             { corners
@@ -747,9 +764,34 @@ renderEvent model vp event =
                 , bottomLeft = round <| model.fontSize / 2
             }
         ]
-        [ paragraph [ width fill, Font.size <| round <| model.fontSize * 1.75, Font.bold ] [ text event.title ]
-        , paragraph [ width fill, Font.bold ] [ text <| eventTimeString event.startTime event.duration ]
-        , renderMd model vp event.description
+        [ paragraph
+            [ width fill
+            , Font.size <| round <| model.fontSize * 1.75
+            , Font.bold
+            , paddingXY (round model.fontSize * 2) <| round model.fontSize
+            , spacing <| round <| model.fontSize
+            , Border.color <| Style.mix 0.5 model.pal.bg model.pal.fg
+            , Border.width 1
+            , Border.roundEach
+                { corners
+                    | topLeft = round <| model.fontSize / 4
+                    , topRight = round <| model.fontSize / 2
+                    , bottomRight = round <| model.fontSize / 2
+                }
+            , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg event.color
+            , Border.color <| Style.mix 0.75 model.pal.fg event.color
+            ]
+            [ text event.title ]
+        , paragraph
+            [ width fill
+            , Font.bold
+            , paddingXY (round model.fontSize * 2) 0
+            ]
+            [ text <| eventTimeString event.startTime event.duration ]
+        , el
+            [ paddingXY (round model.fontSize * 2) 0 ]
+          <|
+            renderMd model vp event.description
         ]
 
 
@@ -1063,16 +1105,7 @@ titleBar model vp =
                                 , Ev.onClick <| ChangeMenu MenuClosed
                                 ]
                                 none
-                            , el
-                                [ alignTop
-                                , alignRight
-                                , Bg.color <| addAlpha 0.95 <| model.pal.bg
-                                , Font.size <| round model.fontSize
-                                , padding <| round <| model.fontSize
-                                , Style.shadow
-                                ]
-                              <|
-                                mainMenu model
+                            , mainMenu model vp
                             ]
                         , el
                             [ fillSpace
@@ -1124,8 +1157,7 @@ titleBar model vp =
                         }
                     , el [ alignRight ] <|
                         text <|
-                            viewTimeDate model.zone <|
-                                model.time
+                            viewTimeDate vp model.zone model.time
                     , case model.menu of
                         MenuClosed ->
                             iconButton model
@@ -1181,41 +1213,52 @@ titleBar model vp =
 -}
 
 
-mainMenu : Model -> Element Msg
-mainMenu model =
-    column
-        [ spacing <| round <| model.fontSize * 1.5
-        , Font.letterSpacing 1.25
+mainMenu : Model -> Viewport -> Element Msg
+mainMenu model vp =
+    el
+        [ alignTop
+        , alignRight
+        , Bg.color <| addAlpha 0.95 <| model.pal.bg
+        , Font.size <| round model.fontSize
+        , padding <| round <| model.fontSize
+        , Style.shadow
+        , height <| maximum (round <| vp.viewport.height * 0.75) shrink
+        , scrollbarY
         ]
-        [ iconButton model
-            (GotoPage Home)
-            (Just Pic.home)
-          <|
-            text "Home"
-        , iconButton model
-            (GotoPage Calendar)
-            (Just Pic.calendar)
-          <|
-            text "Calendar"
-        , iconButton model
-            (GotoPage Blog)
-            (Just Pic.blog)
-          <|
-            text "Blog"
-        , iconButton model
-            (GotoPage Solutions)
-            (Just Pic.solutions)
-          <|
-            text "Solutions"
-        , iconButton model (GotoPage Graph) (Just Pic.dims) <| text "Graph"
-        , hBar
-        , if model.pal.name == "Newspaper" then
-            iconButton model (ChangeColor dark) (Just Pic.dark) <| text "Mode"
+    <|
+        column
+            [ spacing <| round <| model.fontSize * 0.8
+            , Font.letterSpacing 1.25
+            ]
+            [ iconButton model
+                (GotoPage Home)
+                (Just Pic.home)
+              <|
+                text "Home"
+            , iconButton model
+                (GotoPage Calendar)
+                (Just Pic.calendar)
+              <|
+                text "Calendar"
+            , iconButton model
+                (GotoPage Blog)
+                (Just Pic.blog)
+              <|
+                text "Blog"
+            , iconButton model
+                (GotoPage Solutions)
+                (Just Pic.solutions)
+              <|
+                text "Solutions"
+            , iconButton model (GotoPage Graph) (Just Pic.dims) <| text "Graph"
+            , hBar
+            , if model.pal.name == "Newspaper" then
+                iconButton model (ChangeColor dark) (Just Pic.dark) <| text "Mode"
 
-          else
-            iconButton model (ChangeColor newspaper) (Just Pic.light) <| text "Mode"
-        , iconButton model (GotoPage Settings) (Just Pic.settings) <| text "Settings"
-        ]
+              else
+                iconButton model (ChangeColor newspaper) (Just Pic.light) <| text "Mode"
+            , iconButton model (GotoPage Settings) (Just Pic.settings) <| text "Settings"
+            ]
 
 
 weekdayToString : Time.Weekday -> String
@@ -1283,9 +1326,16 @@ monthToString month =
             "December"
 
 
-viewTimeDate : Time.Zone -> Maybe Time.Posix -> String
-viewTimeDate zone maybeTime =
+viewTimeDate : Viewport -> Time.Zone -> Maybe Time.Posix -> String
+viewTimeDate vp zone maybeTime =
     maybeTime
+        |> (\time ->
+                if vp.viewport.width < 600 then
+                    Nothing
+
+                else
+                    time
+           )
         |> Maybe.map (Date.fromPosix zone)
         |> Maybe.map (Date.format "EEEE, MMMM ddd, y")
         |> Maybe.withDefault ""

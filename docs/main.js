@@ -6727,7 +6727,7 @@ var $author$project$Main$init = F3(
 							title: 'Plutus PBL Live Coding'
 						}
 						])),
-				fontSize: 20,
+				fontSize: 16,
 				hemisphere: $author$project$Types$North,
 				menu: $author$project$Types$MenuClosed,
 				navKey: key,
@@ -26045,12 +26045,6 @@ var $author$project$Main$renderEvent = F3(
 					$author$project$Ui$width($author$project$Ui$fill),
 					$author$project$Ui$spacing(
 					$elm$core$Basics$round(model.fontSize)),
-					$author$project$Ui$paddingEach(
-					_Utils_update(
-						$author$project$Types$edges,
-						{
-							left: $elm$core$Basics$round(model.fontSize)
-						})),
 					$author$project$Ui$Border$widthEach(
 					_Utils_update(
 						$author$project$Types$edges,
@@ -26072,7 +26066,31 @@ var $author$project$Main$renderEvent = F3(
 							$author$project$Ui$width($author$project$Ui$fill),
 							$author$project$Ui$Font$size(
 							$elm$core$Basics$round(model.fontSize * 1.75)),
-							$author$project$Ui$Font$bold
+							$author$project$Ui$Font$bold,
+							A2(
+							$author$project$Ui$paddingXY,
+							$elm$core$Basics$round(model.fontSize) * 2,
+							$elm$core$Basics$round(model.fontSize)),
+							$author$project$Ui$spacing(
+							$elm$core$Basics$round(model.fontSize)),
+							$author$project$Ui$Border$color(
+							A3($author$project$Style$mix, 0.5, model.pal.bg, model.pal.fg)),
+							$author$project$Ui$Border$width(1),
+							$author$project$Ui$Border$roundEach(
+							_Utils_update(
+								$author$project$Types$corners,
+								{
+									bottomRight: $elm$core$Basics$round(model.fontSize / 2),
+									topLeft: $elm$core$Basics$round(model.fontSize / 4),
+									topRight: $elm$core$Basics$round(model.fontSize / 2)
+								})),
+							$author$project$Ui$Background$color(
+							A2(
+								$author$project$Style$addAlpha,
+								0.7,
+								A3($author$project$Style$mix, 0.25, model.pal.bg, event.color))),
+							$author$project$Ui$Border$color(
+							A3($author$project$Style$mix, 0.75, model.pal.fg, event.color))
 						]),
 					_List_fromArray(
 						[
@@ -26083,14 +26101,27 @@ var $author$project$Main$renderEvent = F3(
 					_List_fromArray(
 						[
 							$author$project$Ui$width($author$project$Ui$fill),
-							$author$project$Ui$Font$bold
+							$author$project$Ui$Font$bold,
+							A2(
+							$author$project$Ui$paddingXY,
+							$elm$core$Basics$round(model.fontSize) * 2,
+							0)
 						]),
 					_List_fromArray(
 						[
 							$author$project$Ui$text(
 							A2($author$project$Types$eventTimeString, event.startTime, event.duration))
 						])),
-					A3($author$project$Markup$renderMd, model, vp, event.description)
+					A2(
+					$author$project$Ui$el,
+					_List_fromArray(
+						[
+							A2(
+							$author$project$Ui$paddingXY,
+							$elm$core$Basics$round(model.fontSize) * 2,
+							0)
+						]),
+					A3($author$project$Markup$renderMd, model, vp, event.description))
 				]));
 	});
 var $mdgriffith$elm_ui$Element$scrollbarY = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.scrollbarsY);
@@ -26213,6 +26244,10 @@ var $author$project$Ui$rotate = function (angle) {
 			$mdgriffith$elm_ui$Element$rotate(angle)
 		]);
 };
+var $author$project$Main$rowOrColumn = F3(
+	function (pred, attrs, els) {
+		return pred ? A2($author$project$Ui$row, attrs, els) : A2($author$project$Ui$column, attrs, els);
+	});
 var $elm$time$Time$toHour = F2(
 	function (zone, time) {
 		return A2(
@@ -26272,8 +26307,9 @@ var $author$project$Main$calendarView = F2(
 				return {hourLines: 'assets/earth-hours-south.png', hourRotation: ((time.hours + (time.minutes / 60)) / 12) * $elm$core$Basics$pi, leftLabel: '18', localHourRotation: ((time.localHours + (time.minutes / 60)) / 12) * $elm$core$Basics$pi, minuteRotation: ((time.minutes + (time.seconds / 60)) / 30) * $elm$core$Basics$pi, op: 'Northern', picUrl: 'assets/earth-south.png', rightLabel: '06', secondRotation: ((time.seconds + (time.millis / 1000)) / 30) * $elm$core$Basics$pi};
 			}
 		}();
-		return A2(
-			$author$project$Ui$column,
+		return A3(
+			$author$project$Main$rowOrColumn,
+			vp.viewport.width > 1200,
 			_List_fromArray(
 				[
 					$author$project$Style$fillSpace,
@@ -26297,86 +26333,98 @@ var $author$project$Main$calendarView = F2(
 							A2($author$project$Main$dayView, model, vp))
 						]),
 					$author$project$Main$calendar(model)),
-					$author$project$Markup$hBar,
 					A2(
-					$author$project$Ui$el,
+					$author$project$Ui$column,
 					_List_fromArray(
-						[$author$project$Ui$centerX]),
-					A2(
-						$author$project$Ui$image,
-						_List_fromArray(
-							[
-								$author$project$Style$centerXY,
-								$author$project$Ui$clip,
-								$author$project$Ui$inFront(
-								A2(
-									$author$project$Ui$image,
-									_List_fromArray(
-										[
-											$author$project$Ui$rotate(c.localHourRotation)
-										]),
-									{description: 'local hour hand', src: 'assets/earth-local-hour.png'})),
-								$author$project$Ui$behindContent(
-								A2(
-									$author$project$Ui$image,
-									_List_fromArray(
-										[
-											$author$project$Ui$rotate(c.hourRotation),
-											$author$project$Ui$inFront(
-											A2(
-												$author$project$Ui$image,
-												_List_fromArray(
-													[
-														$author$project$Ui$rotate(c.secondRotation)
-													]),
-												{description: 'second hand', src: 'assets/earth-second.png'})),
-											$author$project$Ui$inFront(
-											A2(
-												$author$project$Ui$image,
-												_List_fromArray(
-													[
-														$author$project$Ui$rotate(c.minuteRotation)
-													]),
-												{description: 'minute hand', src: 'assets/earth-minute.png'}))
-										]),
-									{description: 'earth clock', src: c.picUrl}))
-							]),
-						{description: 'earth', src: c.hourLines})),
-					A2(
-					$author$project$Ui$el,
+						[
+							$author$project$Ui$spacing(
+							$elm$core$Basics$round(model.fontSize)),
+							$author$project$Ui$padding(
+							$elm$core$Basics$round(model.fontSize)),
+							$author$project$Style$centerXY
+						]),
 					_List_fromArray(
-						[$author$project$Ui$centerX]),
-					A4(
-						$author$project$Markup$iconButton,
-						model,
-						$author$project$Types$ToggleClockOrientation,
-						$elm$core$Maybe$Nothing,
-						$author$project$Ui$text('Flip Clock to ' + (c.op + ' Hemisphere')))),
-					A2(
-					$author$project$Ui$el,
-					_List_fromArray(
-						[$author$project$Ui$centerX, $author$project$Ui$Font$bold]),
-					$author$project$Ui$text('Current Time:')),
-					A2(
-					$author$project$Ui$el,
-					_List_fromArray(
-						[$author$project$Ui$centerX]),
-					$author$project$Ui$text(
-						$elm$core$String$fromInt(time.hours) + (':' + (A3(
-							$elm$core$String$padLeft,
-							2,
-							_Utils_chr('0'),
-							$elm$core$String$fromInt(time.minutes)) + ' UTC')))),
-					A2(
-					$author$project$Ui$el,
-					_List_fromArray(
-						[$author$project$Ui$centerX]),
-					$author$project$Ui$text(
-						$elm$core$String$fromInt(time.localHours) + (':' + (A3(
-							$elm$core$String$padLeft,
-							2,
-							_Utils_chr('0'),
-							$elm$core$String$fromInt(time.minutes)) + ' Local'))))
+						[
+							A2(
+							$author$project$Ui$el,
+							_List_fromArray(
+								[$author$project$Ui$centerX]),
+							A2(
+								$author$project$Ui$image,
+								_List_fromArray(
+									[
+										$author$project$Style$centerXY,
+										$author$project$Ui$clip,
+										$author$project$Ui$inFront(
+										A2(
+											$author$project$Ui$image,
+											_List_fromArray(
+												[
+													$author$project$Ui$rotate(c.localHourRotation)
+												]),
+											{description: 'local hour hand', src: 'assets/earth-local-hour.png'})),
+										$author$project$Ui$behindContent(
+										A2(
+											$author$project$Ui$image,
+											_List_fromArray(
+												[
+													$author$project$Ui$rotate(c.hourRotation),
+													$author$project$Ui$inFront(
+													A2(
+														$author$project$Ui$image,
+														_List_fromArray(
+															[
+																$author$project$Ui$rotate(c.secondRotation)
+															]),
+														{description: 'second hand', src: 'assets/earth-second.png'})),
+													$author$project$Ui$inFront(
+													A2(
+														$author$project$Ui$image,
+														_List_fromArray(
+															[
+																$author$project$Ui$rotate(c.minuteRotation)
+															]),
+														{description: 'minute hand', src: 'assets/earth-minute.png'}))
+												]),
+											{description: 'earth clock', src: c.picUrl}))
+									]),
+								{description: 'earth', src: c.hourLines})),
+							A2(
+							$author$project$Ui$el,
+							_List_fromArray(
+								[$author$project$Ui$centerX]),
+							A4(
+								$author$project$Markup$iconButton,
+								model,
+								$author$project$Types$ToggleClockOrientation,
+								$elm$core$Maybe$Nothing,
+								$author$project$Ui$text('Flip Clock to ' + (c.op + ' Hemisphere')))),
+							A2(
+							$author$project$Ui$el,
+							_List_fromArray(
+								[$author$project$Ui$centerX, $author$project$Ui$Font$bold]),
+							$author$project$Ui$text('Current Time:')),
+							A2(
+							$author$project$Ui$el,
+							_List_fromArray(
+								[$author$project$Ui$centerX]),
+							$author$project$Ui$text(
+								$elm$core$String$fromInt(time.hours) + (':' + (A3(
+									$elm$core$String$padLeft,
+									2,
+									_Utils_chr('0'),
+									$elm$core$String$fromInt(time.minutes)) + ' UTC')))),
+							A2(
+							$author$project$Ui$el,
+							_List_fromArray(
+								[$author$project$Ui$centerX]),
+							$author$project$Ui$text(
+								$elm$core$String$fromInt(time.localHours) + (':' + (A3(
+									$elm$core$String$padLeft,
+									2,
+									_Utils_chr('0'),
+									$elm$core$String$fromInt(time.minutes)) + ' Local'))))
+						]))
 				]));
 	});
 var $mdgriffith$elm_ui$Element$fillPortion = $mdgriffith$elm_ui$Internal$Model$Fill;
@@ -26532,8 +26580,8 @@ var $author$project$Main$settingsView = F2(
 									var width = _v0.width;
 									var height = _v0.height;
 									return {
-										height: $elm$core$Basics$round(height / model.dpi),
-										width: $elm$core$Basics$round(width / model.dpi)
+										height: $elm$core$Basics$round(height),
+										width: $elm$core$Basics$round(width)
 									};
 								}(vp.viewport))))),
 					A2(
@@ -26544,7 +26592,7 @@ var $author$project$Main$settingsView = F2(
 						function (_v1) {
 							var width = _v1.width;
 							var height = _v1.height;
-							return '{ width = ' + ($elm$core$String$fromFloat(width / model.dpi) + (', height = ' + ($elm$core$String$fromFloat(height / model.dpi) + ' }')));
+							return '{ width = ' + ($elm$core$String$fromFloat(width) + (', height = ' + ($elm$core$String$fromFloat(height) + ' }')));
 						}(vp.viewport))),
 					A2(
 					$author$project$Ui$el,
@@ -26608,77 +26656,100 @@ var $author$project$Pic$homePath = 'm13.123 3.8715e-7 -0.0021 0.0022-0.0021-0.00
 var $author$project$Pic$home = A3($author$project$Pic$svgIcon, $author$project$Pic$homePath, 26.213, 26.458);
 var $author$project$Pic$lightPath = 'm21.92 18.77q2.297-3.5301 1.4279-7.6364-0.87224-4.1212-4.4024-6.4182-3.5183-2.3152-7.6395-1.4429-4.1062 0.86903-6.3999 4.4143-2.2818 3.527-1.4097 7.6482 0.86903 4.1062 4.3842 6.4063 3.527 2.2818 7.6332 1.4128 4.1212-0.87225 6.4063-4.3842zm-11.053-18.759c-0.07522-0.015534-0.15823-0.013734-0.24858 0.00532-0.17212 0.036427-0.2878 0.12362-0.34834 0.26229l-0.86888 1.9728c0.50947-0.1802 1.0388-0.3313 1.591-0.4482 0.56224-0.11899 1.1178-0.19857 1.6654-0.24005l-1.5882-1.4529c-0.06011-0.05023-0.12726-0.083603-0.20247-0.099164zm7.9453 0.83338c-0.11631-0.01612-0.22132 0.00655-0.31641 0.067128l-1.8537 1.071c1.0341 0.30993 2.0372 0.78184 3.0112 1.4095l-0.4557-2.1561c-0.038255-0.18068-0.12681-0.30168-0.26551-0.36225-0.04112-0.013734-0.08104-0.024181-0.11977-0.029568zm-15.006 3.1768c-0.15721-0.020908-0.29463 0.025981-0.41413 0.14118-0.10905 0.12198-0.14596 0.26993-0.10953 0.44203l0.45287 2.1377c0.63789-0.96166 1.3628-1.7947 2.1793-2.4927zm18.796 1.9954c0.69602 0.87709 1.2489 1.8519 1.6587 2.9254l0.89758-2.0366c0.056883-0.1559 0.041241-0.29558-0.048256-0.42052-0.082625-0.13532-0.19827-0.21424-0.34689-0.23676zm-20.505 4.3457-1.8588 1.0766c-0.13541 0.08257-0.21278 0.20206-0.23342 0.3593-0.022394 0.14864 0.024181 0.28238 0.13926 0.40184l1.6277 1.4825c-0.058849-1.1383 0.049562-2.2449 0.3254-3.3201zm22.974 2.386c0.06176 1.1509-0.04885 2.2706-0.33202 3.3588l1.8819-1.082c0.13532-0.0826 0.21281-0.20723 0.23166-0.37308 0.01702-0.17441-0.031-0.31717-0.1444-0.42804zm-22.488 4.7783-0.88885 1.992c-0.058768 0.14744-0.04532 0.29759 0.040942 0.45009 0.092959 0.14279 0.21386 0.2255 0.36253 0.24728l2.1345 0.22431c-0.69135-0.8746-1.2417-1.8457-1.6491-2.914zm20.524 2.1697c-0.64377 0.96906-1.3792 1.8069-2.2094 2.5079l2.154 0.22616c0.13637 0.0068 0.27236-0.04852 0.40901-0.16737 0.10045-0.12013 0.13503-0.25754 0.10224-0.41245zm-15.91 3.3868 0.45166 2.1345c0.043179 0.16152 0.13411 0.27203 0.27283 0.33269 0.18173 0.05124 0.32953 0.04891 0.44279-0.01159l1.8629-1.0716c-1.0395-0.3021-2.049-0.76512-3.0302-1.3842zm10.276 1.0763c-0.52602 0.18758-1.0748 0.343-1.6471 0.46411-0.56163 0.11884-1.1164 0.19836-1.6639 0.2402l1.6268 1.4763c0.11352 0.11204 0.2599 0.14498 0.43863 0.09726 0.18068-0.03822 0.30018-0.12688 0.36076-0.26576z';
 var $author$project$Pic$light = A3($author$project$Pic$svgIcon, $author$project$Pic$lightPath, 26.856, 26.458);
+var $author$project$Ui$maximum = $mdgriffith$elm_ui$Element$maximum;
 var $author$project$Pic$settingsPath = 'm3.8787 16.017c1.3875-0.0041 3.8165-0.21631 3.8137-1.5986-0.0027881-1.3823-2.4285-1.5764-3.8137-1.5805-1.3852-0.0041-3.8759 0.17804-3.8787 1.5804-0.0027881 1.4024 2.4912 1.6028 3.8787 1.5987zm0.9168-16.017h-1.8986v10.547h1.8986zm9.3313 0h-1.7956v2.8911h1.7956zm-1.7956 10.652h1.7956v15.806h-1.7956zm-7.5357 7.6556h-1.8986v8.1503h1.8986zm8.466-9.9466c1.3875-0.0041 3.8165-0.21631 3.8137-1.5986-0.0028-1.3823-2.4285-1.5764-3.8137-1.5805-1.3852-0.0041-3.8759 0.17804-3.8787 1.5804-0.00279 1.4024 2.4912 1.6028 3.8787 1.5987zm10.3-8.3611h-1.8986v14.885h1.8986zm-1.8986 22.646h1.8986v3.8116h-1.8986zm-16.867-22.646h-1.8986v10.547h1.8986zm9.3313 0h-1.7956v2.8911h1.7956zm-1.7956 10.652h1.7956v15.806h-1.7956zm-7.5357 7.6556h-1.8986v8.1503h1.8986zm17.849 2.0477c1.3875-0.0041 3.8165-0.21631 3.8137-1.5986-0.0028-1.3823-2.4285-1.5764-3.8137-1.5805-1.3852-0.0041-3.8759 0.17804-3.8787 1.5804-0.0028 1.4024 2.4912 1.6028 3.8787 1.5987zm0.9168-20.355h-1.8986v14.885h1.8986zm-1.8986 22.646h1.8986v3.8116h-1.8986z';
 var $author$project$Pic$settings = A3($author$project$Pic$svgIcon, $author$project$Pic$settingsPath, 26.458, 26.458);
+var $author$project$Ui$shrink = $mdgriffith$elm_ui$Element$shrink;
 var $author$project$Pic$solutionsPath = 'm9.8581 1.8845c4.2437-0.053247 8.0943 3.8087 7.8697 8.0823 0.0077 2.6696-1.5024 5.1269-3.6132 6.6799-1.4561 0.76112-1.4486 3.1146-2.783 3.5365-1.5545-0.18354-2.079 0.17442-3.6258-0.14291-0.23694-2.2657-2.5672-3.6644-4.0521-5.1761-2.7918-3.201-2.2281-8.6378 1.174-11.197 1.4065-1.1525 3.2074-1.8124 5.0304-1.7829zm-0.38564-1.8607c-5.3155-0.067914-9.972 5.0579-9.4293 10.344 0.12472 3.0824 1.9241 5.9031 4.3886 7.6791 1.622 1.5204 0.86975 3.879 1.2233 5.8003 0.63864 1.1201 2.3221 0.92469 2.9241 2.2799 1.2116 0.77183 2.9467 0.11757 3.5021-1.1714 1.7546-0.14172 2.3661-1.4707 1.9908-3.0465-0.4007-2.1117 0.95018-3.8085 2.469-5.0803 2.2752-2.0179 3.3433-5.1314 2.9793-8.1244-0.32898-4.9207-5.1307-9.0588-10.048-8.6807zm-1.4227 5.0268c-0.97743 0.48855-0.29402 2.6587-2.1078 2.246-2.0944 0.47823 1.098 1.9028-0.246 3.1912-1.421 1.1406 0.43187 1.5576 1.4053 1.7432 0.43369 1.0487 0.52218 2.9053 1.9543 1.4087 1.1689-1.1994 2.6519 1.8481 3.1084-0.20359-0.75694-1.9652 3.8488-1.0826 1.7085-3.0801-0.97455-1.1205 1.9187-3.3182-0.78562-3.0521-1.4285-0.28787-0.53286-3.3928-2.3383-1.8852-1.0392 1.3614-1.8127-0.51766-2.6987-0.36809zm1.6647 2.7825c1.8153-0.20883 2.6255 2.5443 0.99169 3.3774-1.6058 0.99594-3.5475-1.228-2.3468-2.6864 0.3094-0.42572 0.82541-0.7058 1.3551-0.69108z';
 var $author$project$Pic$solutions = A3($author$project$Pic$svgIcon, $author$project$Pic$solutionsPath, 19.59, 26.458);
-var $author$project$Main$mainMenu = function (model) {
-	return A2(
-		$author$project$Ui$column,
-		_List_fromArray(
-			[
-				$author$project$Ui$spacing(
-				$elm$core$Basics$round(model.fontSize * 1.5)),
-				$author$project$Ui$Font$letterSpacing(1.25)
-			]),
-		_List_fromArray(
-			[
-				A4(
-				$author$project$Markup$iconButton,
-				model,
-				$author$project$Types$GotoPage($author$project$Types$Home),
-				$elm$core$Maybe$Just($author$project$Pic$home),
-				$author$project$Ui$text('Home')),
-				A4(
-				$author$project$Markup$iconButton,
-				model,
-				$author$project$Types$GotoPage($author$project$Types$Calendar),
-				$elm$core$Maybe$Just($author$project$Pic$calendar),
-				$author$project$Ui$text('Calendar')),
-				A4(
-				$author$project$Markup$iconButton,
-				model,
-				$author$project$Types$GotoPage($author$project$Types$Blog),
-				$elm$core$Maybe$Just($author$project$Pic$blog),
-				$author$project$Ui$text('Blog')),
-				A4(
-				$author$project$Markup$iconButton,
-				model,
-				$author$project$Types$GotoPage($author$project$Types$Solutions),
-				$elm$core$Maybe$Just($author$project$Pic$solutions),
-				$author$project$Ui$text('Solutions')),
-				A4(
-				$author$project$Markup$iconButton,
-				model,
-				$author$project$Types$GotoPage($author$project$Types$Graph),
-				$elm$core$Maybe$Just($author$project$Pic$dims),
-				$author$project$Ui$text('Graph')),
-				$author$project$Markup$hBar,
-				(model.pal.name === 'Newspaper') ? A4(
-				$author$project$Markup$iconButton,
-				model,
-				$author$project$Types$ChangeColor($author$project$Style$dark),
-				$elm$core$Maybe$Just($author$project$Pic$dark),
-				$author$project$Ui$text('Mode')) : A4(
-				$author$project$Markup$iconButton,
-				model,
-				$author$project$Types$ChangeColor($author$project$Style$newspaper),
-				$elm$core$Maybe$Just($author$project$Pic$light),
-				$author$project$Ui$text('Mode')),
-				A4(
-				$author$project$Markup$iconButton,
-				model,
-				$author$project$Types$GotoPage($author$project$Types$Settings),
-				$elm$core$Maybe$Just($author$project$Pic$settings),
-				$author$project$Ui$text('Settings'))
-			]));
-};
+var $author$project$Main$mainMenu = F2(
+	function (model, vp) {
+		return A2(
+			$author$project$Ui$el,
+			_List_fromArray(
+				[
+					$author$project$Ui$alignTop,
+					$author$project$Ui$alignRight,
+					$author$project$Ui$Background$color(
+					A2($author$project$Style$addAlpha, 0.95, model.pal.bg)),
+					$author$project$Ui$Font$size(
+					$elm$core$Basics$round(model.fontSize)),
+					$author$project$Ui$padding(
+					$elm$core$Basics$round(model.fontSize)),
+					$author$project$Style$shadow,
+					$author$project$Ui$height(
+					A2(
+						$author$project$Ui$maximum,
+						$elm$core$Basics$round(vp.viewport.height * 0.75),
+						$author$project$Ui$shrink)),
+					$author$project$Ui$scrollbarY
+				]),
+			A2(
+				$author$project$Ui$column,
+				_List_fromArray(
+					[
+						$author$project$Ui$spacing(
+						$elm$core$Basics$round(model.fontSize * 0.8)),
+						$author$project$Ui$Font$letterSpacing(1.25)
+					]),
+				_List_fromArray(
+					[
+						A4(
+						$author$project$Markup$iconButton,
+						model,
+						$author$project$Types$GotoPage($author$project$Types$Home),
+						$elm$core$Maybe$Just($author$project$Pic$home),
+						$author$project$Ui$text('Home')),
+						A4(
+						$author$project$Markup$iconButton,
+						model,
+						$author$project$Types$GotoPage($author$project$Types$Calendar),
+						$elm$core$Maybe$Just($author$project$Pic$calendar),
+						$author$project$Ui$text('Calendar')),
+						A4(
+						$author$project$Markup$iconButton,
+						model,
+						$author$project$Types$GotoPage($author$project$Types$Blog),
+						$elm$core$Maybe$Just($author$project$Pic$blog),
+						$author$project$Ui$text('Blog')),
+						A4(
+						$author$project$Markup$iconButton,
+						model,
+						$author$project$Types$GotoPage($author$project$Types$Solutions),
+						$elm$core$Maybe$Just($author$project$Pic$solutions),
+						$author$project$Ui$text('Solutions')),
+						A4(
+						$author$project$Markup$iconButton,
+						model,
+						$author$project$Types$GotoPage($author$project$Types$Graph),
+						$elm$core$Maybe$Just($author$project$Pic$dims),
+						$author$project$Ui$text('Graph')),
+						$author$project$Markup$hBar,
+						(model.pal.name === 'Newspaper') ? A4(
+						$author$project$Markup$iconButton,
+						model,
+						$author$project$Types$ChangeColor($author$project$Style$dark),
+						$elm$core$Maybe$Just($author$project$Pic$dark),
+						$author$project$Ui$text('Mode')) : A4(
+						$author$project$Markup$iconButton,
+						model,
+						$author$project$Types$ChangeColor($author$project$Style$newspaper),
+						$elm$core$Maybe$Just($author$project$Pic$light),
+						$author$project$Ui$text('Mode')),
+						A4(
+						$author$project$Markup$iconButton,
+						model,
+						$author$project$Types$GotoPage($author$project$Types$Settings),
+						$elm$core$Maybe$Just($author$project$Pic$settings),
+						$author$project$Ui$text('Settings'))
+					])));
+	});
 var $author$project$Pic$menuClosedPath = 'm0 0v4.9614h29.104v-4.9614zm0 10.747v4.9619h29.104v-4.9619zm0 10.749v4.9614h29.104v-4.9614z';
 var $author$project$Pic$menuClosed = A3($author$project$Pic$svgIcon, $author$project$Pic$menuClosedPath, 29.104, 26.458);
 var $author$project$Pic$menuOpenPath = 'm0 0v4.9614h18.155l4.6183-4.9614zm0 10.747v4.9619h12.769l-2.3089-2.4804 2.3099-2.4815zm0 10.749v4.9614h22.772l-4.6177-4.9614zm29.104-21.496-12.314 13.228 12.314 13.23v-6.8217l-5.9639-6.4078 5.9639-6.4073v-6.8197z';
 var $author$project$Pic$menuOpen = A3($author$project$Pic$svgIcon, $author$project$Pic$menuOpenPath, 29.104, 26.458);
-var $author$project$Main$viewTimeDate = F2(
-	function (zone, maybeTime) {
+var $author$project$Main$viewTimeDate = F3(
+	function (vp, zone, maybeTime) {
 		return A2(
 			$elm$core$Maybe$withDefault,
 			'',
@@ -26688,7 +26759,9 @@ var $author$project$Main$viewTimeDate = F2(
 				A2(
 					$elm$core$Maybe$map,
 					$justinmimbs$date$Date$fromPosix(zone),
-					maybeTime)));
+					function (time) {
+						return (vp.viewport.width < 600) ? $elm$core$Maybe$Nothing : time;
+					}(maybeTime))));
 	});
 var $author$project$Main$titleBar = F2(
 	function (model, vp) {
@@ -26735,21 +26808,7 @@ var $author$project$Main$titleBar = F2(
 														$author$project$Types$ChangeMenu($author$project$Types$MenuClosed))
 													]),
 												$author$project$Ui$none),
-												A2(
-												$author$project$Ui$el,
-												_List_fromArray(
-													[
-														$author$project$Ui$alignTop,
-														$author$project$Ui$alignRight,
-														$author$project$Ui$Background$color(
-														A2($author$project$Style$addAlpha, 0.95, model.pal.bg)),
-														$author$project$Ui$Font$size(
-														$elm$core$Basics$round(model.fontSize)),
-														$author$project$Ui$padding(
-														$elm$core$Basics$round(model.fontSize)),
-														$author$project$Style$shadow
-													]),
-												$author$project$Main$mainMenu(model))
+												A2($author$project$Main$mainMenu, model, vp)
 											])),
 										A2(
 										$author$project$Ui$el,
@@ -26866,7 +26925,7 @@ var $author$project$Main$titleBar = F2(
 										_List_fromArray(
 											[$author$project$Ui$alignRight]),
 										$author$project$Ui$text(
-											A2($author$project$Main$viewTimeDate, model.zone, model.time))),
+											A3($author$project$Main$viewTimeDate, vp, model.zone, model.time))),
 										function () {
 										var _v1 = model.menu;
 										if (_v1.$ === 'MenuClosed') {

@@ -1,5 +1,5 @@
 #! /bin/sh
 clear
-cp docs/assets/index-backup.html docs/index.html
+cp backup/index.html docs/index.html
 ls -R src/* | entr -r elm-live -d docs src/Main.elm  -- --output=docs/main.js
 reset
