@@ -6727,7 +6727,7 @@ var $author$project$Main$init = F3(
 							title: 'Plutus PBL Live Coding'
 						}
 						])),
-				fontSize: 12 * flags.dpi,
+				fontSize: 20,
 				hemisphere: $author$project$Types$North,
 				menu: $author$project$Types$MenuClosed,
 				navKey: key,

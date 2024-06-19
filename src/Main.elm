@@ -195,7 +195,7 @@ init flags url key =
                   , color = rgb255 0xDD 0x77 0x99 -- #dd7799
                   }
                 ]
-        , fontSize = 12 * flags.dpi
+        , fontSize = 20 -- 12 * flags.dpi
         , dpi = flags.dpi
         }
     <|

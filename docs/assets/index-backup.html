@@ -36,13 +36,13 @@ var app = Elm.Main.init({
   }
 });
 
-
+/*
 if (navigator.storage && navigator.storage.persist)
   navigator.storage.persist().then(granted => {
     if (!granted)
       alert("Warning: Browser storage may not retain state!")
 });
-
+*/
 
 app.ports.saveSettings.subscribe(function(data) {
     localStorage.setItem('settings', JSON.stringify(data));
