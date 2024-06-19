@@ -292,7 +292,7 @@ renderToken model vp tok =
                         [ paragraph
                             [ paddingXY (round model.fontSize * 2) <| round model.fontSize
                             , width fill
-                            , Font.size <| round <| model.fontSize * 2 * (1.0 - ((level - 1) * 0.1))
+                            , Font.size <| round <| model.fontSize * 2.5 * (1.0 - ((level - 1) * 0.1))
                             , spacing <| round <| model.fontSize
                             , Border.color <| Style.mix 0.5 model.pal.bg model.pal.fg
                             , Border.widthEach { edges | bottom = lineSize * 2 }
@@ -314,7 +314,7 @@ renderToken model vp tok =
                         , Border.color <| Style.mix 0.5 model.pal.bg model.pal.fg
                         , paddingXY (round <| model.fontSize * 2) <| round model.fontSize
                         , Bg.color <| Style.mix 0.9 model.pal.fg model.pal.bg
-                        , Font.size <| round <| model.fontSize * 2 * (1.0 - ((level - 1) * 0.1))
+                        , Font.size <| round <| model.fontSize * 2.5 * (1.0 - ((level - 1) * 0.1))
                         , spacing <| round <| model.fontSize
                         , width fill
                         ]
@@ -368,8 +368,7 @@ renderToken model vp tok =
 
         Text str ->
             paragraph [ width fill ]
-                [ wrappedRow
-                    []
+                [ wrappedRow []
                     [ text str ]
                 ]
 
@@ -409,7 +408,7 @@ renderToken model vp tok =
         Link { destination } toks ->
             -- { title, destination }
             iconButton model
-                (GetDoc destination)
+                (RequestDoc True destination)
                 Nothing
             <|
                 paragraph [] <|
@@ -601,7 +600,7 @@ iconButton model msg maybeIcon content =
         isExtLink : Bool
         isExtLink =
             case msg of
-                GetDoc str ->
+                RequestDoc False str ->
                     let
                         testStr : String
                         testStr =
@@ -662,7 +661,7 @@ iconButton model msg maybeIcon content =
             ]
             { url =
                 case msg of
-                    GetDoc str ->
+                    RequestDoc True str ->
                         if isExtLink then
                             str
 

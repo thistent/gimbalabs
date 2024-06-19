@@ -205,7 +205,7 @@ init flags url key =
             , Http.get
                 { url = "Notes/" ++ startDoc
                 , expect =
-                    Http.expectString <| ReceiveDoc startDoc
+                    Http.expectString <| ReceiveDoc False startDoc
                 }
             ]
 
@@ -277,17 +277,17 @@ update msg model =
                     Return.return model <|
                         Nav.load url
 
-        GetDoc doc ->
+        RequestDoc navTo doc ->
             Return.return
                 model
             <|
                 Http.get
                     { url = "Notes/" ++ doc
                     , expect =
-                        Http.expectString <| ReceiveDoc doc
+                        Http.expectString <| ReceiveDoc navTo doc
                     }
 
-        ReceiveDoc doc res ->
+        ReceiveDoc navTo doc res ->
             -- ReceiveDoc str res ->
             case res of
                 Ok p ->
@@ -295,6 +295,12 @@ update msg model =
                         { model
                             | docText = p
                             , docName = doc
+                            , page =
+                                if navTo then
+                                    Blog
+
+                                else
+                                    model.page
                         }
 
                 Err _ ->
@@ -341,6 +347,7 @@ view model vp =
                     { newPal
                         | bg = Style.mix 0.6 oldPal.bg newPal.bg
                         , fg = Style.mix 0.85 oldPal.bg newPal.fg
+                        , link = Style.mix 0.85 oldPal.bg newPal.fg
                     }
             }
     in
@@ -428,30 +435,30 @@ view model vp =
                         el [ fillSpace ] <|
                             column [ centerX, spacing <| round model.fontSize ]
                                 [ heading model "Learn"
-                                , el [] <| text "⯀ Starter Kits"
-                                , el [] <| text "⯀ Plutus"
-                                , el [] <| text "⯀ Playground"
+                                , el [] <| text "Starter Kits"
+                                , el [] <| text "Plutus"
+                                , el [] <| text "Playground"
                                 ]
                     , turningPage (m model.pal yellowNote) 0 <|
                         el [ fillSpace ] <|
                             column [ centerX, spacing <| round model.fontSize ]
                                 [ heading model "APIs"
-                                , el [] <| text "⯀ Dandelion"
-                                , el [] <| text "⯀ Endpoints"
+                                , el [] <| text "Dandelion"
+                                , el [] <| text "Endpoints"
                                 ]
                     , turningPage (m model.pal greenNote) -0.02 <|
                         el [ fillSpace ] <|
                             column [ centerX, spacing <| round model.fontSize ]
-                                [ heading model "Updates"
-                                , el [] <| text "⯀ Updates"
+                                [ heading (m model.pal greenNote) "Updates"
+                                , iconButton (m model.pal greenNote) (RequestDoc True "Updates.md") (Just Pic.location) <| text "Updates"
                                 ]
                     , turningPage (m model.pal blueNote) 0.01 <|
                         el [ fillSpace ] <|
                             column [ centerX, spacing <| round model.fontSize ]
-                                [ heading model "About Us"
-                                , el [] <| text "⯀ Team"
-                                , el [] <| text "⯀ Calendar"
-                                , el [] <| text "⯀ Stake Pool"
+                                [ heading (m model.pal blueNote) "About Us"
+                                , iconButton (m model.pal blueNote) (RequestDoc True "About.md") (Just Pic.location) <| text "About Us"
+                                , iconButton (m model.pal blueNote) (GotoPage Calendar) (Just Pic.location) <| text "Calendar"
+                                , el [] <| text "Stake Pool"
                                 ]
                     ]
                 ]
@@ -641,7 +648,7 @@ blogView model vp =
             ]
             [ el [ Font.bold ] <| text "File:"
             , text <| "/Notes/" ++ model.docName
-            , el [ alignRight ] <| iconButton model (GetDoc "Main.md") Nothing <| text "Main.md"
+            , el [ alignRight ] <| iconButton model (RequestDoc True "Main.md") Nothing <| text "Main.md"
             ]
         , hBar
         , renderMd model vp model.docText
@@ -1248,7 +1255,7 @@ mainMenu model vp =
               <|
                 text "Blog"
             , iconButton model
-                (GotoPage Solutions)
+                (RequestDoc True "Solutions.md")
                 (Just Pic.solutions)
               <|
                 text "Solutions"

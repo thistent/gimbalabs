@@ -60,8 +60,8 @@ type Msg
     | AdjustTimeZone Time.Zone
     | UrlChanged Url.Url
     | LinkClicked Browser.UrlRequest
-    | GetDoc String
-    | ReceiveDoc String (Result Http.Error String)
+    | RequestDoc Bool String
+    | ReceiveDoc Bool String (Result Http.Error String)
     | ToggleClockOrientation
     | SelectDate (Maybe Date)
 

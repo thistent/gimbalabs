@@ -22,4 +22,4 @@
 
 - [Solutions](Solutions.md)
 
-`- [Updates](Updates.md)`
+- [Updates](Updates.md)
