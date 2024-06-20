@@ -10,7 +10,6 @@ import Dict exposing (Dict)
 import Http
 import Time
 import Ui exposing (..)
-import Ui.Region exposing (description)
 import Url
 
 
@@ -95,13 +94,17 @@ type alias Pal =
 -- Events --
 
 
+type alias Duration =
+    { hours : Int, minutes : Int }
+
+
 {-| every Wednesday 14:30-16:00 UTC
 -}
 type alias WeeklyEvent =
     { firstDate : Date
     , lastDate : Date
-    , startTime : Int -- Time of the day UTC in minutes
-    , duration : Int -- Length of event in minutes
+    , startTime : Duration -- Time since midnight UTC
+    , duration : Duration -- Length of event
     , exceptions : List Date
     , title : String
     , description : String
@@ -109,28 +112,32 @@ type alias WeeklyEvent =
     }
 
 
-eventTimeString : Int -> Int -> String
+durMins : Duration -> Int
+durMins tod =
+    tod.hours * 60 + tod.minutes
+
+
+eventTimeString : Duration -> Duration -> String
 eventTimeString startTime duration =
     let
         h1 =
-            startTime
-                // 60
+            startTime.hours
                 |> String.fromInt
                 |> String.padLeft 2 '0'
 
         m1 =
-            modBy 60 startTime
+            startTime.minutes
                 |> String.fromInt
                 |> String.padLeft 2 '0'
 
         h2 =
-            (startTime + duration)
+            (durMins startTime + durMins duration)
                 // 60
                 |> String.fromInt
                 |> String.padLeft 2 '0'
 
         m2 =
-            modBy 60 (startTime + duration)
+            modBy 60 (durMins startTime + durMins duration)
                 |> String.fromInt
                 |> String.padLeft 2 '0'
     in

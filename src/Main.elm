@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 -- import Pane
+-- import GraphView as Gv
 
 import Array
 import Browser
@@ -15,7 +16,7 @@ import Docs exposing (..)
 import Ease
 import Html exposing (Html)
 import Http
-import Markup exposing (dayView, hBar, iconButton, renderEvent, renderMd)
+import Markup exposing (dayView, hBar, iconButton, renderMd)
 import Pic
 import Return exposing (Return)
 import Style exposing (..)
@@ -144,8 +145,14 @@ init flags url key =
             Array.fromList
                 [ { firstDate = Date.fromCalendarDate 2024 Mar 11
                   , lastDate = Date.fromCalendarDate 2024 Dec (30 + 1)
-                  , startTime = 13 * 60 + 0
-                  , duration = 1 * 60 + 0
+                  , startTime =
+                        { hours = 13
+                        , minutes = 0
+                        }
+                  , duration =
+                        { hours = 1
+                        , minutes = 0
+                        }
                   , exceptions =
                         []
                   , title = "Cardano Go Live Coding"
@@ -154,8 +161,14 @@ init flags url key =
                   }
                 , { firstDate = Date.fromCalendarDate 2024 Mar 5
                   , lastDate = Date.fromCalendarDate 2024 Aug (27 + 1)
-                  , startTime = 13 * 60 + 0
-                  , duration = 1 * 60 + 0
+                  , startTime =
+                        { hours = 13
+                        , minutes = 0
+                        }
+                  , duration =
+                        { hours = 1
+                        , minutes = 0
+                        }
                   , exceptions =
                         [ Date.fromCalendarDate 2024 Jun 4
                         ]
@@ -165,8 +178,14 @@ init flags url key =
                   }
                 , { firstDate = Date.fromCalendarDate 2024 Jan 9
                   , lastDate = Date.fromCalendarDate 2024 Jun (25 + 1)
-                  , startTime = 18 * 60 + 0
-                  , duration = 1 * 60 + 30
+                  , startTime =
+                        { hours = 18
+                        , minutes = 0
+                        }
+                  , duration =
+                        { hours = 1
+                        , minutes = 30
+                        }
                   , exceptions =
                         [ Date.fromCalendarDate 2024 Jun 18
                         ]
@@ -176,8 +195,14 @@ init flags url key =
                   }
                 , { firstDate = Date.fromCalendarDate 2024 Feb 29
                   , lastDate = Date.fromCalendarDate 2024 Dec (26 + 1)
-                  , startTime = 14 * 60 + 30
-                  , duration = 1 * 60 + 30
+                  , startTime =
+                        { hours = 14
+                        , minutes = 30
+                        }
+                  , duration =
+                        { hours = 1
+                        , minutes = 30
+                        }
                   , exceptions =
                         []
                   , title = "Gimbalabs Open Spaces"
@@ -186,8 +211,14 @@ init flags url key =
                   }
                 , { firstDate = Date.fromCalendarDate 2024 May 22
                   , lastDate = Date.fromCalendarDate 2024 Dec (25 + 1)
-                  , startTime = 14 * 60 + 0
-                  , duration = 1 * 60 + 30
+                  , startTime =
+                        { hours = 14
+                        , minutes = 0
+                        }
+                  , duration =
+                        { hours = 1
+                        , minutes = 30
+                        }
                   , exceptions =
                         []
                   , title = "Plutus PBL Live Coding"
@@ -355,8 +386,7 @@ view model vp =
             }
     in
     layout
-        [ Font.size <| round model.fontSize
-        , Font.family [ Font.serif ]
+        [ Font.family [ Font.serif ]
         , Font.color model.pal.fg
         , Font.letterSpacing 0.2
         , Bg.color model.pal.bg
@@ -481,7 +511,9 @@ view model vp =
 
 graphView : Model -> Viewport -> Element Msg
 graphView model vp =
-    el [ centerXY ] <| text "Graph View"
+    el [ centerXY ] <|
+        --Gv.view model
+        text "Graph View"
 
 
 calendarView : Model -> Viewport -> Element Msg
@@ -871,7 +903,8 @@ dayOnCalendar model day =
 
                     --, padding <| round <| model.fontSize / 2 - model.fontSize / 6
                     , spacing <| round <| model.fontSize / 2 - model.fontSize / 6
-                    , Font.size 10
+
+                    --, Font.size 10
                     , Bg.color bg
                     ]
                 <|

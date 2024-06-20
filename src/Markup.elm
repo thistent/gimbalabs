@@ -1,10 +1,7 @@
 module Markup exposing (..)
 
--- import Docs exposing (..)
-
 import Browser.Dom exposing (Viewport)
 import Date
-import Docs exposing (heading)
 import Html
 import Html.Attributes as Attrs
 import Markdown.Block as Md
