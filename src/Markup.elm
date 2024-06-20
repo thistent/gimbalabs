@@ -3,6 +3,8 @@ module Markup exposing (..)
 -- import Docs exposing (..)
 
 import Browser.Dom exposing (Viewport)
+import Date
+import Docs exposing (heading)
 import Html
 import Html.Attributes as Attrs
 import Markdown.Block as Md
@@ -408,7 +410,7 @@ renderToken model vp tok =
         Link { destination } toks ->
             -- { title, destination }
             iconButton model
-                (RequestDoc True destination)
+                (RequestDoc StayHere destination)
                 Nothing
             <|
                 paragraph [] <|
@@ -460,9 +462,37 @@ renderToken model vp tok =
         ListItem { task, content, children } ->
             mdItem model task (render content) (render children)
 
-        CodeBlock codeRec ->
+        CodeBlock ({ language } as codeRec) ->
             el [ width fill ] <|
-                renderCodeBlock model vp codeRec
+                case language of
+                    Just s ->
+                        case s of
+                            "events" ->
+                                column
+                                    [ spacing <| round <| model.fontSize * 2
+                                    , paddingXY (round <| model.fontSize / 2) 0
+                                    , width fill
+                                    ]
+                                <|
+                                    case model.time of
+                                        Nothing ->
+                                            [ paragraph
+                                                [ Font.bold
+                                                , Font.size <| round <| model.fontSize * 2
+                                                ]
+                                                [ text "I don't know what day it is!" ]
+                                            ]
+
+                                        Just time ->
+                                            model.events
+                                                |> eventsOfDay (Date.fromPosix model.zone time)
+                                                |> List.map (renderEvent model vp)
+
+                            _ ->
+                                renderCodeBlock model vp codeRec
+
+                    Nothing ->
+                        renderCodeBlock model vp codeRec
 
         ThematicBreak ->
             hBar
@@ -594,13 +624,16 @@ iconButton model msg maybeIcon content =
                 ChangeColor pal ->
                     pal /= model.pal
 
+                RequestDoc page name ->
+                    page /= model.page || model.docName /= name
+
                 _ ->
                     True
 
         isExtLink : Bool
         isExtLink =
             case msg of
-                RequestDoc False str ->
+                RequestDoc _ str ->
                     let
                         testStr : String
                         testStr =
@@ -661,7 +694,7 @@ iconButton model msg maybeIcon content =
             ]
             { url =
                 case msg of
-                    RequestDoc True str ->
+                    RequestDoc _ str ->
                         if isExtLink then
                             str
 
@@ -675,6 +708,117 @@ iconButton model msg maybeIcon content =
 
     else
         linkContent
+
+
+dayView : Model -> Viewport -> Element Msg
+dayView model vp =
+    case model.selectDate of
+        Nothing ->
+            none
+
+        Just date ->
+            column
+                [ height fill
+                , width <| minimum 500 fill
+                , padding <| round model.fontSize
+                , spacing <| round model.fontSize * 2
+                , Border.width lineSize
+                , Border.roundEach
+                    { corners
+                        | topLeft = round <| model.fontSize / 2
+                        , topRight = round <| model.fontSize / 2
+                    }
+                , Bg.color <| Style.addAlpha 0.9 model.pal.bg
+                , scrollbarY
+                ]
+                [ column
+                    [ spacing <| round <| model.fontSize * 0.65
+                    , width fill
+                    , inFront <|
+                        el
+                            [ alignTop
+                            , alignRight
+                            ]
+                        <|
+                            iconButton model
+                                (SelectDate Nothing)
+                                Nothing
+                            <|
+                                text "Close"
+                    ]
+                    [ el
+                        [ centerX
+                        , Font.size <| round <| model.fontSize * 1.5
+                        , Font.bold
+                        ]
+                      <|
+                        text <|
+                            Date.format "EEEE" date
+                    , el
+                        [ centerX
+                        , Font.size <| round <| model.fontSize * 1.5
+                        , Font.bold
+                        ]
+                      <|
+                        text <|
+                            Date.format "MMMM ddd, y" date
+                    , hBar
+                    ]
+                , column
+                    [ spacing <| round <| model.fontSize * 2
+                    , paddingXY (round <| model.fontSize / 2) 0
+                    , width fill
+                    ]
+                    (model.events
+                        |> eventsOfDay date
+                        |> List.map (renderEvent model vp)
+                    )
+                ]
+
+
+renderEvent : Model -> Viewport -> WeeklyEvent -> Element Msg
+renderEvent model vp event =
+    textColumn
+        [ width fill
+        , spacing <| round model.fontSize
+
+        --, paddingEach { edges | left = round model.fontSize }
+        , Border.widthEach { edges | left = lineSize * 2 }
+        , Border.roundEach
+            { corners
+                | topLeft = round <| model.fontSize / 2
+                , bottomLeft = round <| model.fontSize / 2
+            }
+        ]
+        [ paragraph
+            [ width fill
+            , Font.size <| round <| model.fontSize * 1.75
+            , Font.bold
+            , paddingXY (round model.fontSize * 2) <| round model.fontSize
+            , spacing <| round <| model.fontSize
+            , Border.color <| Style.mix 0.5 model.pal.bg model.pal.fg
+            , Border.width 1
+            , Border.roundEach
+                { corners
+                    | topLeft = round <| model.fontSize / 4
+                    , topRight = round <| model.fontSize / 2
+                    , bottomRight = round <| model.fontSize / 2
+                }
+            , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg event.color
+            , Border.color <| Style.mix 0.75 model.pal.fg event.color
+            ]
+            [ text event.title ]
+        , paragraph
+            [ width fill
+            , Font.bold
+            , paddingXY (round model.fontSize * 2) 0
+            ]
+            [ text <| eventTimeString event.startTime event.duration ]
+        , el
+            [ paddingXY (round model.fontSize * 2) 0 ]
+          <|
+            renderMd model vp event.description
+        ]
 
 
 vBar : Element Msg

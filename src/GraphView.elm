@@ -5,7 +5,7 @@ import Browser.Dom as Dom
 import Browser.Events as Events
 import Color exposing (Color)
 import Force
-import Graph exposing (Edge, Graph, Node, NodeContext, NodeId)
+import Graph exposing (Edge, Graph, NodeContext, NodeId, Vertex)
 import Html exposing (Html)
 import Html.Attributes as Ha
 import Html.Events.Extra.Mouse as Mouse

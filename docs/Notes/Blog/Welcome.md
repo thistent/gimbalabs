@@ -1,6 +1,6 @@
 # Welcome to the Gimbalabs Blog
 
-```
+```metadata
 date = 2024-01-02
 author = "James Dunseith"
 ```

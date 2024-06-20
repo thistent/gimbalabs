@@ -1,6 +1,6 @@
 # Blink Labs, TxPipe, and the power of collaborations.
 
-```
+```metadata
 date = 2024-03-31
 author = "Sebastian Pabon"
 ```

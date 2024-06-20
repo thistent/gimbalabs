@@ -1,6 +1,6 @@
 # Gimbalabs Discord Redesign
 
-```
+```metadata
 date = 2024-01-20
 author = "Hinson Wong"
 ```

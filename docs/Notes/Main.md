@@ -23,3 +23,5 @@
 - [Solutions](Solutions.md)
 
 - [Updates](Updates.md)
+
+- [Home](Home.md)

@@ -60,8 +60,8 @@ type Msg
     | AdjustTimeZone Time.Zone
     | UrlChanged Url.Url
     | LinkClicked Browser.UrlRequest
-    | RequestDoc Bool String
-    | ReceiveDoc Bool String (Result Http.Error String)
+    | RequestDoc Page String
+    | ReceiveDoc Page String (Result Http.Error String)
     | ToggleClockOrientation
     | SelectDate (Maybe Date)
 
@@ -73,6 +73,7 @@ type Page
     | Solutions
     | Settings
     | Graph
+    | StayHere
 
 
 type Menu

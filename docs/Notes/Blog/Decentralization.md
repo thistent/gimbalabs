@@ -1,6 +1,6 @@
 # From Decentralization to Digital Nation
 
-```
+```metadata
 date = 2024-01-24
 author = "Alex Seregin"
 ```

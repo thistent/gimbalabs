@@ -1,6 +1,6 @@
 # Philosophy on New Discord Design Proposal
 
-```
+```metadata
 date = 2024-02-05
 author = "Hinson Wong"
 ```

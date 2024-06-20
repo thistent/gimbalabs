@@ -1,6 +1,6 @@
 # Gimbalabs Digest April 6, 2024
 
-```
+```metadata
 date = 2024-04-06
 author = "Sebastian Pabon"
 ```

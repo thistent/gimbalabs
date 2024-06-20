@@ -2,20 +2,20 @@ module Main exposing (..)
 
 -- import Pane
 
-import Array exposing (Array)
+import Array
 import Browser
 import Browser.Dom as Dom exposing (Viewport)
 import Browser.Events as Events exposing (onResize)
 import Browser.Navigation as Nav
 import Calendar exposing (CalendarDate)
-import Date exposing (Date)
+import Date
 import Delay exposing (Timer)
 import Dict
 import Docs exposing (..)
 import Ease
 import Html exposing (Html)
 import Http
-import Markup exposing (hBar, iconButton, renderMd, vBar)
+import Markup exposing (dayView, hBar, iconButton, renderEvent, renderMd)
 import Pic
 import Return exposing (Return)
 import Style exposing (..)
@@ -123,7 +123,7 @@ init flags url key =
         startDoc : String
         startDoc =
             -- "Types.md"
-            "Main.md"
+            "Home.md"
     in
     Return.return
         { navKey = key
@@ -205,7 +205,7 @@ init flags url key =
             , Http.get
                 { url = "Notes/" ++ startDoc
                 , expect =
-                    Http.expectString <| ReceiveDoc False startDoc
+                    Http.expectString <| ReceiveDoc StayHere startDoc
                 }
             ]
 
@@ -218,7 +218,10 @@ update : Msg -> Model -> Return Msg Model
 update msg model =
     case msg of
         GotoPage page ->
-            Return.singleton { model | page = page }
+            Return.singleton
+                { model
+                    | page = page
+                }
 
         ChangeMenu menu ->
             Return.singleton { model | menu = menu }
@@ -296,11 +299,11 @@ update msg model =
                             | docText = p
                             , docName = doc
                             , page =
-                                if navTo then
-                                    Blog
+                                if navTo == StayHere then
+                                    model.page
 
                                 else
-                                    model.page
+                                    navTo
                         }
 
                 Err _ ->
@@ -377,37 +380,45 @@ view model vp =
             [ el [ height <| px <| round <| model.fontSize * 3.5 ] none
             , case model.page of
                 Home ->
-                    column
-                        [ fillSpace
-                        , spacing <| round <| model.fontSize * 2
-                        , padding <| round <| model.fontSize / 2
-                        ]
-                        [ el [ width <| fillPortion 3, height fill ] <|
-                            topGroup model
-                                [ heading model "Welcome to Gimbalabs!"
-                                , item model <|
-                                    "Right now, we are building Plutus PBL 2024, "
-                                        ++ "running weekly live coding sessions, "
-                                        ++ "and hosting Gimbalabs Open Spaces."
-                                ]
-                        , heading model "Today's Events"
-                        , column
-                            [ spacing <| round <| model.fontSize * 2
-                            , paddingXY (round <| model.fontSize / 2) 0
-                            , width fill
-                            ]
-                            (case model.time of
-                                Nothing ->
-                                    [ text "(Nothing Today)"
-                                    ]
+                    blogView model vp
 
-                                Just time ->
-                                    model.events
-                                        |> eventsOfDay (Date.fromPosix model.zone time)
-                                        |> List.map (renderEvent model vp)
-                            )
-                        ]
+                {-
+                   column
+                       [ fillSpace
+                       , spacing <| round <| model.fontSize * 2
+                       , padding <| round <| model.fontSize / 2
+                       ]
+                       [ column
+                           [ spacing <| round <| model.fontSize * 2
+                           , paddingXY (round <| model.fontSize / 2) 0
+                           , width fill
+                           ]
+                           (case model.time of
+                               Nothing ->
+                                   [ paragraph
+                                       [ Font.bold
+                                       , Font.size <| round <| model.fontSize * 2
+                                       ]
+                                       [ text "No events today!" ]
+                                   ]
 
+                               Just time ->
+                                   model.events
+                                       |> eventsOfDay (Date.fromPosix model.zone time)
+                                       |> List.map (renderEvent model vp)
+                                       |> (::) (heading model "Today's Events")
+                           )
+                       , hBar
+                       , el [ width <| fillPortion 3, height fill ] <|
+                           topGroup model
+                               [ heading model "Welcome to Gimbalabs!"
+                               , item model <|
+                                   "Right now, we are building Plutus PBL 2024, "
+                                       ++ "running weekly live coding sessions, "
+                                       ++ "and hosting Gimbalabs Open Spaces."
+                               ]
+                       ]
+                -}
                 Calendar ->
                     calendarView model vp
 
@@ -415,13 +426,16 @@ view model vp =
                     blogView model vp
 
                 Solutions ->
-                    el [ centerXY ] <| text "Solutions"
+                    blogView model vp
 
                 Settings ->
                     settingsView model vp
 
                 Graph ->
                     graphView model vp
+
+                StayHere ->
+                    el [ fillSpace ] <| el [ centerXY ] <| text "How'd we get here?"
             , hBar
             , textColumn
                 [ fillSpace
@@ -450,13 +464,13 @@ view model vp =
                         el [ fillSpace ] <|
                             column [ centerX, spacing <| round model.fontSize ]
                                 [ heading (m model.pal greenNote) "Updates"
-                                , iconButton (m model.pal greenNote) (RequestDoc True "Updates.md") (Just Pic.location) <| text "Updates"
+                                , iconButton (m model.pal greenNote) (RequestDoc Blog "Updates.md") (Just Pic.location) <| text "Updates"
                                 ]
                     , turningPage (m model.pal blueNote) 0.01 <|
                         el [ fillSpace ] <|
                             column [ centerX, spacing <| round model.fontSize ]
                                 [ heading (m model.pal blueNote) "About Us"
-                                , iconButton (m model.pal blueNote) (RequestDoc True "About.md") (Just Pic.location) <| text "About Us"
+                                , iconButton (m model.pal blueNote) (RequestDoc Blog "About.md") (Just Pic.location) <| text "About Us"
                                 , iconButton (m model.pal blueNote) (GotoPage Calendar) (Just Pic.location) <| text "Calendar"
                                 , el [] <| text "Stake Pool"
                                 ]
@@ -638,21 +652,35 @@ blogView model vp =
             { edges
                 | right = round model.fontSize
                 , left = round model.fontSize
+                , top = round <| model.fontSize / 4
                 , bottom = round model.fontSize
             }
         ]
-        [ row
-            [ width fill
-            , paddingXY lineSize 0
-            , spacing <| round model.fontSize
-            ]
-            [ el [ Font.bold ] <| text "File:"
-            , text <| "/Notes/" ++ model.docName
-            , el [ alignRight ] <| iconButton model (RequestDoc True "Main.md") Nothing <| text "Main.md"
-            ]
-        , hBar
-        , renderMd model vp model.docText
-        ]
+    <|
+        surroundByFileInfo (model.page == Blog)
+            model
+            [ renderMd model vp model.docText ]
+
+
+surroundByFileInfo : Bool -> Model -> List (Element Msg) -> List (Element Msg)
+surroundByFileInfo pred model content =
+    let
+        fileInfo =
+            row
+                [ width fill
+                , paddingXY lineSize 0
+                , spacing <| round model.fontSize
+                ]
+                [ el [ Font.bold ] <| text "File:"
+                , text <| "/Notes/" ++ model.docName
+                , el [ alignRight ] <| iconButton model (RequestDoc Blog "Main.md") Nothing <| text "Main.md"
+                ]
+    in
+    if pred then
+        [ fileInfo, hBar ] ++ content ++ [ hBar, fileInfo ]
+
+    else
+        content
 
 
 settingsView : Model -> Viewport -> Element Msg
@@ -690,117 +718,6 @@ settingsView model vp =
             |> String.fromFloat
             |> text
             |> el [ centerX ]
-        ]
-
-
-dayView : Model -> Viewport -> Element Msg
-dayView model vp =
-    case model.selectDate of
-        Nothing ->
-            none
-
-        Just date ->
-            column
-                [ height fill
-                , width <| minimum 500 fill
-                , padding <| round model.fontSize
-                , spacing <| round model.fontSize * 2
-                , Border.width lineSize
-                , Border.roundEach
-                    { corners
-                        | topLeft = round <| model.fontSize / 2
-                        , topRight = round <| model.fontSize / 2
-                    }
-                , Bg.color <| Style.addAlpha 0.9 model.pal.bg
-                , scrollbarY
-                ]
-                [ column
-                    [ spacing <| round <| model.fontSize * 0.65
-                    , width fill
-                    , inFront <|
-                        el
-                            [ alignTop
-                            , alignRight
-                            ]
-                        <|
-                            iconButton model
-                                (SelectDate Nothing)
-                                Nothing
-                            <|
-                                text "Close"
-                    ]
-                    [ el
-                        [ centerX
-                        , Font.size <| round <| model.fontSize * 1.5
-                        , Font.bold
-                        ]
-                      <|
-                        text <|
-                            Date.format "EEEE" date
-                    , el
-                        [ centerX
-                        , Font.size <| round <| model.fontSize * 1.5
-                        , Font.bold
-                        ]
-                      <|
-                        text <|
-                            Date.format "MMMM ddd, y" date
-                    , hBar
-                    ]
-                , column
-                    [ spacing <| round <| model.fontSize * 2
-                    , paddingXY (round <| model.fontSize / 2) 0
-                    , width fill
-                    ]
-                    (model.events
-                        |> eventsOfDay date
-                        |> List.map (renderEvent model vp)
-                    )
-                ]
-
-
-renderEvent : Model -> Viewport -> WeeklyEvent -> Element Msg
-renderEvent model vp event =
-    textColumn
-        [ width fill
-        , spacing <| round model.fontSize
-
-        --, paddingEach { edges | left = round model.fontSize }
-        , Border.widthEach { edges | left = lineSize * 2 }
-        , Border.roundEach
-            { corners
-                | topLeft = round <| model.fontSize / 2
-                , bottomLeft = round <| model.fontSize / 2
-            }
-        ]
-        [ paragraph
-            [ width fill
-            , Font.size <| round <| model.fontSize * 1.75
-            , Font.bold
-            , paddingXY (round model.fontSize * 2) <| round model.fontSize
-            , spacing <| round <| model.fontSize
-            , Border.color <| Style.mix 0.5 model.pal.bg model.pal.fg
-            , Border.width 1
-            , Border.roundEach
-                { corners
-                    | topLeft = round <| model.fontSize / 4
-                    , topRight = round <| model.fontSize / 2
-                    , bottomRight = round <| model.fontSize / 2
-                }
-            , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg event.color
-            , Border.color <| Style.mix 0.75 model.pal.fg event.color
-            ]
-            [ text event.title ]
-        , paragraph
-            [ width fill
-            , Font.bold
-            , paddingXY (round model.fontSize * 2) 0
-            ]
-            [ text <| eventTimeString event.startTime event.duration ]
-        , el
-            [ paddingXY (round model.fontSize * 2) 0 ]
-          <|
-            renderMd model vp event.description
         ]
 
 
@@ -1240,7 +1157,7 @@ mainMenu model vp =
             , Font.letterSpacing 1.25
             ]
             [ iconButton model
-                (GotoPage Home)
+                (RequestDoc Home "Home.md")
                 (Just Pic.home)
               <|
                 text "Home"
@@ -1250,12 +1167,12 @@ mainMenu model vp =
               <|
                 text "Calendar"
             , iconButton model
-                (GotoPage Blog)
+                (RequestDoc Blog "Main.md")
                 (Just Pic.blog)
               <|
                 text "Blog"
             , iconButton model
-                (RequestDoc True "Solutions.md")
+                (RequestDoc Solutions "Solutions.md")
                 (Just Pic.solutions)
               <|
                 text "Solutions"
