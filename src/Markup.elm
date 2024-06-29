@@ -8,6 +8,7 @@ import Markdown.Block as Md
 import Markdown.Html as MdHtml
 import Markdown.Parser as Md
 import Markdown.Renderer as Md
+import Parser exposing (Parser)
 import Pic
 import Style exposing (..)
 import Types exposing (..)
@@ -291,7 +292,7 @@ renderToken model vp tok =
                         [ paragraph
                             [ paddingXY (round model.fontSize * 2) <| round model.fontSize
                             , width fill
-                            , Font.size <| round <| model.fontSize * 2.5 * (1.0 - ((level - 1) * 0.1))
+                            , Font.size <| round <| model.fontSize * 1.25
                             , spacing <| round <| model.fontSize
                             , Border.color <| Style.mix 0.5 model.pal.bg model.pal.fg
                             , Border.widthEach { edges | bottom = lineSize * 2 }
@@ -311,9 +312,9 @@ renderToken model vp tok =
                                 , bottomRight = round <| model.fontSize / 2
                             }
                         , Border.color <| Style.mix 0.5 model.pal.bg model.pal.fg
-                        , paddingXY (round <| model.fontSize * 2) <| round model.fontSize
+                        , paddingXY (round <| model.fontSize * 0.75) <| round model.fontSize
                         , Bg.color <| Style.mix 0.9 model.pal.fg model.pal.bg
-                        , Font.size <| round <| model.fontSize * 2.5 * (1.0 - ((level - 1) * 0.1))
+                        , Font.size <| round <| model.fontSize * 1.25
                         , spacing <| round <| model.fontSize
                         , width fill
                         ]
@@ -330,7 +331,7 @@ renderToken model vp tok =
                         , Border.color <| Style.mix 0.5 model.pal.bg model.pal.fg
                         , paddingEach
                             { edges
-                                | left = round <| model.fontSize
+                                | left = round <| model.fontSize * 0.75
                                 , bottom = round <| model.fontSize
                             }
                         , spacing <| round <| model.fontSize * 2
@@ -459,59 +460,34 @@ renderToken model vp tok =
         ListItem { task, content, children } ->
             mdItem model task (render content) (render children)
 
-        CodeBlock ({ language } as codeRec) ->
-            el [ width fill ] <|
-                case language of
-                    Just s ->
-                        case s of
-                            "events" ->
-                                column
-                                    [ spacing <| round <| model.fontSize * 2
-                                    , paddingXY (round <| model.fontSize / 2) 0
-                                    , width fill
-                                    ]
-                                <|
-                                    case model.time of
-                                        Nothing ->
-                                            [ paragraph
-                                                [ Font.bold
-                                                , Font.size <| round <| model.fontSize * 2
-                                                ]
-                                                [ text "I don't know what day it is!" ]
-                                            ]
-
-                                        Just time ->
-                                            model.events
-                                                |> eventsOfDay (Date.fromPosix model.zone time)
-                                                |> List.map (renderEvent model vp)
-
-                            _ ->
-                                renderCodeBlock model vp codeRec
-
-                    Nothing ->
-                        renderCodeBlock model vp codeRec
+        CodeBlock codeRec ->
+            codeRec
+                |> renderMeetings model vp
+                |> Maybe.withDefault
+                    (renderCodeBlock model codeRec)
 
         ThematicBreak ->
             hBar
 
         Table toks ->
-            el [ fillSpace ] <|
-                column
-                    [ Bg.color <| Style.mix 0.15 model.pal.bg model.pal.fg
-                    , Border.rounded <| round <| model.fontSize / 2
-                    , width fill
-
-                    --, width <| px <| round <| vp.viewport.width * 0.85
-                    --, centerX
-                    , alignRight
-                    ]
-                    (render toks)
+            {- paragraph
+               [ fillSpace
+               ]
+               [ text <| Debug.toString toks
+               ]
+            -}
+            column
+                [ Bg.color <| Style.mix 0.15 model.pal.bg model.pal.fg
+                , Border.rounded <| round <| model.fontSize / 2
+                , fillSpace
+                , clip
+                , scrollbars
+                ]
+                (render toks)
 
         TableHeader toks ->
             row
-                [ width fill
-                , height fill
-                , spacing <| round <| model.fontSize
+                [ fillSpace
                 , Border.roundEach
                     { corners
                         | topLeft = round <| model.fontSize / 2
@@ -523,7 +499,7 @@ renderToken model vp tok =
 
         TableBody toks ->
             column
-                [ width fill
+                [ fillSpace
                 , Border.roundEach { corners | bottomRight = round model.fontSize }
                 , Border.rounded <| round <| model.fontSize / 2
                 , Bg.color <| Style.mix 0.05 model.pal.bg model.pal.fg
@@ -532,8 +508,7 @@ renderToken model vp tok =
 
         TableRow toks ->
             row
-                [ width fill
-                , height fill
+                [ fillSpace
                 , Border.color <| Style.mix 0.2 model.pal.bg model.pal.fg
                 , Border.roundEach
                     { corners
@@ -600,6 +575,35 @@ renderToken model vp tok =
                         batch []
                 ]
                 (render toks)
+
+
+renderMeetings : Model -> Viewport -> { language : Maybe String, body : String } -> Maybe (Element Msg)
+renderMeetings model vp codeRec =
+    codeRec.language
+        |> Maybe.andThen
+            (\s ->
+                case s of
+                    "Meetings.today" ->
+                        (model.events
+                            |> eventsOfDay (Date.fromPosix model.zone model.time)
+                            |> List.map (renderEvent model vp)
+                            |> (\es ->
+                                    if List.isEmpty es then
+                                        [ el [ centerXY ] <| text "No events today!" ]
+
+                                    else
+                                        es
+                               )
+                        )
+                            |> column
+                                [ spacing (round (model.fontSize * 2))
+                                , width fill
+                                ]
+                            |> Just
+
+                    _ ->
+                        Nothing
+            )
 
 
 
@@ -716,8 +720,8 @@ dayView model vp =
         Just date ->
             column
                 [ height fill
-                , width <| minimum 500 fill
-                , padding <| round model.fontSize
+                , width fill -- <| minimum 500 fill
+                , padding <| round <| model.fontSize * 0.75
                 , spacing <| round model.fontSize * 2
                 , Border.width lineSize
                 , Border.roundEach
@@ -763,13 +767,25 @@ dayView model vp =
                     ]
                 , column
                     [ spacing <| round <| model.fontSize * 2
-                    , paddingXY (round <| model.fontSize / 2) 0
-                    , width fill
+                    , paddingXY (round <| model.fontSize * 0.75) 0
+                    , fillSpace
                     ]
+                  <|
                     (model.events
                         |> eventsOfDay date
                         |> List.map (renderEvent model vp)
                     )
+                        ++ [ el
+                                [ alignBottom
+                                , alignLeft
+                                ]
+                             <|
+                                iconButton model
+                                    (SelectDate Nothing)
+                                    Nothing
+                                <|
+                                    text "Close"
+                           ]
                 ]
 
 
@@ -781,6 +797,9 @@ renderEvent model vp event =
 
         --, paddingEach { edges | left = round model.fontSize }
         , Border.widthEach { edges | left = lineSize * 2 }
+        , Border.color <|
+            Style.saturate <|
+                Style.mix 0.75 event.color model.pal.fg
         , Border.roundEach
             { corners
                 | topLeft = round <| model.fontSize / 2
@@ -789,11 +808,10 @@ renderEvent model vp event =
         ]
         [ paragraph
             [ width fill
-            , Font.size <| round <| model.fontSize * 1.75
+            , Font.size <| round <| model.fontSize * 1.25
             , Font.bold
-            , paddingXY (round model.fontSize * 2) <| round model.fontSize
+            , paddingXY (round <| model.fontSize * 0.75) <| round model.fontSize
             , spacing <| round <| model.fontSize
-            , Border.color <| Style.mix 0.5 model.pal.bg model.pal.fg
             , Border.width 1
             , Border.roundEach
                 { corners
@@ -808,7 +826,7 @@ renderEvent model vp event =
         , paragraph
             [ width fill
             , Font.bold
-            , paddingXY (round model.fontSize * 2) 0
+            , paddingXY (round <| model.fontSize * 0.75) 0
             ]
             [ text <| eventTimeString event.startTime event.duration ]
         , el
@@ -932,9 +950,11 @@ mdItem model task content children =
         ]
 
 
-renderCodeBlock : Model -> Viewport -> { body : String, language : Maybe String } -> Element Msg
-renderCodeBlock model vp { body, language } =
-    el [ width fill ] <|
+renderCodeBlock : Model -> { body : String, language : Maybe String } -> Element Msg
+renderCodeBlock model { body, language } =
+    el
+        [ width fill ]
+    <|
         textColumn
             [ Font.family [ Font.monospace ]
             , Bg.color <| Style.mix 0.2 model.pal.bg model.pal.fg
@@ -944,7 +964,7 @@ renderCodeBlock model vp { body, language } =
             --, centerX
             , alignRight
             ]
-            [ el
+            [ paragraph
                 [ Font.size <| round <| model.fontSize
                 , padding <| round <| model.fontSize / 2
                 , Bg.color <| Style.mix 0.2 model.pal.bg model.pal.fg
@@ -954,10 +974,10 @@ renderCodeBlock model vp { body, language } =
               <|
                 case language of
                     Just l ->
-                        text l
+                        [ text l ]
 
                     Nothing ->
-                        none
+                        []
             , el
                 [ width fill
                 , Bg.color <|
@@ -999,7 +1019,8 @@ renderCodeBlock model vp { body, language } =
                                                         }
                                             in
                                             row
-                                                [ width fill ]
+                                                [ width fill
+                                                ]
                                                 [ el
                                                     [ Bg.color bg.num
                                                     , Font.bold
@@ -1018,11 +1039,11 @@ renderCodeBlock model vp { body, language } =
                                                             '0'
                                                         |> (\s -> el [ centerY, noSelect ] (text s))
                                                     )
-                                                , paragraph
+                                                , row
                                                     [ Bg.color bg.text
                                                     , paddingXY (model.fontSize / 2 |> round) 0
-                                                    , width fill
                                                     , height fill
+                                                    , width fill
                                                     ]
                                                     [ if str /= "" then
                                                         spaceText str

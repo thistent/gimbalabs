@@ -8,7 +8,7 @@ import Date exposing (Date)
 import Delay exposing (Delay)
 import Dict exposing (Dict)
 import Http
-import Time
+import Time exposing (Month)
 import Ui exposing (..)
 import Url
 
@@ -25,7 +25,8 @@ type alias Model =
     , pal : Pal
     , size : Delay Dom.Viewport
     , zone : Time.Zone
-    , time : Maybe Time.Posix
+    , time : Time.Posix
+    , focusMonth : Date --{ year : Int, month : Month }
     , currentSlide : String
     , slides : Dict String (Pal -> Element Msg)
     , docText : String
@@ -39,7 +40,7 @@ type alias Model =
 
 
 type alias Flags =
-    { dpi : Float }
+    { dpi : Float, time : Int }
 
 
 type Orientation
@@ -63,6 +64,7 @@ type Msg
     | ReceiveDoc Page String (Result Http.Error String)
     | ToggleClockOrientation
     | SelectDate (Maybe Date)
+    | SetFocusMonth Date
 
 
 type Page
@@ -105,11 +107,16 @@ type alias WeeklyEvent =
     , lastDate : Date
     , startTime : Duration -- Time since midnight UTC
     , duration : Duration -- Length of event
-    , exceptions : List Date
+    , exceptions : List (RangeOrSingle Date)
     , title : String
     , description : String
     , color : Color
     }
+
+
+type RangeOrSingle a
+    = Range a a
+    | Single a
 
 
 durMins : Duration -> Int
@@ -151,9 +158,28 @@ eventsOfDay date allEvents =
             (\ev ->
                 (Date.weekdayNumber ev.firstDate == Date.weekdayNumber date)
                     && Date.isBetween ev.firstDate (Date.add Date.Days 1 ev.lastDate) date
-                    && not (List.member date ev.exceptions)
+                    && not (isInExceptions date ev.exceptions)
             )
         |> Array.toList
+
+
+isInExceptions : Date -> List (RangeOrSingle Date) -> Bool
+isInExceptions date rds =
+    rds |> List.foldl (checkRange date) False
+
+
+checkRange : Date -> RangeOrSingle Date -> Bool -> Bool
+checkRange date range alreadyFound =
+    if alreadyFound then
+        True
+
+    else
+        case range of
+            Single a ->
+                Date.compare a date == EQ
+
+            Range a b ->
+                Date.isBetween a b date
 
 
 dateRange : Date -> Date -> List Date

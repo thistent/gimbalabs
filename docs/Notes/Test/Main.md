@@ -1,28 +1,25 @@
-# Main.md
+# Test/Main.md
 
-Look at this [Other Page](Other.md)!
+Look at this [Other Page](Test/Other.md)!
 
 This page does not exist: [Nothing](Nothing.md)
 
-A presentation: [Scopes of Authority](Auth.md)
 
 Code: `You can [Reload the Main Page](Main.md) or view the [Other Page](Other.md)!`
 
-## Markdown files like this [blog post](Post-01.md)!
+## Markdown files like this presentation: [Scopes of Authority](Test/Auth.md)
 
 This is a Markdown file in the /docs/notes/ directory being loaded dynamically into the web app!
 It could be beneficial to have a custom semantic markup language.
 
-- Now, look at [blog post number two](Post-02.md)!
-
-- Now read about [Typed Markdown](Types.md)
+- Now read about [Typed Markdown](Test/Types.md)
 
 ### Markdown Testing
 
 | Questions | Answers |
 | --------- | ------- |
 | What?     | It      |
-| Why, oh why? This is the question that I'm looking for a good answer to!     | Because |
+| Why, oh why? This is the **question** that I'm looking for a good answer to!     | Because |
 | How?      | Happily, because it's very important to have a positive outlook even when things get tough! |
 | When      | Now     |
 

@@ -141,7 +141,7 @@ heading m txt =
     el
         [ Border.widthEach { edges | bottom = lineSize }
         , paddingEach { edges | bottom = round m.fontSize }
-        , Font.size <| round <| m.fontSize * 2
+        , Font.size <| round <| m.fontSize * 1.5
         , width fill
         ]
     <|

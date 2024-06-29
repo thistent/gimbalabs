@@ -9,7 +9,7 @@ import Browser.Dom as Dom exposing (Viewport)
 import Browser.Events as Events exposing (onResize)
 import Browser.Navigation as Nav
 import Calendar exposing (CalendarDate)
-import Date
+import Date exposing (Date)
 import Delay exposing (Timer)
 import Dict
 import Docs exposing (..)
@@ -21,7 +21,7 @@ import Pic
 import Return exposing (Return)
 import Style exposing (..)
 import Task
-import Time exposing (Month(..))
+import Time exposing (Month(..), Posix)
 import Types exposing (..)
 import Ui exposing (..)
 import Ui.Background as Bg
@@ -123,18 +123,24 @@ init flags url key =
     let
         startDoc : String
         startDoc =
-            -- "Types.md"
-            "Home.md"
+            -- "Test/Types.md"
+            "Test/Types.md"
+
+        time : Posix
+        time =
+            Time.millisToPosix flags.time
     in
     Return.return
         { navKey = key
         , url = url
-        , page = Home
+        , page = Blog
         , menu = MenuClosed
         , pal = newspaper -- dark
         , size = Delay.wait 500 Nothing
         , zone = Time.utc
-        , time = Nothing
+        , time = time
+        , focusMonth =
+            time |> Date.fromPosix Time.utc
         , currentSlide = "start"
         , slides = Dict.empty
         , docText = ""
@@ -142,8 +148,10 @@ init flags url key =
         , hemisphere = North
         , selectDate = Nothing
         , events =
-            Array.fromList
-                [ { firstDate = Date.fromCalendarDate 2024 Mar 11
+            Array.fromList <|
+                [ { title = "Cardano Go Live Coding"
+                  , description = "[Zoom Link](https://us06web.zoom.us/meeting/register/tZwtcemrqTwoG9fYL2pYvrCwQG9u2tJNmqa6)"
+                  , firstDate = Date.fromCalendarDate 2024 Mar 11
                   , lastDate = Date.fromCalendarDate 2024 Dec (30 + 1)
                   , startTime =
                         { hours = 13
@@ -154,12 +162,13 @@ init flags url key =
                         , minutes = 0
                         }
                   , exceptions =
-                        []
-                  , title = "Cardano Go Live Coding"
-                  , description = "[Zoom Link](https://us06web.zoom.us/meeting/register/tZwtcemrqTwoG9fYL2pYvrCwQG9u2tJNmqa6)"
+                        [ Range (Date.fromCalendarDate 2024 Jul 1) (Date.fromCalendarDate 2024 Jul 11)
+                        ]
                   , color = rgb255 0xCC 0xAA 0x00 -- #ccaa00
                   }
-                , { firstDate = Date.fromCalendarDate 2024 Mar 5
+                , { title = "Mesh Live Coding"
+                  , description = "[Zoom Link](https://us06web.zoom.us/meeting/register/tZEqcuGgpz8oG9d-DgQBDEnICud-mF4uyQCs)"
+                  , firstDate = Date.fromCalendarDate 2024 Mar 5
                   , lastDate = Date.fromCalendarDate 2024 Aug (27 + 1)
                   , startTime =
                         { hours = 13
@@ -170,13 +179,14 @@ init flags url key =
                         , minutes = 0
                         }
                   , exceptions =
-                        [ Date.fromCalendarDate 2024 Jun 4
+                        [ Single <| Date.fromCalendarDate 2024 Jun 4
+                        , Range (Date.fromCalendarDate 2024 Jul 1) (Date.fromCalendarDate 2024 Jul 31)
                         ]
-                  , title = "Mesh Live Coding"
-                  , description = "[Zoom Link](https://us06web.zoom.us/meeting/register/tZEqcuGgpz8oG9d-DgQBDEnICud-mF4uyQCs)"
                   , color = rgb255 0xBB 0x77 0xDD -- #bb77dd
                   }
-                , { firstDate = Date.fromCalendarDate 2024 Jan 9
+                , { title = "Gimbalabs Playground"
+                  , description = "[Zoom Link](https://us06web.zoom.us/meeting/register/tZYoduuqpjsqGtdzMHXoRVVnJqcQGOtpQRQv)"
+                  , firstDate = Date.fromCalendarDate 2024 Jan 9
                   , lastDate = Date.fromCalendarDate 2024 Jun (25 + 1)
                   , startTime =
                         { hours = 18
@@ -187,13 +197,14 @@ init flags url key =
                         , minutes = 30
                         }
                   , exceptions =
-                        [ Date.fromCalendarDate 2024 Jun 18
+                        [ Single <| Date.fromCalendarDate 2024 Jun 18
+                        , Range (Date.fromCalendarDate 2024 Jul 1) (Date.fromCalendarDate 2024 Jul 31)
                         ]
-                  , title = "Gimbalabs Playground"
-                  , description = "[Zoom Link](https://us06web.zoom.us/meeting/register/tZYoduuqpjsqGtdzMHXoRVVnJqcQGOtpQRQv)"
                   , color = rgb255 0x00 0x99 0xCC -- #0099cc
                   }
-                , { firstDate = Date.fromCalendarDate 2024 Feb 29
+                , { title = "Gimbalabs Open Spaces"
+                  , description = "[Zoom Link](https://us06web.zoom.us/meeting/register/tZErceCqpzMtG9XldfuPnBQEus5MBivl9OZe)"
+                  , firstDate = Date.fromCalendarDate 2024 Feb 29
                   , lastDate = Date.fromCalendarDate 2024 Dec (26 + 1)
                   , startTime =
                         { hours = 14
@@ -204,12 +215,13 @@ init flags url key =
                         , minutes = 30
                         }
                   , exceptions =
-                        []
-                  , title = "Gimbalabs Open Spaces"
-                  , description = "[Zoom Link](https://us06web.zoom.us/meeting/register/tZErceCqpzMtG9XldfuPnBQEus5MBivl9OZe)"
+                        [ Range (Date.fromCalendarDate 2024 Jul 1) (Date.fromCalendarDate 2024 Jul 11)
+                        ]
                   , color = rgb255 0x99 0xCC 0x66 -- #99cc66
                   }
-                , { firstDate = Date.fromCalendarDate 2024 May 22
+                , { title = "Plutus PBL Live Coding"
+                  , description = "[Zoom Link](https://us06web.zoom.us/meeting/register/tZwoduCgrTgiHt3u34gOSGRL5pY4pdZlT5MM)"
+                  , firstDate = Date.fromCalendarDate 2024 May 22
                   , lastDate = Date.fromCalendarDate 2024 Dec (25 + 1)
                   , startTime =
                         { hours = 14
@@ -220,9 +232,8 @@ init flags url key =
                         , minutes = 30
                         }
                   , exceptions =
-                        []
-                  , title = "Plutus PBL Live Coding"
-                  , description = "[Zoom Link](https://us06web.zoom.us/meeting/register/tZwoduCgrTgiHt3u34gOSGRL5pY4pdZlT5MM)"
+                        [ Range (Date.fromCalendarDate 2024 Jul 1) (Date.fromCalendarDate 2024 Jul 31)
+                        ]
                   , color = rgb255 0xDD 0x77 0x99 -- #dd7799
                   }
                 ]
@@ -283,10 +294,14 @@ update msg model =
                 }
 
         Tick time ->
-            Return.singleton
+            Return.return
                 { model
-                    | time = Just time
+                    | time = time
                 }
+            <|
+                Cmd.batch
+                    [ Task.perform SceneInfo Dom.getViewport
+                    ]
 
         FrameDelta delta ->
             Return.singleton
@@ -322,7 +337,7 @@ update msg model =
                     }
 
         ReceiveDoc navTo doc res ->
-            -- ReceiveDoc str res ->
+            -- https://raw.githubusercontent.com/thistent/gimbalabs/main/src/Markup.elm
             case res of
                 Ok p ->
                     Return.singleton
@@ -353,6 +368,9 @@ update msg model =
         SelectDate maybeDate ->
             Return.singleton { model | selectDate = maybeDate }
 
+        SetFocusMonth date ->
+            Return.singleton { model | focusMonth = date }
+
 
 
 -- Subscriptions --
@@ -373,22 +391,11 @@ subs _ =
 
 view : Model -> Viewport -> Html Msg
 view model vp =
-    let
-        m : Pal -> Pal -> Model
-        m oldPal newPal =
-            { model
-                | pal =
-                    { newPal
-                        | bg = Style.mix 0.6 oldPal.bg newPal.bg
-                        , fg = Style.mix 0.85 oldPal.bg newPal.fg
-                        , link = Style.mix 0.85 oldPal.bg newPal.fg
-                    }
-            }
-    in
     layout
         [ Font.family [ Font.serif ]
         , Font.color model.pal.fg
         , Font.letterSpacing 0.2
+        , Font.size <| round model.fontSize
         , Bg.color model.pal.bg
         , inFront <|
             el
@@ -405,52 +412,17 @@ view model vp =
             [ fillSpace
             , Bg.color model.pal.bg
             , spacing <| round <| model.fontSize
-            , padding <| round <| model.fontSize / 2
+            , padding <| round <| model.fontSize * 0.75
+            , clip
+            , scrollbars
             ]
             [ el [ height <| px <| round <| model.fontSize * 3.5 ] none
             , case model.page of
                 Home ->
                     blogView model vp
 
-                {-
-                   column
-                       [ fillSpace
-                       , spacing <| round <| model.fontSize * 2
-                       , padding <| round <| model.fontSize / 2
-                       ]
-                       [ column
-                           [ spacing <| round <| model.fontSize * 2
-                           , paddingXY (round <| model.fontSize / 2) 0
-                           , width fill
-                           ]
-                           (case model.time of
-                               Nothing ->
-                                   [ paragraph
-                                       [ Font.bold
-                                       , Font.size <| round <| model.fontSize * 2
-                                       ]
-                                       [ text "No events today!" ]
-                                   ]
-
-                               Just time ->
-                                   model.events
-                                       |> eventsOfDay (Date.fromPosix model.zone time)
-                                       |> List.map (renderEvent model vp)
-                                       |> (::) (heading model "Today's Events")
-                           )
-                       , hBar
-                       , el [ width <| fillPortion 3, height fill ] <|
-                           topGroup model
-                               [ heading model "Welcome to Gimbalabs!"
-                               , item model <|
-                                   "Right now, we are building Plutus PBL 2024, "
-                                       ++ "running weekly live coding sessions, "
-                                       ++ "and hosting Gimbalabs Open Spaces."
-                               ]
-                       ]
-                -}
                 Calendar ->
-                    calendarView model vp
+                    calendarPage model vp
 
                 Blog ->
                     blogView model vp
@@ -467,46 +439,69 @@ view model vp =
                 StayHere ->
                     el [ fillSpace ] <| el [ centerXY ] <| text "How'd we get here?"
             , hBar
-            , textColumn
-                [ fillSpace
-                ]
-                [ wrappedRow
-                    [ fillSpace
-                    , spacing <| round <| model.fontSize * 2
-                    , padding <| round <| model.fontSize
-                    ]
-                    [ turningPage (m model.pal orangeNote) 0.02 <|
-                        el [ fillSpace ] <|
-                            column [ centerX, spacing <| round model.fontSize ]
-                                [ heading model "Learn"
-                                , el [] <| text "Starter Kits"
-                                , el [] <| text "Plutus"
-                                , el [] <| text "Playground"
-                                ]
-                    , turningPage (m model.pal yellowNote) 0 <|
-                        el [ fillSpace ] <|
-                            column [ centerX, spacing <| round model.fontSize ]
-                                [ heading model "APIs"
-                                , el [] <| text "Dandelion"
-                                , el [] <| text "Endpoints"
-                                ]
-                    , turningPage (m model.pal greenNote) -0.02 <|
-                        el [ fillSpace ] <|
-                            column [ centerX, spacing <| round model.fontSize ]
-                                [ heading (m model.pal greenNote) "Updates"
-                                , iconButton (m model.pal greenNote) (RequestDoc Blog "Updates.md") (Just Pic.location) <| text "Updates"
-                                ]
-                    , turningPage (m model.pal blueNote) 0.01 <|
-                        el [ fillSpace ] <|
-                            column [ centerX, spacing <| round model.fontSize ]
-                                [ heading (m model.pal blueNote) "About Us"
-                                , iconButton (m model.pal blueNote) (RequestDoc Blog "About.md") (Just Pic.location) <| text "About Us"
-                                , iconButton (m model.pal blueNote) (GotoPage Calendar) (Just Pic.location) <| text "Calendar"
-                                , el [] <| text "Stake Pool"
-                                ]
-                    ]
-                ]
+            , navNotes model
             ]
+
+
+navNotes : Model -> Element Msg
+navNotes model =
+    let
+        m : Pal -> Pal -> Model
+        m oldPal newPal =
+            { model
+                | pal =
+                    { newPal
+                        | bg = Style.mix 0.6 oldPal.bg newPal.bg
+                        , fg = Style.mix 0.85 oldPal.bg newPal.fg
+                        , link = Style.mix 0.85 oldPal.bg newPal.fg
+                    }
+            }
+    in
+    textColumn
+        [ fillSpace
+        , paddingEach
+            { edges
+                | top = round <| model.fontSize * 0.5
+                , left = round <| model.fontSize * 0.5
+                , right = round <| model.fontSize * 0.5
+                , bottom = round <| model.fontSize * 2
+            }
+        ]
+        [ wrappedRow
+            [ fillSpace
+            , spacing <| round <| model.fontSize * 2
+            ]
+            [ turningPage (m model.pal orangeNote) 0.02 <|
+                el [ fillSpace ] <|
+                    column [ centerX, spacing <| round model.fontSize ]
+                        [ heading model "Learn"
+                        , el [] <| text "Starter Kits"
+                        , el [] <| text "Plutus"
+                        , el [] <| text "Playground"
+                        ]
+            , turningPage (m model.pal yellowNote) 0 <|
+                el [ fillSpace ] <|
+                    column [ centerX, spacing <| round model.fontSize ]
+                        [ heading model "APIs"
+                        , el [] <| text "Dandelion"
+                        , el [] <| text "Endpoints"
+                        ]
+            , turningPage (m model.pal greenNote) -0.02 <|
+                el [ fillSpace ] <|
+                    column [ centerX, spacing <| round model.fontSize ]
+                        [ heading (m model.pal greenNote) "Updates"
+                        , iconButton (m model.pal greenNote) (RequestDoc Blog "Updates.md") (Just Pic.location) <| text "Updates"
+                        ]
+            , turningPage (m model.pal blueNote) 0.01 <|
+                el [ fillSpace ] <|
+                    column [ centerX, spacing <| round model.fontSize ]
+                        [ heading (m model.pal blueNote) "About Us"
+                        , iconButton (m model.pal blueNote) (RequestDoc Blog "About.md") (Just Pic.location) <| text "About Us"
+                        , iconButton (m model.pal blueNote) (GotoPage Calendar) (Just Pic.location) <| text "Calendar"
+                        , el [] <| text "Stake Pool"
+                        ]
+            ]
+        ]
 
 
 graphView : Model -> Viewport -> Element Msg
@@ -516,8 +511,26 @@ graphView model vp =
         text "Graph View"
 
 
-calendarView : Model -> Viewport -> Element Msg
-calendarView model vp =
+calendarPage : Model -> Viewport -> Element Msg
+calendarPage model vp =
+    rowOrColumn (vp.viewport.width > 1200)
+        [ fillSpace
+        , spacing <| round <| model.fontSize
+        , paddingEach { edges | bottom = round <| model.fontSize }
+        ]
+        [ el
+            [ fillSpace
+            , inFront <|
+                dayView model vp
+            ]
+          <|
+            calendarView model
+        , clockView model
+        ]
+
+
+clockView : Model -> Element Msg
+clockView model =
     let
         time :
             { localHours : Int
@@ -528,22 +541,14 @@ calendarView model vp =
             }
         time =
             model.time
-                |> Maybe.map
-                    (\t ->
+                |> (\t ->
                         { localHours = Time.toHour model.zone t
                         , hours = Time.toHour Time.utc t
                         , minutes = Time.toMinute Time.utc t
                         , seconds = Time.toSecond Time.utc t
                         , millis = Time.toMillis Time.utc t
                         }
-                    )
-                |> Maybe.withDefault
-                    { localHours = 0
-                    , hours = 0
-                    , minutes = 0
-                    , seconds = 0
-                    , millis = 0
-                    }
+                   )
 
         c :
             { hourRotation : Float
@@ -582,85 +587,72 @@ calendarView model vp =
                     , op = "Northern"
                     }
     in
-    rowOrColumn (vp.viewport.width > 1200)
-        [ fillSpace
-        , spacing <| round <| model.fontSize
-        , paddingEach { edges | bottom = round <| model.fontSize }
+    column
+        [ spacing <| round model.fontSize
+        , padding <| round model.fontSize
+        , centerXY
         ]
-        [ el
-            [ fillSpace
-            , inFront <|
-                dayView model vp
+        [ el [ centerX ] <|
+            image
+                [ centerXY
+                , clip
+                , inFront <|
+                    image
+                        [ rotate c.localHourRotation
+                        ]
+                        { src = "assets/earth-local-hour.png"
+                        , description = "local hour hand"
+                        }
+                , behindContent <|
+                    image
+                        [ rotate c.hourRotation
+                        , inFront <|
+                            image
+                                [ rotate c.secondRotation
+                                ]
+                                { src = "assets/earth-second.png"
+                                , description = "second hand"
+                                }
+                        , inFront <|
+                            image
+                                [ rotate c.minuteRotation
+                                ]
+                                { src = "assets/earth-minute.png"
+                                , description = "minute hand"
+                                }
+                        ]
+                        { src = c.picUrl
+                        , description = "earth clock"
+                        }
+                ]
+                { src = c.hourLines, description = "earth" }
+        , el [ centerX ] <|
+            iconButton model ToggleClockOrientation Nothing <|
+                text ("Flip Clock to " ++ c.op ++ " Hemisphere")
+        , el
+            [ centerX
+            , Font.bold
             ]
           <|
-            calendar model
-        , column
-            [ spacing <| round model.fontSize
-            , padding <| round model.fontSize
-            , centerXY
+            text "Current Time:"
+        , el
+            [ centerX
             ]
-            [ el [ centerX ] <|
-                image
-                    [ centerXY
-                    , clip
-                    , inFront <|
-                        image
-                            [ rotate c.localHourRotation
-                            ]
-                            { src = "assets/earth-local-hour.png"
-                            , description = "local hour hand"
-                            }
-                    , behindContent <|
-                        image
-                            [ rotate c.hourRotation
-                            , inFront <|
-                                image
-                                    [ rotate c.secondRotation
-                                    ]
-                                    { src = "assets/earth-second.png"
-                                    , description = "second hand"
-                                    }
-                            , inFront <|
-                                image
-                                    [ rotate c.minuteRotation
-                                    ]
-                                    { src = "assets/earth-minute.png"
-                                    , description = "minute hand"
-                                    }
-                            ]
-                            { src = c.picUrl
-                            , description = "earth clock"
-                            }
-                    ]
-                    { src = c.hourLines, description = "earth" }
-            , el [ centerX ] <|
-                iconButton model ToggleClockOrientation Nothing <|
-                    text ("Flip Clock to " ++ c.op ++ " Hemisphere")
-            , el
-                [ centerX
-                , Font.bold
-                ]
-              <|
-                text "Current Time:"
-            , el
-                [ centerX
-                ]
-              <|
-                text <|
-                    String.fromInt time.hours
-                        ++ ":"
-                        ++ (String.padLeft 2 '0' <| String.fromInt time.minutes)
-                        ++ " UTC"
-            , el
-                [ centerX
-                ]
-              <|
-                text <|
-                    String.fromInt time.localHours
-                        ++ ":"
-                        ++ (String.padLeft 2 '0' <| String.fromInt time.minutes)
-                        ++ " Local"
+          <|
+            text <|
+                String.fromInt time.hours
+                    ++ ":"
+                    ++ (String.padLeft 2 '0' <| String.fromInt time.minutes)
+                    ++ " UTC"
+        , el
+            [ centerX
             ]
+          <|
+            text <|
+                String.fromInt time.localHours
+                    ++ ":"
+                    ++ (String.padLeft 2 '0' <| String.fromInt time.minutes)
+                    ++ " Local"
         ]
 
 
@@ -682,9 +674,7 @@ blogView model vp =
         , spacing <| round <| model.fontSize
         , paddingEach
             { edges
-                | right = round model.fontSize
-                , left = round model.fontSize
-                , top = round <| model.fontSize / 4
+                | top = round <| model.fontSize / 4
                 , bottom = round model.fontSize
             }
         ]
@@ -698,14 +688,16 @@ surroundByFileInfo : Bool -> Model -> List (Element Msg) -> List (Element Msg)
 surroundByFileInfo pred model content =
     let
         fileInfo =
-            row
+            wrappedRow
                 [ width fill
                 , paddingXY lineSize 0
                 , spacing <| round model.fontSize
                 ]
-                [ el [ Font.bold ] <| text "File:"
-                , text <| "/Notes/" ++ model.docName
-                , el [ alignRight ] <| iconButton model (RequestDoc Blog "Main.md") Nothing <| text "Main.md"
+                [ wrappedRow [ Font.bold, width fill ]
+                    [ text "File:"
+                    , text <| "/Notes/" ++ model.docName
+                    ]
+                , el [ fillSpace ] <| el [ alignRight, alignTop ] <| iconButton model (RequestDoc Blog "Blog.md") Nothing <| text "Blog.md"
                 ]
     in
     if pred then
@@ -720,18 +712,6 @@ settingsView model vp =
     column [ centerXY, spacing <| round model.fontSize ]
         [ el [ centerX, Font.bold, Font.size <| round <| model.fontSize * 2 ] <| text "Under Construction!"
         , el [ centerXY ] <| text "( Settings )"
-
-        {- , vp.viewport
-           |> (\{ height, width } ->
-                   { height = height |> round
-                   , width = width |> round
-                   }
-              )
-           |> classifyDevice
-           |> Debug.toString
-           |> text
-           |> el [ centerX ]
-        -}
         , vp.viewport
             |> (\{ height, width } ->
                     "{ width = "
@@ -753,10 +733,17 @@ settingsView model vp =
         ]
 
 
-calendar : Model -> Element Msg
-calendar model =
+calendarView : Model -> Element Msg
+calendarView model =
+    let
+        currentDate : Date
+        currentDate =
+            model.time
+                |> Date.fromPosix Time.utc
+    in
     column
-        [ fillSpace
+        [ width fill
+        , Bg.color <| Style.mix 0.075 model.pal.bg model.pal.fg
         , Border.width lineSize
         , Border.roundEach
             { corners
@@ -764,53 +751,97 @@ calendar model =
                 , topRight = round <| model.fontSize / 2
             }
         , Style.shadow
+        , scrollbars
         ]
-        [ column
+        [ row
             [ width fill
-            , Border.widthEach { edges | bottom = lineSize }
-            , Border.roundEach
-                { corners
-                    | topLeft = round <| model.fontSize / 2
-                    , topRight = round <| model.fontSize / 2
-                }
-            , Bg.color <| Style.mix 0.075 model.pal.bg model.pal.fg
+            , spacing <| round <| model.fontSize
             ]
             [ el
-                [ centerX
-                , Font.size <| round <| model.fontSize * 1.5
+                [ padding <| round <| model.fontSize * 0.5
+                , alignLeft
+                ]
+              <|
+                iconButton model
+                    (SetFocusMonth <| Date.add Date.Months -1 model.focusMonth)
+                    (Just Pic.leftArrow)
+                    none
+            , el [ width fill ] <|
+                if (Date.year currentDate == Date.year model.focusMonth) && (Date.month currentDate == Date.month model.focusMonth) then
+                    none
+
+                else
+                    el [ centerX ] <|
+                        (iconButton model
+                            (SetFocusMonth <| Date.fromCalendarDate (Date.year currentDate) (Date.month currentDate) 1)
+                            Nothing
+                         <|
+                            text "Back"
+                        )
+            , el
+                [ Font.size <| round <| model.fontSize * 1.5
                 , Font.bold
                 , paddingXY 0 <| round model.fontSize
                 ]
               <|
                 text <|
-                    (model.time
-                        |> Maybe.map (Date.fromPosix model.zone)
-                        |> Maybe.map (Date.format "MMMM y")
-                        |> Maybe.withDefault "Calendar"
-                    )
-            , row
-                [ width fill
-                , paddingXY 0 <| round <| model.fontSize * 0.4
+                    Date.format "MMMM y" model.focusMonth
+            , el [ width fill ] none
+            , el
+                [ padding <| round <| model.fontSize * 0.5
+                , alignRight
                 ]
-                ([ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ]
-                    |> List.map (text >> el [ centerX ] >> el [ width fill, Font.bold ])
-                )
+              <|
+                iconButton model
+                    (SetFocusMonth <| Date.add Date.Months 1 model.focusMonth)
+                    (Just Pic.rightArrow)
+                    none
             ]
-        , el
-            [ fillSpace
+        , table
+            [ width fill
+            , Bg.color model.pal.bg
             ]
-          <|
-            (model.time
-                |> Maybe.map (Calendar.fromTime Nothing Time.utc)
-                |> Maybe.map (List.map (weekOnCalendar model) >> column [ fillSpace ])
-                |> Maybe.withDefault none
-            )
+            { data =
+                Calendar.fromDate Nothing model.focusMonth
+            , columns =
+                [ calColumn model "Sun" 0
+                , calColumn model "Mon" 1
+                , calColumn model "Tue" 2
+                , calColumn model "Wed" 3
+                , calColumn model "Thu" 4
+                , calColumn model "Fri" 5
+                , calColumn model "Sat" 6
+                ]
+            }
         ]
 
 
-weekOnCalendar : Model -> List CalendarDate -> Element Msg
-weekOnCalendar model =
-    List.map (dayOnCalendar model) >> row [ fillSpace ]
+calColumn : Model -> String -> Int -> { header : Element Msg, width : Length, view : List CalendarDate -> Element Msg }
+calColumn model dayName index =
+    { header =
+        el
+            [ width fill
+            , Font.bold
+            , Bg.color <| Style.mix 0.075 model.pal.bg model.pal.fg
+            , Border.widthEach { edges | bottom = lineSize }
+            ]
+        <|
+            el [ centerX ] <|
+                text dayName
+    , width = fill
+    , view =
+        \dates ->
+            Array.fromList dates
+                |> Array.get index
+                |> Maybe.map (dayOnCalendar model)
+                |> Maybe.withDefault
+                    (el
+                        [ fillSpace
+                        , Bg.color <| rgb 1 0 0
+                        ]
+                        none
+                    )
+    }
 
 
 dayOnCalendar : Model -> CalendarDate -> Element Msg
@@ -824,20 +855,13 @@ dayOnCalendar model day =
             }
         date =
             model.time
-                |> Maybe.map
-                    (\t ->
+                |> (\t ->
                         { year = Time.toYear Time.utc t
                         , month = Time.toMonth Time.utc t
                         , day = Time.toDay Time.utc t
                         , posix = t
                         }
-                    )
-                |> Maybe.withDefault
-                    { year = 0
-                    , month = Time.Jan
-                    , day = 0
-                    , posix = Time.millisToPosix 0
-                    }
+                   )
 
         isToday : Bool
         isToday =
@@ -852,13 +876,14 @@ dayOnCalendar model day =
                 Nothing ->
                     False
 
-        isThisMonth : Bool
-        isThisMonth =
-            Date.month day.date == date.month
+        isFocusMonth : Bool
+        isFocusMonth =
+            (Date.month model.focusMonth == Date.month day.date)
+                && (Date.year model.focusMonth == Date.year day.date)
 
         bg : Color
         bg =
-            case ( isSelected, isThisMonth ) of
+            case ( isSelected, isFocusMonth ) of
                 ( True, True ) ->
                     Style.mix 0.5 model.pal.link model.pal.bg
 
@@ -874,7 +899,7 @@ dayOnCalendar model day =
         internalBorder : Color
         internalBorder =
             if isToday then
-                model.pal.fg
+                model.pal.extLink
 
             else
                 bg
@@ -883,7 +908,14 @@ dayOnCalendar model day =
         [ fillSpace
         , padding <| round <| model.fontSize / 6
         , Border.width 1
-        , Bg.color internalBorder
+        , Border.color <|
+            if isToday then
+                Style.mix 0.85 bg internalBorder
+
+            else
+                model.pal.fg
+        , Bg.color <| Style.mix 0.85 bg internalBorder
+        , Font.size 10
         ]
     <|
         link
@@ -900,12 +932,8 @@ dayOnCalendar model day =
             , label =
                 column
                     [ fillSpace
-
-                    --, padding <| round <| model.fontSize / 2 - model.fontSize / 6
                     , spacing <| round <| model.fontSize / 2 - model.fontSize / 6
-
-                    --, Font.size 10
-                    , Bg.color bg
+                    , Bg.color <| Style.mix 0.1 bg internalBorder
                     ]
                 <|
                     el
@@ -931,39 +959,6 @@ dayOnCalendar model day =
                                 |> eventsOfDay day.date
                                 |> List.map (calendarItem model)
                            )
-
-            {-
-               paragraph
-                   [ width fill
-                   , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg model.pal.error
-                   , Border.color <| Style.mix 0.5 model.pal.bg model.pal.error
-                   , Border.width 1
-                   , Border.rounded <| round <| model.fontSize / 3
-                   , padding <| round <| model.fontSize / 2 - model.fontSize / 6
-                   ]
-                   [ text "Open Spaces"
-                   ]
-               , paragraph
-                   [ width fill
-                   , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg model.pal.link
-                   , Border.color <| Style.mix 0.5 model.pal.bg model.pal.link
-                   , Border.width 1
-                   , Border.rounded <| round <| model.fontSize / 3
-                   , padding <| round <| model.fontSize / 2 - model.fontSize / 6
-                   ]
-                   [ text "Live Coding"
-                   ]
-               , paragraph
-                   [ width fill
-                   , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg model.pal.extLink
-                   , Border.color <| Style.mix 0.5 model.pal.bg model.pal.extLink
-                   , Border.width 1
-                   , Border.rounded <| round <| model.fontSize / 3
-                   , padding <| round <| model.fontSize / 2 - model.fontSize / 6
-                   ]
-                   [ text "Playground"
-                   ]
-            -}
             }
 
 
@@ -972,7 +967,7 @@ calendarItem model event =
     paragraph
         [ width fill
         , Bg.color <| Style.addAlpha 0.7 <| Style.mix 0.25 model.pal.bg event.color
-        , Border.color <| Style.mix 0.5 model.pal.bg event.color
+        , Border.color <| Style.addAlpha 0.7 <| Style.mix 0.5 model.pal.fg event.color
         , Border.width 1
         , Border.rounded <| round <| model.fontSize / 3
         , padding <| round <| model.fontSize / 2 - model.fontSize / 6
@@ -1055,8 +1050,8 @@ titleBar model vp =
                     column
                         [ alignTop
                         , alignRight
-                        , width <| px <| round <| vp.viewport.width * 0.9
-                        , height <| px <| round <| vp.viewport.height * 0.9
+                        , width <| px <| round <| vp.viewport.width * 0.95
+                        , height <| px <| round <| vp.viewport.width * 0.95
                         ]
                         [ row [ fillSpace ]
                             [ el
@@ -1124,52 +1119,14 @@ titleBar model vp =
                                 (Just Pic.menuClosed)
                                 none
 
-                        {- Pic.menuClosed model.pal.link
-                           model.fontSize
-                        -}
                         MenuOpen ->
                             iconButton model
                                 (ChangeMenu MenuClosed)
                                 (Just Pic.menuOpen)
                                 none
-
-                    {- Pic.menuOpen model.pal.link
-                       model.fontSize
-                       (ChangeMenu MenuClosed)
-                    -}
                     ]
                 ]
         ]
-
-
-
-{-
-
-   colorPicker : Model -> Element Msg
-   colorPicker model =
-       row
-           [ spacing <| round <| fontSize * 1.5
-           , Font.letterSpacing 1.25
-           ]
-           [ iconButton model (ChangeMenu MenuOpen) Nothing <| text "🠈 Back"
-           , iconButton model ResetView Nothing <| text "Reset"
-           ]
-
-
-
-      settingsMenu : Model -> Element Msg
-      settingsMenu model =
-          row
-              [ spacing <| round <| fontSize * 1.5
-              , Font.letterSpacing 1.25
-              ]
-              [ iconButton model
-                  (ChangeMenu ThemePicker)
-                  (Just Pic.pal)
-                <|
-                  text "Theme"
-              ]
--}
 
 
 mainMenu : Model -> Viewport -> Element Msg
@@ -1200,7 +1157,7 @@ mainMenu model vp =
               <|
                 text "Calendar"
             , iconButton model
-                (RequestDoc Blog "Main.md")
+                (RequestDoc Blog "Blog.md")
                 (Just Pic.blog)
               <|
                 text "Blog"
@@ -1220,84 +1177,14 @@ mainMenu model vp =
             ]
 
 
-weekdayToString : Time.Weekday -> String
-weekdayToString weekday =
-    case weekday of
-        Time.Mon ->
-            "Monday"
+viewTimeDate : Viewport -> Time.Zone -> Time.Posix -> String
+viewTimeDate vp zone time =
+    if vp.viewport.width < 600 then
+        ""
 
-        Time.Tue ->
-            "Tuesday"
-
-        Time.Wed ->
-            "Wednesday"
-
-        Time.Thu ->
-            "Thursday"
-
-        Time.Fri ->
-            "Friday"
-
-        Time.Sat ->
-            "Saturday"
-
-        Time.Sun ->
-            "Sunday"
-
-
-monthToString : Time.Month -> String
-monthToString month =
-    case month of
-        Time.Jan ->
-            "January"
-
-        Time.Feb ->
-            "February"
-
-        Time.Mar ->
-            "March"
-
-        Time.Apr ->
-            "April"
-
-        Time.May ->
-            "May"
-
-        Time.Jun ->
-            "June"
-
-        Time.Jul ->
-            "July"
-
-        Time.Aug ->
-            "August"
-
-        Time.Sep ->
-            "September"
-
-        Time.Oct ->
-            "October"
-
-        Time.Nov ->
-            "November"
-
-        Time.Dec ->
-            "December"
-
-
-viewTimeDate : Viewport -> Time.Zone -> Maybe Time.Posix -> String
-viewTimeDate vp zone maybeTime =
-    maybeTime
-        |> (\time ->
-                if vp.viewport.width < 600 then
-                    Nothing
-
-                else
-                    time
-           )
-        |> Maybe.map (Date.fromPosix zone)
-        |> Maybe.map (Date.format "EEEE, MMMM ddd, y")
-        |> Maybe.withDefault ""
+    else
+        Date.fromPosix zone time
+            |> Date.format "EEEE, MMMM ddd, y"
 
 
 

@@ -221,3 +221,8 @@ addAlpha alph color =
 mix : Float -> Color -> Color -> Color
 mix f a b =
     CM.weightedMix b a f
+
+
+saturate : Color -> Color
+saturate c =
+    CM.saturate 0.25 c
